@@ -314,15 +314,10 @@ export function formatPrice(price: number) {
 
 export function getServicePrice(service: Service) {
   const prices = service.variants?.map((variant) => variant.price);
-  const minimum = prices?.length
+  const startingPrice = prices?.length
     ? Math.min(...prices)
     : service.minPrice ?? service.basePrice;
-  const maximum = prices?.length
-    ? Math.max(...prices)
-    : service.maxPrice ?? service.basePrice;
 
-  if (minimum === undefined || maximum === undefined) return "Price on request";
-  return minimum === maximum
-    ? formatPrice(minimum)
-    : formatPrice(minimum) + " – " + formatPrice(maximum);
+  if (startingPrice === undefined) return "Price on request";
+  return formatPrice(startingPrice);
 }

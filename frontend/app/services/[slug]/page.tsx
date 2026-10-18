@@ -8,7 +8,13 @@ import BookingPanel from "@/components/services/BookingPanel";
 import ServiceCard from "@/components/services/ServiceCard";
 import ServiceInformationTabs from "@/components/services/ServiceInformationTabs";
 import ServiceImageCarousel from "@/components/services/ServiceImageCarousel";
-import { getServicePrice, mockServices, type Service, type ServiceFAQ } from "@/lib/services";
+import {
+  getServiceOriginalPrice,
+  getServicePrice,
+  mockServices,
+  type Service,
+  type ServiceFAQ,
+} from "@/lib/services";
 import { loadServerServiceBySlug, loadServerServices } from "@/lib/server-services";
 
 type ServiceDetailsProps = {
@@ -65,6 +71,7 @@ async function ServiceDetailsContent({ params }: ServiceDetailsProps) {
 
   const included = service.included ?? service.features;
   const faqs = service.faqs?.length ? service.faqs : previewFAQs;
+  const originalPrice = getServiceOriginalPrice(service);
 
   return (
     <main className="min-h-screen bg-slate-50">
@@ -133,7 +140,10 @@ async function ServiceDetailsContent({ params }: ServiceDetailsProps) {
             <p className="mt-4 max-w-xl border-t border-slate-200 pt-4 leading-7 text-slate-600">
               {service.description}
             </p>
-            <p className="mt-5 text-3xl font-extrabold text-blue-950">{getServicePrice(service)}</p>
+            <div className="mt-5 flex flex-wrap items-baseline gap-3">
+              <p className="text-3xl font-extrabold text-blue-950">{getServicePrice(service)}</p>
+              {originalPrice ? <del className="text-base text-slate-400">{originalPrice}</del> : null}
+            </div>
 
             <div className="mt-5 flex flex-wrap gap-3">
               <InfoPill icon={<Clock3 />} text={service.duration} />

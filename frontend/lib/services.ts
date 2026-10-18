@@ -125,47 +125,24 @@ export function formatPrice(price: number) {
 
 export function getServicePrice(service: Service) {
   const prices = service.variants?.map((variant) => variant.price);
-  const minimum = prices?.length
+  const startingPrice = prices?.length
     ? Math.min(...prices)
     : service.minPrice ?? service.basePrice;
-  const maximum = prices?.length
-    ? Math.max(...prices)
-    : service.maxPrice ?? service.basePrice;
 
-  if (minimum === undefined || maximum === undefined) return "Price on request";
-  return minimum === maximum
-    ? formatPrice(minimum)
-    : formatPrice(minimum) + " – " + formatPrice(maximum);
+  if (startingPrice === undefined) return "Price on request";
+  return formatPrice(startingPrice);
 }
 
 export function getServiceOriginalPrice(service: Service) {
   if (service.variants?.length) {
-    if (service.variants.some((variant) => variant.originalPrice === undefined)) return undefined;
-    const prices = service.variants.map((variant) => variant.originalPrice as number);
-    const minimum = Math.min(...prices);
-    const maximum = Math.max(...prices);
-    return minimum === maximum
-      ? formatPrice(minimum)
-      : `${formatPrice(minimum)} – ${formatPrice(maximum)}`;
+    const lowestPricedVariant = service.variants.reduce((lowest, variant) =>
+      variant.price < lowest.price ? variant : lowest,
+    );
+    return lowestPricedVariant.originalPrice === undefined
+      ? undefined
+      : formatPrice(lowestPricedVariant.originalPrice);
   }
   return service.originalPrice === undefined ? undefined : formatPrice(service.originalPrice);
-}
-
-export function getServiceSavings(service: Service) {
-  const differences = service.variants?.length
-    ? service.variants.map((variant) =>
-        variant.originalPrice === undefined ? undefined : variant.originalPrice - variant.price,
-      )
-    : service.originalPrice === undefined
-      ? []
-      : [service.originalPrice - (service.basePrice ?? service.minPrice ?? 0)];
-
-  if (!differences.length || differences.some((difference) => difference === undefined || difference <= 0)) {
-    return undefined;
-  }
-  return differences.every((difference) => difference === differences[0])
-    ? differences[0]
-    : undefined;
 }
 
 export function getAddonTotal(service: Service, addonIds: string[] = []) {

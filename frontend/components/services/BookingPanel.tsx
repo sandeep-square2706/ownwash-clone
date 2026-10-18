@@ -147,9 +147,6 @@ export default function BookingPanel({ service }: { service: Service }) {
           {originalLineTotal > lineTotal ? (
             <span className="mt-1 block text-xs text-slate-500">
               <del>{formatPrice(originalLineTotal)}</del>
-              <span className="ml-2 font-semibold text-cyan-800">
-                Save {formatPrice(originalLineTotal - lineTotal)}
-              </span>
             </span>
           ) : null}
         </span>

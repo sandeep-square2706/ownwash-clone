@@ -11,13 +11,7 @@ import {
   subscribeToStore,
   toggleWishlist,
 } from "@/lib/client-store";
-import {
-  formatPrice,
-  getServiceOriginalPrice,
-  getServicePrice,
-  getServiceSavings,
-  type Service,
-} from "@/lib/services";
+import { getServiceOriginalPrice, getServicePrice, type Service } from "@/lib/services";
 
 type ServiceCardProps = {
   service: Service;
@@ -49,7 +43,6 @@ export default function ServiceCard({ service, listView = false }: ServiceCardPr
   const hasOptions = Boolean(service.variants?.length);
   const detailHref = `/services/${service.slug}`;
   const originalPrice = getServiceOriginalPrice(service);
-  const savings = getServiceSavings(service);
 
   return (
     <article
@@ -106,14 +99,7 @@ export default function ServiceCard({ service, listView = false }: ServiceCardPr
           <div className="mt-4 flex flex-wrap items-baseline gap-2">
             <p className="text-xl font-bold text-blue-950">{getServicePrice(service)}</p>
             {originalPrice && (
-              <>
-                <del className="text-sm text-slate-400">{originalPrice}</del>
-                {savings ? (
-                  <span className="rounded-full bg-cyan-50 px-2 py-1 text-[11px] font-bold text-cyan-800">
-                    Save {formatPrice(savings)}
-                  </span>
-                ) : null}
-              </>
+              <del className="text-sm text-slate-400">{originalPrice}</del>
             )}
           </div>
           <p className="mt-1 text-xs text-slate-500">
