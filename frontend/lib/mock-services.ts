@@ -70,7 +70,7 @@ export const mockServices: Service[] = [
     description:
       "A detailed interior refresh for seats, carpets, dashboard, doors and hard-to-reach areas.",
     duration: "2–3 hrs",
-    images: ["/images/generated/blog-car-care.webp"],
+    images: ["/images/generated/blog-car-care.webp", localImage("car-interior-cleaning.jpeg")],
     features: ["Seat and carpet cleaning", "Dashboard and console care", "Interior vacuuming"],
     addons: [{ id: "odor-treatment", name: "Odour treatment", price: 149 }],
     variants: [
@@ -90,7 +90,7 @@ export const mockServices: Service[] = [
     description:
       "A careful steam clean that refreshes your vehicle interior and helps lift stubborn grime.",
     duration: "60–90 min",
-    images: ["/images/generated/menu-steam-wash.webp"],
+    images: ["/images/generated/menu-steam-wash.webp", "/images/generated/steam-washing-2.webp"],
     features: ["Steam cleaning", "Interior refresh", "Odour-reducing treatment"],
     variants: [
       { id: "hatchback", name: "Hatchback", price: 549, originalPrice: 599 },
@@ -149,7 +149,7 @@ export const mockServices: Service[] = [
     duration: "1–2 hrs",
     images: [
       localImage("sofa-steam-cleaning.jpeg"),
-      localImage("sofa-cleaning.jpeg"),
+      "/images/generated/blog-sofa-care.webp",
     ],
     features: ["Upholstery vacuuming", "Spot and stain treatment", "Fabric-safe cleaning"],
     addons: [{ id: "fabric-protection", name: "Fabric protection", price: 199 }],
@@ -170,7 +170,13 @@ export const mockServices: Service[] = [
     description:
       "Reliable cleaning for workspaces, shared areas and office floors, scheduled around your day.",
     duration: "1–4 hrs",
-    images: [],
+    images: [
+      "/images/generated/office-cleaning.webp",
+      "/images/generated/office-cleaning-2.webp",
+      "/images/generated/office-cleaning-3.webp",
+      "/images/generated/office-cleaning-4.webp",
+      "/images/generated/office-cleaning-5.webp",
+    ],
     features: ["Workspace and surface cleaning", "Floor care", "Waste and touchpoint refresh"],
     variants: [
       { id: "small", name: "Small office", price: 449, originalPrice: 499 },
@@ -189,11 +195,7 @@ export const mockServices: Service[] = [
     description:
       "A practical home clean for floors, surfaces and everyday spaces, delivered at your doorstep.",
     duration: "2–4 hrs",
-    images: [
-      localImage("sofa-cleaning.jpeg"),
-      localImage("kitchen-cleaning.jpeg"),
-      localImage("bathroom-cleaning.jpeg"),
-    ],
+    images: ["/images/generated/home-cleaning.webp", localImage("bathroom-cleaning.jpeg")],
     features: ["Surface dusting", "Floor cleaning", "Kitchen and bathroom refresh"],
     isActive: true,
   },
@@ -207,7 +209,7 @@ export const mockServices: Service[] = [
     description:
       "A technician visit for AC cleaning and service, with options for routine care or a deeper clean.",
     duration: "60–90 min",
-    images: [],
+    images: ["/images/generated/ac-cleaning.webp"],
     features: ["Filter cleaning", "Indoor unit care", "Service check"],
     variants: [
       { id: "routine", name: "Routine service", price: 449, originalPrice: 499 },
@@ -226,7 +228,7 @@ export const mockServices: Service[] = [
     description:
       "A thorough tank clean with scrubbing, residue removal and a final hygiene-focused rinse.",
     duration: "1–2 hrs",
-    images: [],
+    images: ["/images/generated/water-tank-cleaning.webp"],
     features: ["Tank scrubbing", "Residue removal", "Rinse and sanitisation"],
     variants: [
       { id: "small", name: "Small tank", price: 449, originalPrice: 499 },
@@ -279,7 +281,7 @@ export const mockServices: Service[] = [
     description:
       "Refresh sofa fabric with careful dust removal and spot care, suited to your seating size.",
     duration: "1–3 hrs",
-    images: [localImage("sofa-cleaning.jpeg"), localImage("sofa-steam-cleaning.jpeg")],
+    images: [localImage("sofa-cleaning.jpeg")],
     features: ["Dry vacuuming", "Spot treatment", "Fabric-safe finish"],
     variants: [
       { id: "single", name: "Single seat", price: 199, originalPrice: 249 },

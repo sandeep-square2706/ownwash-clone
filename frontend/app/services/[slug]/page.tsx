@@ -1,12 +1,15 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Check, CircleHelp, Clock3, MapPin, ShieldCheck, Star, X } from "lucide-react";
+import { Suspense } from "react";
+import { Check, CircleHelp, Clock3, MapPin, ShieldCheck, X } from "lucide-react";
 
 import BookingPanel from "@/components/services/BookingPanel";
+import ServiceCard from "@/components/services/ServiceCard";
+import ServiceInformationTabs from "@/components/services/ServiceInformationTabs";
 import ServiceImageCarousel from "@/components/services/ServiceImageCarousel";
-import { mockServices, type ServiceFAQ } from "@/lib/services";
-import { loadServerServiceBySlug } from "@/lib/server-services";
+import { getServicePrice, mockServices, type Service, type ServiceFAQ } from "@/lib/services";
+import { loadServerServiceBySlug, loadServerServices } from "@/lib/server-services";
 
 type ServiceDetailsProps = {
   params: Promise<{ slug: string }>;
@@ -46,7 +49,15 @@ export async function generateMetadata({ params }: ServiceDetailsProps): Promise
   }
 }
 
-export default async function ServiceDetails({ params }: ServiceDetailsProps) {
+export default function ServiceDetails(props: ServiceDetailsProps) {
+  return (
+    <Suspense fallback={<ServiceDetailsLoading />}>
+      <ServiceDetailsContent {...props} />
+    </Suspense>
+  );
+}
+
+async function ServiceDetailsContent({ params }: ServiceDetailsProps) {
   const { slug } = await params;
   const service = await loadServerServiceBySlug(slug);
 
@@ -67,7 +78,7 @@ export default async function ServiceDetails({ params }: ServiceDetailsProps) {
         </nav>
       </div>
 
-      <section className="px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
+      <section className="px-4 py-7 sm:px-6 sm:py-10 lg:px-8">
         <div className="mx-auto grid max-w-7xl items-start gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:gap-12">
           <div>
             <ServiceImageCarousel
@@ -76,6 +87,7 @@ export default async function ServiceDetails({ params }: ServiceDetailsProps) {
               sizes="(max-width: 1024px) 100vw, 58vw"
               priority
               className="aspect-[4/3] rounded-3xl bg-slate-100 sm:aspect-[1.2/1]"
+              showThumbnails
             />
             <div className="mt-7 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7">
               <h2 className="text-xl font-bold text-blue-950">What’s included</h2>
@@ -111,22 +123,19 @@ export default async function ServiceDetails({ params }: ServiceDetailsProps) {
           </div>
 
           <div className="flex flex-col">
-            <p className="text-sm font-bold uppercase tracking-[0.16em] text-blue-700">
-              CleanKart doorstep service
+            <p className="text-sm font-semibold text-slate-500">
+              {service.category} <span className="mx-2 text-slate-300">·</span>
+              SKU: CK-{String(service.id).padStart(4, "0")}
             </p>
-            <h1 className="mt-3 text-3xl font-bold leading-tight text-blue-950 sm:text-4xl">
+            <h1 className="mt-2 text-3xl font-bold leading-tight text-blue-950 sm:text-4xl">
               {service.name}
             </h1>
-            {service.rating !== undefined && service.reviewCount !== undefined ? (
-              <p className="mt-3 flex items-center gap-2 text-sm text-slate-600">
-                <Star className="h-4 w-4 fill-amber-400 text-amber-400" aria-hidden="true" />
-                <span className="font-semibold text-blue-950">{service.rating.toFixed(1)}</span>
-                <span>({service.reviewCount} reviews)</span>
-              </p>
-            ) : null}
-            <p className="mt-4 max-w-xl leading-7 text-slate-600">{service.description}</p>
+            <p className="mt-4 max-w-xl border-t border-slate-200 pt-4 leading-7 text-slate-600">
+              {service.description}
+            </p>
+            <p className="mt-5 text-3xl font-extrabold text-blue-950">{getServicePrice(service)}</p>
 
-            <div className="mt-6 flex flex-wrap gap-3">
+            <div className="mt-5 flex flex-wrap gap-3">
               <InfoPill icon={<Clock3 />} text={service.duration} />
               <InfoPill icon={<MapPin />} text="At your doorstep" />
               <InfoPill icon={<ShieldCheck />} text="Quality assured" />
@@ -138,25 +147,20 @@ export default async function ServiceDetails({ params }: ServiceDetailsProps) {
             <div className="mt-6">
               <BookingPanel service={service} />
             </div>
-
-            <section className="mt-7 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
-              <div className="flex items-center justify-between gap-4">
-                <div>
-                  <h2 className="text-lg font-bold text-blue-950">Customer reviews</h2>
-                  <p className="mt-1 text-sm text-slate-600">
-                    {service.reviewCount
-                      ? `${service.reviewCount} customer reviews`
-                      : "Service-specific reviews will appear when bookings are connected."}
-                  </p>
-                </div>
-                <Star className="h-6 w-6 shrink-0 text-blue-500" aria-hidden="true" />
-              </div>
-              <Link href="/reviews" className="mt-4 inline-flex text-sm font-semibold text-blue-700 underline underline-offset-2 hover:text-blue-900">
-                Read customer stories
-              </Link>
-            </section>
           </div>
         </div>
+      </section>
+
+      <section className="px-4 pb-10 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl">
+          <ServiceInformationTabs service={service} />
+        </div>
+      </section>
+
+      <section className="px-4 pb-12 sm:px-6 lg:px-8">
+        <Suspense fallback={<RelatedServicesLoading />}>
+          <RelatedServicesSection service={service} />
+        </Suspense>
       </section>
 
       <section className="px-4 pb-14 sm:px-6 lg:px-8">
@@ -179,6 +183,83 @@ export default async function ServiceDetails({ params }: ServiceDetailsProps) {
       </section>
     </main>
   );
+}
+
+function ServiceDetailsLoading() {
+  return (
+    <main className="min-h-screen bg-slate-50 px-4 py-10 sm:px-6 lg:px-8">
+      <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-2">
+        <div className="aspect-[4/3] animate-pulse rounded-3xl bg-slate-200" />
+        <div className="space-y-4">
+          <div className="h-5 w-40 animate-pulse rounded bg-slate-200" />
+          <div className="h-10 w-3/4 animate-pulse rounded bg-slate-200" />
+          <div className="h-24 animate-pulse rounded bg-slate-200" />
+          <div className="h-64 animate-pulse rounded-3xl bg-slate-200" />
+        </div>
+      </div>
+    </main>
+  );
+}
+
+async function RelatedServicesSection({ service }: { service: Service }) {
+  const catalog = await loadServerServices().catch(() => mockServices.filter((item) => item.isActive));
+  const relatedServices = getRelatedServices(service, catalog);
+
+  return (
+    <div className="mx-auto max-w-7xl">
+      <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <p className="text-sm font-semibold uppercase tracking-[0.16em] text-blue-700">Keep exploring</p>
+          <h2 className="mt-1 text-2xl font-bold text-blue-950">Related services</h2>
+        </div>
+        <Link href="/services" className="text-sm font-semibold text-blue-700 underline underline-offset-2 hover:text-blue-900">
+          View all services
+        </Link>
+      </div>
+      {relatedServices.length > 0 ? (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+          {relatedServices.map((relatedService) => (
+            <ServiceCard key={relatedService.id} service={relatedService} />
+          ))}
+        </div>
+      ) : (
+        <p className="rounded-2xl border border-slate-200 bg-white p-5 text-sm text-slate-600">
+          More services will appear here as they are added to the catalogue.
+        </p>
+      )}
+    </div>
+  );
+}
+
+function RelatedServicesLoading() {
+  return (
+    <div className="mx-auto max-w-7xl" aria-label="Loading related services">
+      <div className="mb-5 h-9 w-56 animate-pulse rounded bg-slate-200" />
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+        {Array.from({ length: 6 }, (_, index) => (
+          <div key={index} className="aspect-[4/5] animate-pulse rounded-2xl bg-white shadow-sm" />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function getRelatedServices(service: Service, catalog: Service[]) {
+  const usedImages = new Set(service.images);
+  const candidates = catalog
+    .filter((candidate) => candidate.isActive && candidate.id !== service.id)
+    .sort((left, right) => Number(right.category === service.category) - Number(left.category === service.category));
+  const related: Service[] = [];
+
+  for (const candidate of candidates) {
+    const uniqueImages = candidate.images.filter((image) => !usedImages.has(image));
+    if (uniqueImages.length === 0) continue;
+    related.push({ ...candidate, images: uniqueImages });
+    uniqueImages.forEach((image) => usedImages.add(image));
+    if (related.length === 6) break;
+  }
+
+  return related;
 }
 
 function InfoPill({ icon, text }: { icon: React.ReactNode; text: string }) {

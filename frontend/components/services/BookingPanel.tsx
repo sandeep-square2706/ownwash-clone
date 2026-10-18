@@ -1,18 +1,21 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Heart, Minus, Plus, ShoppingCart } from "lucide-react";
+import { Heart, Minus, Plus, Share2, ShoppingCart } from "lucide-react";
 
 import { addToCart, readWishlist, subscribeToStore, toggleWishlist } from "@/lib/client-store";
 import { formatPrice, getAddonTotal, type Service } from "@/lib/services";
 
 export default function BookingPanel({ service }: { service: Service }) {
+  const router = useRouter();
   const [variantId, setVariantId] = useState(service.variants?.[0]?.id ?? "");
   const [selectedAddonIds, setSelectedAddonIds] = useState<string[]>([]);
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [shareMessage, setShareMessage] = useState("");
   const selectedVariant = service.variants?.find((variant) => variant.id === variantId);
   const basePrice = selectedVariant?.price ?? service.basePrice ?? service.minPrice ?? 0;
   const originalBasePrice = selectedVariant?.originalPrice ?? service.originalPrice;
@@ -31,6 +34,27 @@ export default function BookingPanel({ service }: { service: Service }) {
     setAdded(true);
   }
 
+  function handleBuyNow() {
+    addToCart(service.id, selectedVariant?.id, selectedAddonIds, quantity);
+    router.push("/checkout");
+  }
+
+  async function handleShare() {
+    const url = window.location.href;
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: service.name, text: service.description, url });
+        setShareMessage("Service shared.");
+      } else {
+        await navigator.clipboard.writeText(url);
+        setShareMessage("Service link copied.");
+      }
+    } catch (error) {
+      if (error instanceof Error && error.name === "AbortError") return;
+      setShareMessage("Unable to share this service right now.");
+    }
+  }
+
   function toggleAddon(addonId: string) {
     setSelectedAddonIds((selected) =>
       selected.includes(addonId)
@@ -42,20 +66,9 @@ export default function BookingPanel({ service }: { service: Service }) {
 
   return (
     <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <p className="text-sm font-semibold text-blue-950">Choose your service</p>
-          <p className="mt-1 text-xs text-slate-500">Preview pricing · no booking is created</p>
-        </div>
-        <button
-          type="button"
-          onClick={() => setSaved(toggleWishlist(service.id).includes(service.id))}
-          aria-pressed={saved}
-          aria-label={`${saved ? "Remove" : "Add"} ${service.name} ${saved ? "from" : "to"} wishlist`}
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-800 transition hover:bg-blue-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
-        >
-          <Heart className={saved ? "h-5 w-5 fill-rose-500 text-rose-500" : "h-5 w-5"} aria-hidden="true" />
-        </button>
+      <div>
+        <p className="text-sm font-semibold text-blue-950">Choose your service</p>
+        <p className="mt-1 text-xs text-slate-500">Preview pricing · no booking is created</p>
       </div>
 
       {service.variants?.length ? (
@@ -141,14 +154,23 @@ export default function BookingPanel({ service }: { service: Service }) {
           ) : null}
         </span>
       </div>
-      <button
-        type="button"
-        onClick={handleAdd}
-        className="mt-5 flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-[var(--brand-gold)] px-5 text-sm font-bold text-[var(--brand-navy)] transition hover:bg-amber-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--brand-blue)]"
-      >
-        <ShoppingCart className="h-4 w-4" aria-hidden="true" />
-        Add to cart
-      </button>
+      <div className="mt-5 grid gap-3 sm:grid-cols-2">
+        <button
+          type="button"
+          onClick={handleAdd}
+          className="flex min-h-12 items-center justify-center gap-2 rounded-xl border border-[var(--brand-blue)] bg-white px-4 text-sm font-bold text-[var(--brand-blue)] transition hover:bg-blue-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--brand-blue)]"
+        >
+          <ShoppingCart className="h-4 w-4" aria-hidden="true" />
+          {added ? "Added to cart" : "Add to cart"}
+        </button>
+        <button
+          type="button"
+          onClick={handleBuyNow}
+          className="flex min-h-12 items-center justify-center gap-2 rounded-xl bg-[var(--brand-blue)] px-4 text-sm font-bold text-white transition hover:bg-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700"
+        >
+          Buy now
+        </button>
+      </div>
       {added && (
         <div className="mt-3 rounded-xl bg-blue-50 px-3 py-3 text-center text-sm text-[var(--brand-navy)]" role="status">
           Added to this browser’s preview cart. Your selection is not a confirmed booking.
@@ -157,6 +179,26 @@ export default function BookingPanel({ service }: { service: Service }) {
           </Link>
         </div>
       )}
+      <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-3 border-t border-slate-100 pt-4">
+        <button
+          type="button"
+          onClick={() => setSaved(toggleWishlist(service.id).includes(service.id))}
+          aria-pressed={saved}
+          className="inline-flex min-h-10 items-center gap-2 text-sm font-medium text-slate-700 hover:text-blue-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+        >
+          <Heart className={saved ? "h-5 w-5 fill-rose-500 text-rose-500" : "h-5 w-5"} aria-hidden="true" />
+          {saved ? "Saved to wishlist" : "Add to wishlist"}
+        </button>
+        <button
+          type="button"
+          onClick={() => void handleShare()}
+          className="inline-flex min-h-10 items-center gap-2 text-sm font-medium text-slate-700 hover:text-blue-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+        >
+          <Share2 className="h-5 w-5" aria-hidden="true" />
+          Share this service
+        </button>
+      </div>
+      {shareMessage ? <p className="mt-2 text-xs text-slate-500" role="status">{shareMessage}</p> : null}
       <p className="mt-3 text-center text-xs leading-5 text-slate-500">
         Final price and availability will be checked by the booking service when connected.
       </p>

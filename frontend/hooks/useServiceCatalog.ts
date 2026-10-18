@@ -27,8 +27,7 @@ export default function useServiceCatalog() {
       })
       .catch(() => {
         if (current) {
-          setServices([]);
-          setStatus("error");
+          setStatus((previous) => (previous === "ready" ? "ready" : "error"));
           setError("We couldn’t load services. Check your connection and try again.");
         }
       });
@@ -37,6 +36,22 @@ export default function useServiceCatalog() {
       current = false;
     };
   }, [refreshAttempt]);
+
+  useEffect(() => {
+    let lastRefreshAt = Date.now();
+    const refreshWhenVisible = () => {
+      if (document.visibilityState !== "visible" || Date.now() - lastRefreshAt < 30_000) return;
+      lastRefreshAt = Date.now();
+      setRefreshAttempt((attempt) => attempt + 1);
+    };
+
+    window.addEventListener("focus", refreshWhenVisible);
+    document.addEventListener("visibilitychange", refreshWhenVisible);
+    return () => {
+      window.removeEventListener("focus", refreshWhenVisible);
+      document.removeEventListener("visibilitychange", refreshWhenVisible);
+    };
+  }, []);
 
   function retry() {
     setStatus("loading");
