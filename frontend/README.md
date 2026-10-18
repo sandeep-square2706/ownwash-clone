@@ -1,36 +1,41 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CleanKart frontend
 
-## Getting Started
+CleanKart is a responsive Next.js service marketplace preview built with the provided brand logo and service photographs. The current checkout, sign-in, contact, newsletter and franchise forms are presentation flows only. They do not send data, authenticate a user, reserve a service or process a payment.
 
-First, run the development server:
+## Run locally
+
+From this directory:
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Then open `http://localhost:3000`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Environment
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The app works with isolated seed data when no API is configured. To point the catalog at a backend, create `.env.local` in this directory:
 
-## Learn More
+```text
+NEXT_PUBLIC_CLEANKART_API_URL=https://your-api-host
+NEXT_PUBLIC_SITE_URL=https://your-site-host
+```
 
-To learn more about Next.js, take a look at the following resources:
+These are public base URLs. Never put payment secrets, database credentials, or authentication secrets in a `NEXT_PUBLIC_` variable. The expected service API response and the future booking/payment boundary are described in [API_CONTRACT.md](./API_CONTRACT.md).
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Main routes
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- `/` — CleanKart home
+- `/services` — searchable, filterable service catalogue
+- `/services/[slug]` — service details, options, add-ons and preview cart action
+- `/wishlist`, `/cart` — browser-local preview state
+- `/checkout` — address, contact, schedule and payment-method preview
+- `/account`, `/reviews`, `/faq`, `/contact`, `/franchise`, `/partner`, `/about`
+- `/privacy`, `/terms`
 
-## Deploy on Vercel
+## Deploy to Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Use the `frontend` directory as the Vercel project Root Directory. The app uses the Next.js framework preset and `npm run build`. Vercel’s generated deployment URL is used for preview metadata. Set `NEXT_PUBLIC_SITE_URL` to the canonical site URL when a production domain is selected. Configure `NEXT_PUBLIC_CLEANKART_API_URL` only after a compatible API is available.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+No Vercel project or deployment is created by this repository setup.

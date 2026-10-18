@@ -5,6 +5,8 @@ import {
   UsersRound,
 } from "lucide-react";
 
+import HomeSectionHeading from "@/components/home/HomeSectionHeading";
+
 const benefits = [
   {
     title: "Certified Quality",
@@ -34,37 +36,27 @@ const benefits = [
 
 export default function WhyChooseUs() {
   return (
-    <section className="bg-gray-50 px-4 py-16 sm:px-6 lg:px-8">
+    <section className="bg-white px-4 py-12 sm:px-6 sm:py-14 lg:px-8">
       <div className="mx-auto max-w-[1380px]">
-
-        <div className="mb-10">
-          <p className="text-sm font-semibold uppercase tracking-[2px] text-teal-600">
-            Why Choose Us?
-          </p>
-
-          <h2 className="mt-2 text-3xl font-bold text-gray-900 sm:text-4xl">
-            Why Choose Our
-            <span className="block text-teal-700">
-              Cleaning Solutions
-            </span>
-          </h2>
+        <div className="mb-9">
+          <HomeSectionHeading eyebrow="Why choose us?" title="Why choose" accent="CleanKart?" />
         </div>
 
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {benefits.map(({ title, description, icon: Icon }) => (
             <article
               key={title}
-              className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
+              className="rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_5px_22px_rgba(16,44,95,0.04)] transition hover:-translate-y-1 hover:border-blue-200 hover:shadow-[0_12px_30px_rgba(16,44,95,0.1)] sm:p-6"
             >
-              <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-teal-50 text-teal-700">
+              <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--brand-blue)] text-white shadow-sm shadow-blue-900/20">
                 <Icon className="h-7 w-7" />
               </div>
 
-              <h3 className="mt-5 text-lg font-bold text-gray-900">
+              <h3 className="mt-4 text-lg font-bold text-[var(--brand-navy)]">
                 {title}
               </h3>
 
-              <p className="mt-3 text-sm leading-6 text-gray-600">
+              <p className="mt-3 text-sm leading-6 text-slate-600">
                 {description}
               </p>
             </article>

@@ -1,144 +1,43 @@
-"use client";
+import Link from "next/link";
+import { MessageCircle, ShieldCheck } from "lucide-react";
 
-import { ChevronLeft, ChevronRight, Star } from "lucide-react";
-import { useState } from "react";
-
-const testimonials = [
-  {
-    name: "Saktikant Das",
-    service: "Car Washing",
-    initials: "SD",
-    review:
-      "Ownwash's doorstep car washing service is convenient and professional. The team arrived on time and cleaned the car very well.",
-  },
-  {
-    name: "Saket",
-    service: "Foam Washing",
-    initials: "SK",
-    review:
-      "Ownwash's foam washing made the car spotless. The team cleaned difficult areas carefully and the service was convenient at home.",
-  },
-  {
-    name: "Anjali",
-    service: "Sofa Dry Cleaning",
-    initials: "AN",
-    review:
-      "The sofa dry cleaning service was impressive. Stains were removed effectively and the service was completed on time at home.",
-  },
-];
+import HomeSectionHeading from "@/components/home/HomeSectionHeading";
 
 export default function Testimonials() {
-  const [active, setActive] = useState(0);
-
-  const previous = () => {
-    setActive((current) =>
-      current === 0 ? testimonials.length - 1 : current - 1
-    );
-  };
-
-  const next = () => {
-    setActive((current) =>
-      current === testimonials.length - 1 ? 0 : current + 1
-    );
-  };
-
   return (
-    <section className="bg-white px-4 py-16 sm:px-6 lg:px-8">
+    <section className="bg-white px-4 py-12 sm:px-6 sm:py-14 lg:px-8">
       <div className="mx-auto max-w-7xl">
-        {/* Heading */}
-        <div className="flex items-end justify-between">
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-widest text-teal-700">
-              Testimonials
+        <div className="mb-8 max-w-2xl">
+          <HomeSectionHeading eyebrow="Customer reviews" title="Honest feedback" accent="matters" />
+          <p className="mt-3 text-sm leading-6 text-slate-600">
+            Once CleanKart bookings are live, customers will be able to share feedback about the service they received.
+          </p>
+        </div>
+
+        <div className="mt-8 grid gap-4 md:grid-cols-2">
+          <article className="rounded-2xl border border-blue-100 bg-[#f6f9fe] p-6 sm:p-8">
+              <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-[var(--brand-blue)] shadow-sm">
+              <ShieldCheck className="h-6 w-6" aria-hidden="true" />
+            </span>
+            <h3 className="mt-5 text-lg font-bold text-[var(--brand-navy)]">Reviews tied to completed services</h3>
+            <p className="mt-2 text-sm leading-6 text-slate-600">
+              This preview does not publish sample names, ratings or testimonials as customer feedback.
             </p>
-
-            <h2 className="mt-2 text-3xl font-bold text-gray-900 sm:text-4xl">
-              What Our Clients Says?
-            </h2>
-          </div>
-
-          {/* Arrows */}
-          <div className="hidden gap-2 sm:flex">
-            <button
-              type="button"
-              onClick={previous}
-              aria-label="Previous testimonial"
-              className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-300 transition hover:bg-teal-700 hover:text-white"
-            >
-              <ChevronLeft className="h-5 w-5" />
-            </button>
-
-            <button
-              type="button"
-              onClick={next}
-              aria-label="Next testimonial"
-              className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-300 transition hover:bg-teal-700 hover:text-white"
-            >
-              <ChevronRight className="h-5 w-5" />
-            </button>
-          </div>
-        </div>
-
-        {/* Cards */}
-        <div className="mt-10 grid gap-6 md:grid-cols-3">
-          {testimonials.map((testimonial, index) => (
-            <article
-              key={testimonial.name}
-              className={`rounded-xl border border-gray-200 bg-white p-6 shadow-sm ${
-                index === active ? "ring-1 ring-teal-200" : ""
-              }`}
-            >
-              <div className="flex items-center gap-4">
-                <div className="flex h-14 w-14 items-center justify-center rounded-full bg-teal-100 font-bold text-teal-700">
-                  {testimonial.initials}
-                </div>
-
-                <div>
-                  <h3 className="font-bold text-gray-900">
-                    {testimonial.name}
-                  </h3>
-
-                  <p className="mt-1 text-sm text-gray-500">
-                    {testimonial.service}
-                  </p>
-                </div>
-              </div>
-
-              <div className="mt-5 flex gap-1">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <Star
-                    key={star}
-                    className="h-4 w-4 fill-yellow-400 text-yellow-400"
-                  />
-                ))}
-              </div>
-
-              <p className="mt-4 text-sm leading-7 text-gray-600">
-                “{testimonial.review}”
+          </article>
+          <article className="flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-6 shadow-[0_7px_24px_rgba(16,44,95,0.06)] sm:p-8">
+            <div>
+              <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-50 text-[var(--brand-blue)]">
+                <MessageCircle className="h-6 w-6" aria-hidden="true" />
+              </span>
+              <h3 className="mt-5 text-lg font-bold text-[var(--brand-navy)]">Choose a service to explore</h3>
+              <p className="mt-2 text-sm leading-6 text-slate-600">
+                Browse the current service catalogue and compare options in the frontend preview.
               </p>
-            </article>
-          ))}
-        </div>
-
-        {/* Mobile arrows */}
-        <div className="mt-6 flex justify-center gap-2 sm:hidden">
-          <button
-            type="button"
-            onClick={previous}
-            className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-300"
-            aria-label="Previous testimonial"
-          >
-            <ChevronLeft className="h-5 w-5" />
-          </button>
-
-          <button
-            type="button"
-            onClick={next}
-            className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-300"
-            aria-label="Next testimonial"
-          >
-            <ChevronRight className="h-5 w-5" />
-          </button>
+            </div>
+            <Link href="/services" className="mt-5 inline-flex min-h-11 items-center justify-center rounded-full bg-[var(--brand-gold)] px-5 text-sm font-bold text-[var(--brand-navy)] transition hover:bg-amber-300">
+              Explore services
+            </Link>
+          </article>
         </div>
       </div>
     </section>

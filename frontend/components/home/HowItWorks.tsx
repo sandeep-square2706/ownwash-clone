@@ -5,6 +5,8 @@ import {
   Sparkles,
 } from "lucide-react";
 
+import HomeSectionHeading from "@/components/home/HomeSectionHeading";
+
 const steps = [
   {
     number: "01",
@@ -38,48 +40,36 @@ const steps = [
 
 export default function HowItWorks() {
   return (
-    <section className="bg-white px-4 py-16 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-[1200px]">
-
-        <div className="mb-12 text-center">
-          <p className="text-sm font-semibold uppercase tracking-[2px] text-teal-600">
-            Our Process
-          </p>
-
-          <h2 className="mt-2 text-3xl font-bold text-gray-900 sm:text-4xl">
-            Here How It Works?
-          </h2>
+    <section className="bg-white px-4 py-12 sm:px-6 sm:py-14 lg:px-8">
+      <div className="mx-auto max-w-[1380px]">
+        <div className="mb-8">
+          <HomeSectionHeading eyebrow="Our process" title="Here’s how it" accent="works" />
         </div>
 
-        <div className="grid gap-8 md:grid-cols-4">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {steps.map(({ number, title, description, icon: Icon }) => (
             <div
               key={number}
-              className="relative text-center"
+              className="relative flex min-h-[285px] flex-col items-center rounded-xl border border-[#e3eaf4] bg-[#f0f6f7] px-5 pb-6 pt-5 text-center transition hover:-translate-y-1 hover:shadow-lg"
             >
-              <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-teal-50 text-teal-700">
-                <Icon className="h-9 w-9" />
-              </div>
-
-              <span className="mt-4 inline-block text-xs font-bold tracking-widest text-teal-600">
-                STEP {number}
+              <span className="absolute right-4 top-4 text-xs font-bold tracking-[0.16em] text-[var(--brand-blue)]">
+                {number}
               </span>
-
-              <h3 className="mt-2 text-lg font-bold text-gray-900">
+              <div className="flex h-[126px] w-full items-center justify-center">
+                <span className="flex h-[76px] w-[76px] items-center justify-center rounded-full border border-blue-100 bg-white text-[var(--brand-blue)] shadow-sm">
+                  <Icon className="h-9 w-9" aria-hidden="true" />
+                </span>
+              </div>
+              <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-slate-500">Step {number}</span>
+              <h3 className="mt-2 text-lg font-bold text-[var(--brand-navy)]">
                 {title}
               </h3>
-
-              <p className="mx-auto mt-3 max-w-[240px] text-sm leading-6 text-gray-600">
+              <p className="mx-auto mt-2 max-w-[260px] text-sm leading-6 text-slate-700">
                 {description}
               </p>
-
-              {number !== "04" && (
-                <div className="absolute left-[calc(50%+55px)] right-[calc(-50%+55px)] top-10 hidden border-t border-dashed border-teal-200 md:block" />
-              )}
             </div>
           ))}
         </div>
-
       </div>
     </section>
   );

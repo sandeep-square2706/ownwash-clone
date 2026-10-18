@@ -1,78 +1,42 @@
-import { ArrowRight, HandCoins, Headphones, TrendingUp } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
+import { ArrowRight, CheckCircle2 } from "lucide-react";
 
-const benefits = [
-  {
-    icon: HandCoins,
-    title: "Low Investment",
-  },
-  {
-    icon: TrendingUp,
-    title: "High Returns",
-  },
-  {
-    icon: Headphones,
-    title: "Full Support",
-  },
-];
+const partnershipPoints = ["Local service opportunity", "A cleaning-focused business", "Talk with the CleanKart team"];
 
 export default function FranchiseCTA() {
   return (
-    <section className="bg-white px-4 py-14 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-[1380px]">
-
-        <div className="overflow-hidden rounded-3xl bg-gray-900">
-          <div className="grid lg:grid-cols-[1.2fr_0.8fr]">
-
-            <div className="px-7 py-12 sm:px-10 lg:px-14">
-              <p className="text-sm font-semibold uppercase tracking-[2px] text-teal-400">
-                Franchise Opportunity
-              </p>
-
-              <h2 className="mt-3 max-w-2xl text-3xl font-bold text-white sm:text-4xl">
-                Start Your Own Cleaning Business with OwnWash
-              </h2>
-
-              <p className="mt-5 max-w-xl text-sm leading-7 text-gray-300">
-                Build your own cleaning business with a proven service model,
-                professional support and an opportunity to grow.
-              </p>
-
-              <div className="mt-8 flex flex-wrap gap-4">
-                {benefits.map(({ icon: Icon, title }) => (
-                  <div
-                    key={title}
-                    className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2.5 text-sm font-medium text-white"
-                  >
-                    <Icon className="h-4 w-4 text-teal-400" />
-                    {title}
-                  </div>
-                ))}
-              </div>
-
-              <Link
-                href="/franchise"
-                className="mt-8 inline-flex items-center gap-2 rounded-lg bg-teal-600 px-6 py-3.5 text-sm font-bold text-white transition hover:bg-teal-500"
-              >
-                Become A Franchie Partner
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-            </div>
-
-            <div className="hidden min-h-[330px] bg-gradient-to-br from-teal-800 via-teal-700 to-gray-900 lg:block">
-              <div className="flex h-full items-center justify-center">
-                <div className="text-center text-white/80">
-                  <TrendingUp className="mx-auto h-20 w-20" />
-                  <p className="mt-4 text-sm">
-                    Franchise image coming soon
-                  </p>
-                </div>
-              </div>
-            </div>
-
-          </div>
+    <section className="bg-white px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mx-auto grid max-w-[1380px] overflow-hidden rounded-2xl bg-[#fff8e8] p-4 sm:p-6 lg:grid-cols-[290px_1fr_auto] lg:items-center lg:gap-6 lg:p-5">
+        <div className="relative aspect-[1.55] overflow-hidden rounded-xl bg-slate-200 lg:aspect-[1.45]">
+          <Image
+            src="/images/services/car-exterior-wash.jpeg"
+            alt="CleanKart professional providing doorstep car washing"
+            fill
+            sizes="(max-width: 1024px) 100vw, 290px"
+            className="object-cover"
+          />
         </div>
-
+        <div className="py-5 lg:py-3">
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand-blue)]">Partner with CleanKart</p>
+          <h2 className="mt-2 max-w-2xl text-[26px] font-bold leading-tight text-slate-950 sm:text-[32px]">
+            Start a doorstep cleaning business with CleanKart.
+          </h2>
+          <ul className="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-sm text-slate-800">
+            {partnershipPoints.map((point) => (
+              <li key={point} className="flex items-center gap-1.5">
+                <CheckCircle2 className="h-4 w-4 shrink-0 text-[var(--brand-blue)]" aria-hidden="true" />
+                {point}
+              </li>
+            ))}
+          </ul>
+        </div>
+        <Link
+          href="/franchise"
+          className="inline-flex min-h-12 w-fit items-center gap-2 rounded-full bg-[var(--brand-gold)] px-5 text-sm font-bold text-[var(--brand-navy)] transition hover:bg-amber-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--brand-blue)]"
+        >
+          Become a partner <ArrowRight className="h-4 w-4" aria-hidden="true" />
+        </Link>
       </div>
     </section>
   );

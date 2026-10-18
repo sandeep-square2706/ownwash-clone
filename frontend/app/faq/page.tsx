@@ -1,65 +1,81 @@
-const faqs = [
+import type { Metadata } from "next";
+import Link from "next/link";
+import { ChevronDown } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Frequently asked questions",
+  description: "Answers about CleanKart services, preview pricing, saved services and booking availability.",
+};
+
+const questions = [
   {
-    question: "How do I book a service?",
+    question: "How do I choose a service?",
     answer:
-      "Choose a service, select a suitable date and time, provide your address and confirm the booking.",
+      "Browse the service catalogue, open a service to see its description and options, then add the option you need to your cart.",
   },
   {
-    question: "Do you provide doorstep service?",
+    question: "Why does a service show a price range?",
     answer:
-      "Yes. Our services are designed to be delivered at the customer's selected location.",
+      "Some services have options based on vehicle or item size. Choose an option on the service page to see its price.",
   },
   {
-    question: "How can I contact customer support?",
+    question: "Can I save a service for later?",
     answer:
-      "You can contact customer support through phone or email.",
+      "Yes. Tap the heart on a service card to add it to your wishlist. Your saved list is kept in this browser.",
   },
   {
-    question: "Can I cancel my booking?",
+    question: "How do I prepare a booking?",
     answer:
-      "Cancellation and refund rules will be displayed during the booking process.",
+      "Add the services you need to your cart, then continue to the booking form to enter your preferred details.",
+  },
+  {
+    question: "Are online payments available?",
+    answer:
+      "This frontend preview does not process payments. Payment options can be enabled after the secure backend flow is connected.",
   },
 ];
 
 export default function FAQPage() {
   return (
-    <main className="bg-gray-50">
-
-      <section className="bg-[#0C706A] px-4 py-16 text-white sm:px-6 lg:px-8">
+    <main className="min-h-screen bg-slate-50">
+      <section className="bg-blue-950 px-4 py-14 text-white sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
-
-          <p className="text-sm font-semibold uppercase tracking-[2px] text-teal-100">
-            FAQ & Support
+          <p className="text-sm font-semibold uppercase tracking-[0.16em] text-blue-100">
+            Help centre
           </p>
-
           <h1 className="mt-3 text-4xl font-bold sm:text-5xl">
-            Frequently Asked Questions
+            Frequently asked questions
           </h1>
-
+          <p className="mt-4 max-w-2xl leading-7 text-blue-100">
+            Quick answers about services, pricing and the frontend booking flow.
+          </p>
         </div>
       </section>
 
-      <section className="px-4 py-14 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-4xl space-y-4">
-
-          {faqs.map((faq) => (
+      <section className="px-4 py-12 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-3xl space-y-3">
+          {questions.map(({ question, answer }) => (
             <details
-              key={faq.question}
-              className="group rounded-xl border border-gray-200 bg-white p-5 shadow-sm"
+              key={question}
+              className="group rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
             >
-              <summary className="cursor-pointer list-none font-bold text-gray-900">
-                {faq.question}
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-semibold text-blue-950">
+                {question}
+                <ChevronDown className="h-5 w-5 shrink-0 text-blue-700 transition group-open:rotate-180" />
               </summary>
-
-              <p className="mt-4 text-sm leading-7 text-gray-600">
-                {faq.answer}
+              <p className="mt-4 max-w-2xl text-sm leading-6 text-slate-600">
+                {answer}
               </p>
             </details>
           ))}
-
+          <p className="pt-5 text-center text-sm text-slate-600">
+            Still need help?{" "}
+            <Link href="/contact" className="font-semibold text-blue-900 underline underline-offset-2">
+              Contact CleanKart
+            </Link>
+          </p>
         </div>
       </section>
-
     </main>
   );
 }

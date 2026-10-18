@@ -1,68 +1,48 @@
-import {
-  Car,
-  Home,
-  Armchair,
-  CookingPot,
-  Layers3,
-  Sparkles,
-} from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
 
-const addOns = [
-  {
-    title: "Deep Washing",
-    icon: Car,
-  },
-  {
-    title: "Kitchen Cleaning",
-    icon: CookingPot,
-  },
-  {
-    title: "Interior Cleaning",
-    icon: Sparkles,
-  },
-  {
-    title: "Carpet Cleaing",
-    icon: Layers3,
-  },
-  {
-    title: "Sofa-Dry Cleaning",
-    icon: Armchair,
-  },
-  {
-    title: "Home Cleaning",
-    icon: Home,
-  },
+import HomeSectionHeading from "@/components/home/HomeSectionHeading";
+
+const serviceLinks = [
+  { title: "Deep Car Washing", slug: "exterior-deep-cleaning", image: "car-exterior-wash.jpeg" },
+  { title: "Kitchen Cleaning", slug: "kitchen-cleaning", image: "kitchen-cleaning.jpeg" },
+  { title: "Car Interior Cleaning", slug: "interior-deep-cleaning", image: "car-interior-cleaning.jpeg" },
+  { title: "Carpet Cleaning", slug: "carpet-cleaning", image: "carpet-cleaning.jpeg" },
+  { title: "Sofa-Dry Cleaning", slug: "sofa-dry-cleaning", image: "sofa-cleaning.jpeg" },
+  { title: "Bike Foam Wash", slug: "foam-washing", image: "bike-foam-wash.jpeg" },
 ];
 
 export default function AddOns() {
   return (
-    <section className="bg-gray-50 px-4 py-14 sm:px-6 lg:px-8">
+    <section className="bg-[#f6f9fe] px-4 py-12 sm:px-6 sm:py-14 lg:px-8">
       <div className="mx-auto max-w-[1380px]">
-
-        <div className="mb-9 text-center">
-          <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl">
-            Add-ons to Elevate Your Clean
-          </h2>
+        <div className="mb-8">
+          <HomeSectionHeading eyebrow="Our top services" title="Add-ons to elevate your" accent="clean" />
         </div>
 
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
-          {addOns.map(({ title, icon: Icon }) => (
-            <button
+        <div className="grid grid-cols-2 gap-x-4 gap-y-6 sm:grid-cols-3 lg:grid-cols-6">
+          {serviceLinks.map(({ title, slug, image }) => (
+            <Link
               key={title}
-              type="button"
-              className="group flex min-h-[155px] flex-col items-center justify-center rounded-xl border border-gray-200 bg-white p-5 text-center shadow-sm transition duration-300 hover:-translate-y-1 hover:border-teal-300 hover:shadow-lg"
+              href={"/services/" + slug}
+              className="group text-center focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--brand-blue)]"
             >
-              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-teal-50 text-teal-700 transition group-hover:bg-teal-700 group-hover:text-white">
-                <Icon className="h-7 w-7" />
+              <div className="relative aspect-[1.32] overflow-hidden rounded-2xl bg-slate-200 shadow-sm transition duration-300 group-hover:-translate-y-1 group-hover:shadow-lg">
+                <Image
+                  src={"/images/services/" + image}
+                  alt={title}
+                  fill
+                  sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 17vw"
+                  className="object-cover transition duration-500 group-hover:scale-[1.05]"
+                />
               </div>
-
-              <h3 className="mt-4 text-sm font-bold text-gray-900">
+              <span className="mt-3 inline-flex items-center justify-center gap-1.5 text-sm font-semibold text-slate-900 transition group-hover:text-[var(--brand-blue)]">
                 {title}
-              </h3>
-            </button>
+                <span aria-hidden="true">→</span>
+              </span>
+            </Link>
           ))}
         </div>
-
       </div>
     </section>
   );

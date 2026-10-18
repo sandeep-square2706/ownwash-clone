@@ -1,139 +1,119 @@
-import {
-  Mail,
-  MapPin,
-  Phone,
-  Share2,
-} 
-from "lucide-react";
+"use client";
+
+import { useState } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { ArrowRight } from "lucide-react";
+
+const exploreLinks = [
+  ["Services", "/services"],
+  ["About CleanKart", "/about"],
+  ["Frequently asked questions", "/faq"],
+  ["Customer reviews", "/reviews"],
+  ["Franchise opportunities", "/franchise"],
+  ["Partner with CleanKart", "/partner"],
+  ["Privacy overview", "/privacy"],
+  ["Terms of use", "/terms"],
+];
+
+const accountLinks = [
+  ["Your account", "/account"],
+  ["Wishlist", "/wishlist"],
+  ["Cart", "/cart"],
+  ["Contact us", "/contact"],
+];
 
 export default function Footer() {
+  const [subscribed, setSubscribed] = useState(false);
+
   return (
-    <footer className="bg-teal-800 text-white">
-
-      {/* Main Footer */}
-      <div className="mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:px-6 md:grid-cols-2 lg:grid-cols-4 lg:px-8">
-
-        {/* Brand */}
+    <footer className="bg-[var(--brand-navy)] text-white">
+      <div className="mx-auto grid max-w-[1380px] gap-10 px-4 py-14 sm:px-6 md:grid-cols-2 lg:grid-cols-[1.3fr_0.8fr_0.8fr_1fr] lg:px-8">
         <div>
-          <h2 className="text-2xl font-bold">OwnWash</h2>
-
-          <p className="mt-4 max-w-sm text-sm leading-6 text-teal-100">
-            Convenient doorstep cleaning and washing services designed
-            to make your everyday life easier.
-          </p>
-
-          <div className="mt-6 flex gap-3">
-  <a
-    href="#"
-    aria-label="Facebook"
-    className="flex h-9 w-9 items-center justify-center rounded-full border border-teal-500 transition hover:bg-teal-700"
-  >
-    <span className="text-sm font-bold">f</span>
-  </a>
-
-  <a
-    href="#"
-    aria-label="Instagram"
-    className="flex h-9 w-9 items-center justify-center rounded-full border border-teal-500 transition hover:bg-teal-700"
-  >
-    <span className="text-sm font-bold">ig</span>
-  </a>
-
-  <a
-    href="#"
-    aria-label="YouTube"
-    className="flex h-9 w-9 items-center justify-center rounded-full border border-teal-500 transition hover:bg-teal-700"
-  >
-    <span className="text-xs font-bold">YT</span>
-  </a>
-
-  <a
-    href="#"
-    aria-label="Share"
-    className="flex h-9 w-9 items-center justify-center rounded-full border border-teal-500 transition hover:bg-teal-700"
-  >
-    <Share2 className="h-4 w-4" />
-  </a>
-</div>
-        </div>
-
-        {/* Quick Links */}
-        <div>
-          <h3 className="mb-5 text-lg font-semibold">
-            Quick Links
-          </h3>
-
-          <ul className="space-y-3 text-sm text-teal-100">
-            <li>
-              <a href="#">Services</a>
-            </li>
-            <li>
-              <a href="#">About Us</a>
-            </li>
-            <li>
-              <a href="#">Contact</a>
-            </li>
-            <li>
-              <a href="#">Franchise</a>
-            </li>
-            <li>
-              <a href="#">Reviews</a>
-            </li>
-          </ul>
-        </div>
-
-        {/* Useful Links */}
-        <div>
-          <h3 className="mb-5 text-lg font-semibold">
-            Useful Links
-          </h3>
-
-          <ul className="space-y-3 text-sm text-teal-100">
-            <li>
-              <a href="#">Privacy Policy</a>
-            </li>
-            <li>
-              <a href="#">Terms & Conditions</a>
-            </li>
-            <li>
-              <a href="#">FAQ & Support</a>
-            </li>
-          </ul>
-        </div>
-
-        {/* Contact */}
-        <div>
-          <h3 className="mb-5 text-lg font-semibold">
-            Customer Support
-          </h3>
-
-          <div className="space-y-4 text-sm text-teal-100">
-
-            <div className="flex gap-3">
-              <Phone className="h-5 w-5 shrink-0" />
-              <span>+91 XXXXX XXXXX</span>
-            </div>
-
-            <div className="flex gap-3">
-              <Mail className="h-5 w-5 shrink-0" />
-              <span>support@example.com</span>
-            </div>
-
-            <div className="flex gap-3">
-              <MapPin className="h-5 w-5 shrink-0" />
-              <span>
-                Your registered business address
+          <Link href="/" className="inline-flex items-center gap-3" aria-label="CleanKart home">
+            <span className="flex h-14 w-14 items-center justify-center rounded-xl border border-white/75 bg-white p-0.5">
+              <Image src="/images/logo/cleankart-logo.png" alt="" width={56} height={56} className="h-full w-full object-contain" />
+            </span>
+            <span>
+              <span className="block text-[26px] font-black leading-none tracking-tight">
+                Clean<span className="text-[var(--brand-gold)]">Kart</span>
               </span>
-            </div>
+              <span className="mt-1.5 block text-[10px] text-blue-100">Home · Car · Office Cleaning Services</span>
+            </span>
+          </Link>
+          <p className="mt-4 max-w-sm text-sm leading-6 text-blue-100">
+            Doorstep cleaning for your car, home and everyday spaces. Pick a service
+            that fits your day and book with ease.
+          </p>
+        </div>
 
-          </div>
+        <FooterLinks title="Explore" links={exploreLinks} />
+        <FooterLinks title="Your CleanKart" links={accountLinks} />
+
+        <div>
+          <h2 className="text-base font-bold">Stay connected</h2>
+          <p className="mt-3 text-sm leading-6 text-blue-100">
+            Get occasional cleaning tips and CleanKart service updates.
+          </p>
+          <form
+            className="mt-4 flex gap-2"
+            onSubmit={(event) => {
+              event.preventDefault();
+              setSubscribed(true);
+            }}
+          >
+            <label className="sr-only" htmlFor="newsletter-email">Email address</label>
+            <input
+              id="newsletter-email"
+              type="email"
+              required
+              placeholder="Email address"
+              className="min-w-0 flex-1 rounded-xl border border-white/20 bg-white/10 px-3 py-2.5 text-sm text-white outline-none placeholder:text-blue-200 focus:border-[var(--brand-gold)] focus:ring-2 focus:ring-[var(--brand-gold)]/30"
+            />
+            <button type="submit" className="rounded-xl bg-[var(--brand-gold)] px-3 text-sm font-bold text-[var(--brand-navy)] transition hover:bg-amber-300">
+              Subscribe
+            </button>
+          </form>
+          {subscribed && (
+            <p className="mt-2 text-xs leading-5 text-blue-200" role="status">
+              Signup preview only. Your email was not sent or saved.
+            </p>
+          )}
+          <Link
+            href="/contact"
+            className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-blue-200 transition hover:text-white"
+          >
+            Contact CleanKart
+            <ArrowRight className="h-4 w-4" />
+          </Link>
         </div>
       </div>
-
-      {/* Copyright */}
-      <div className="bg-yellow-400 px-4 py-3 text-center text-sm font-medium text-gray-900">
-        © 2026 OwnWash. All rights reserved.
+        <div className="border-t border-white/10 bg-[#0b2450] px-4 py-4 text-center text-xs text-blue-100">
+        © 2026 CleanKart. All rights reserved.
       </div>
     </footer>
+  );
+}
+
+function FooterLinks({
+  title,
+  links,
+}: {
+  title: string;
+  links: string[][];
+}) {
+  return (
+    <div>
+      <h2 className="text-base font-bold">{title}</h2>
+      <ul className="mt-4 space-y-3 text-sm text-blue-100">
+        {links.map(([label, href]) => (
+          <li key={href}>
+            <Link href={href} className="transition hover:text-blue-100">
+              {label}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
