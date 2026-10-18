@@ -16,14 +16,13 @@ import {
 } from "lucide-react";
 
 import { readCart, readWishlist, subscribeToStore } from "@/lib/client-store";
-import { getServicePrice, services, topServiceSlugs } from "@/lib/services";
-
-const featuredServices = topServiceSlugs
-  .map((slug) => services.find((service) => service.slug === slug))
-  .filter((service) => service !== undefined);
+import useServiceCatalog from "@/hooks/useServiceCatalog";
+import { getFeaturedServices, getServicePrice } from "@/lib/services";
 
 export default function Navbar() {
   const pathname = usePathname();
+  const { services: catalog } = useServiceCatalog();
+  const featuredServices = getFeaturedServices(catalog);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [topServicesOpen, setTopServicesOpen] = useState(false);
   const [mobileTopOpen, setMobileTopOpen] = useState(false);
@@ -53,7 +52,7 @@ export default function Navbar() {
       <div className="border-b border-blue-100 bg-white text-blue-950">
         <div className="mx-auto flex min-h-[76px] max-w-[1440px] items-center gap-5 px-4 sm:px-6 lg:px-10">
           <Link href="/" className="flex shrink-0 items-center gap-2.5" aria-label="CleanKart home">
-            <Image src="/images/cleankart-logo.png" alt="" width={52} height={52} priority className="h-12 w-12 object-contain" />
+            <Image src="/images/logo/cleankart-logo.png" alt="" width={52} height={52} priority className="h-12 w-12 object-contain" />
             <span>
               <span className="block text-[25px] font-black leading-none tracking-tight">
                 Clean<span className="text-blue-600">Kart</span>

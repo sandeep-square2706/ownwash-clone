@@ -3,6 +3,7 @@
 export type CartItem = {
   serviceId: number;
   variantId?: string;
+  addonIds?: string[];
   quantity: number;
 };
 
@@ -29,11 +30,30 @@ function writeJSON<T>(key: string, value: T) {
 export function readCart(): CartItem[] {
   const items = readJSON<unknown>(CART_KEY, []);
   return Array.isArray(items)
-    ? items.filter(
-        (item): item is CartItem =>
-          typeof item?.serviceId === "number" &&
-          typeof item?.quantity === "number",
-      )
+    ? items.flatMap((item): CartItem[] => {
+        if (
+          !item ||
+          typeof item !== "object" ||
+          typeof (item as Record<string, unknown>).serviceId !== "number" ||
+          !Number.isFinite((item as Record<string, unknown>).serviceId) ||
+          typeof (item as Record<string, unknown>).quantity !== "number" ||
+          !Number.isFinite((item as Record<string, unknown>).quantity)
+        ) {
+          return [];
+        }
+        const record = item as Record<string, unknown>;
+        const variantId = typeof record.variantId === "string" ? record.variantId : undefined;
+        const rawAddonIds = record.addonIds;
+        const addonIds: string[] = Array.isArray(rawAddonIds)
+          ? rawAddonIds.filter((id: unknown): id is string => typeof id === "string")
+          : [];
+        return [{
+          serviceId: record.serviceId as number,
+          variantId,
+          addonIds: [...new Set(addonIds)],
+          quantity: Math.min(99, Math.max(1, Math.floor(record.quantity as number))),
+        }];
+      })
     : [];
 }
 
@@ -44,13 +64,22 @@ export function readWishlist(): number[] {
     : [];
 }
 
-export function addToCart(serviceId: number, variantId?: string) {
+export function addToCart(
+  serviceId: number,
+  variantId?: string,
+  addonIds: string[] = [],
+  quantity = 1,
+) {
   const items = readCart();
+  const normalizedAddons = [...new Set(addonIds)].sort();
   const matchingItem = items.find(
-    (item) => item.serviceId === serviceId && item.variantId === variantId,
+    (item) =>
+      item.serviceId === serviceId &&
+      item.variantId === variantId &&
+      JSON.stringify([...(item.addonIds ?? [])].sort()) === JSON.stringify(normalizedAddons),
   );
-  if (matchingItem) matchingItem.quantity += 1;
-  else items.push({ serviceId, variantId, quantity: 1 });
+  if (matchingItem) matchingItem.quantity = Math.min(99, matchingItem.quantity + quantity);
+  else items.push({ serviceId, variantId, addonIds: normalizedAddons, quantity: Math.min(99, Math.max(1, quantity)) });
   writeJSON(CART_KEY, items);
   return items;
 }
@@ -59,19 +88,31 @@ export function updateCartQuantity(
   serviceId: number,
   variantId: string | undefined,
   quantity: number,
+  addonIds: string[] = [],
 ) {
+  const normalizedAddons = [...new Set(addonIds)].sort();
   const items = readCart().map((item) =>
-    item.serviceId === serviceId && item.variantId === variantId
-      ? { ...item, quantity: Math.max(1, quantity) }
+    item.serviceId === serviceId &&
+    item.variantId === variantId &&
+    JSON.stringify([...(item.addonIds ?? [])].sort()) === JSON.stringify(normalizedAddons)
+      ? { ...item, quantity: Math.min(99, Math.max(1, Math.floor(quantity))) }
       : item,
   );
   writeJSON(CART_KEY, items);
   return items;
 }
 
-export function removeFromCart(serviceId: number, variantId?: string) {
+export function removeFromCart(
+  serviceId: number,
+  variantId?: string,
+  addonIds: string[] = [],
+) {
+  const normalizedAddons = [...new Set(addonIds)].sort();
   const items = readCart().filter(
-    (item) => item.serviceId !== serviceId || item.variantId !== variantId,
+    (item) =>
+      item.serviceId !== serviceId ||
+      item.variantId !== variantId ||
+      JSON.stringify([...(item.addonIds ?? [])].sort()) !== JSON.stringify(normalizedAddons),
   );
   writeJSON(CART_KEY, items);
   return items;

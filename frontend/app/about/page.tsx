@@ -1,6 +1,12 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, BadgeCheck, HeartHandshake, Sparkles } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "About CleanKart",
+  description: "Learn about CleanKart’s doorstep cleaning service vision for homes, vehicles and everyday spaces.",
+};
 
 const values = [
   {

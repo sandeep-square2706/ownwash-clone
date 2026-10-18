@@ -2,12 +2,16 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
 import ServiceCard from "@/components/services/ServiceCard";
-import { services, topServiceSlugs } from "@/lib/services";
+import { getFeaturedServices, type Service } from "@/lib/services";
+import { loadServerServices } from "@/lib/server-services";
 
-export default function TopServices() {
-  const featuredServices = topServiceSlugs
-    .map((slug) => services.find((service) => service.slug === slug))
-    .filter((service) => service !== undefined);
+export default async function TopServices() {
+  let featuredServices: Service[] = [];
+  try {
+    featuredServices = getFeaturedServices(await loadServerServices());
+  } catch {
+    // Keep the home page usable if the optional catalog API is unavailable.
+  }
 
   return (
     <section className="bg-white px-4 py-16 sm:px-6 lg:px-8">
@@ -33,11 +37,17 @@ export default function TopServices() {
           </Link>
         </div>
 
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-          {featuredServices.map((service) => (
-            <ServiceCard key={service.id} service={service} />
-          ))}
-        </div>
+        {featuredServices.length ? (
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+            {featuredServices.map((service) => (
+              <ServiceCard key={service.id} service={service} />
+            ))}
+          </div>
+        ) : (
+          <p className="rounded-2xl border border-slate-200 bg-slate-50 p-6 text-sm text-slate-600" role="status">
+            Popular services will appear here when the catalogue is available.
+          </p>
+        )}
       </div>
     </section>
   );

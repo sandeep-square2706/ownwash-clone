@@ -1,10 +1,16 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, HardDrive, ShieldCheck } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Privacy",
+  description: "How the current CleanKart frontend preview handles browser-local cart and wishlist data.",
+};
 
 const sections = [
   {
     title: "Details entered in forms",
-    text: "Contact and checkout forms are frontend previews. Submitting them only changes the message shown in your browser; the details are not sent to CleanKart.",
+    text: "Contact, checkout and partner forms are frontend previews. Submitting them only changes the message shown in your browser; the details are not sent to CleanKart.",
   },
   {
     title: "Cart and wishlist",

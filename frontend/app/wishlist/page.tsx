@@ -7,9 +7,10 @@ import {
   readWishlist,
   subscribeToStore,
 } from "@/lib/client-store";
-import { getServiceById } from "@/lib/services";
+import useServiceCatalog from "@/hooks/useServiceCatalog";
 
 export default function WishlistPage() {
+  const { services, status, error, retry } = useServiceCatalog();
   const [savedIds, setSavedIds] = useState<number[]>([]);
 
   useEffect(() => {
@@ -20,10 +21,10 @@ export default function WishlistPage() {
 
   const savedServices = useMemo(
     () =>
-      savedIds
-        .map((id) => getServiceById(id))
+        savedIds
+        .map((id) => services.find((service) => service.id === id))
         .filter((service) => service !== undefined),
-    [savedIds],
+    [savedIds, services],
   );
 
   return (
@@ -34,7 +35,17 @@ export default function WishlistPage() {
         </p>
         <h1 className="mt-2 text-3xl font-bold text-blue-950">Your wishlist</h1>
 
-        {savedServices.length === 0 ? (
+        {status === "loading" ? (
+          <div className="mt-8 rounded-3xl border border-slate-200 bg-white px-5 py-14 text-center text-sm text-slate-600" role="status">
+            Loading your saved services…
+          </div>
+        ) : status === "error" ? (
+          <div className="mt-8 rounded-3xl border border-rose-200 bg-white px-5 py-14 text-center">
+            <h2 className="text-xl font-semibold text-blue-950">Your saved services are unavailable</h2>
+            <p className="mt-2 text-sm text-slate-600">{error}</p>
+            <button type="button" onClick={retry} className="mt-5 rounded-full bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-700">Try again</button>
+          </div>
+        ) : savedServices.length === 0 ? (
           <div className="mt-8 rounded-3xl border border-slate-200 bg-white px-5 py-16 text-center shadow-sm">
             <h2 className="text-xl font-semibold text-blue-950">
               No saved services yet

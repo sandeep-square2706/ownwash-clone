@@ -10,6 +10,8 @@ const exploreLinks = [
   ["About CleanKart", "/about"],
   ["Frequently asked questions", "/faq"],
   ["Customer reviews", "/reviews"],
+  ["Franchise opportunities", "/franchise"],
+  ["Partner with CleanKart", "/partner"],
   ["Privacy overview", "/privacy"],
   ["Terms of use", "/terms"],
 ];
@@ -29,7 +31,7 @@ export default function Footer() {
       <div className="mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:px-6 md:grid-cols-2 lg:grid-cols-[1.3fr_0.8fr_0.8fr_1fr] lg:px-8">
         <div>
           <Link href="/" className="inline-flex items-center gap-3">
-            <Image src="/images/cleankart-logo.png" alt="" width={56} height={56} className="h-14 w-14 object-contain" />
+            <Image src="/images/logo/cleankart-logo.png" alt="" width={56} height={56} className="h-14 w-14 object-contain" />
             <span className="text-2xl font-black tracking-tight">
               Clean<span className="text-blue-300">Kart</span>
             </span>

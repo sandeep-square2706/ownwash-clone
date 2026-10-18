@@ -1,6 +1,12 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Building2, Handshake, Sparkles } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Franchise with CleanKart",
+  description: "Explore the CleanKart local cleaning-service partnership preview.",
+};
 
 const benefits = [
   {
@@ -46,7 +52,7 @@ export default function FranchisePage() {
               home and business care.
             </p>
             <Link
-              href="/contact"
+              href="/partner"
               className="mt-7 inline-flex w-fit items-center gap-2 rounded-full bg-blue-600 px-6 py-3 font-bold text-white transition hover:bg-blue-700"
             >
               Enquire about a partnership <ArrowRight className="h-4 w-4" />

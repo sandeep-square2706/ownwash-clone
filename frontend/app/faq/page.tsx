@@ -1,5 +1,11 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ChevronDown } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Frequently asked questions",
+  description: "Answers about CleanKart services, preview pricing, saved services and booking availability.",
+};
 
 const questions = [
   {

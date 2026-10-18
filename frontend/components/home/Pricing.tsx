@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { ArrowRight, Check } from "lucide-react";
 
-import { getServicePrice, services } from "@/lib/services";
+import { getServicePrice, type Service } from "@/lib/services";
+import { loadServerServices } from "@/lib/server-services";
 
 const featuredPlans = [
   {
@@ -18,7 +19,14 @@ const featuredPlans = [
   },
 ];
 
-export default function Pricing() {
+export default async function Pricing() {
+  let services: Service[] = [];
+  try {
+    services = await loadServerServices();
+  } catch {
+    // The catalog section below explains the empty state if the API is down.
+  }
+
   return (
     <section className="bg-slate-50 px-4 py-16 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-[1200px]">
@@ -34,11 +42,12 @@ export default function Pricing() {
           </p>
         </div>
 
-        <div className="grid gap-5 lg:grid-cols-3">
-          {featuredPlans.map((plan) => {
-            const service = services.find((item) => item.slug === plan.slug);
-            if (!service) return null;
-            return (
+        {services.length ? (
+          <div className="grid gap-5 lg:grid-cols-3">
+            {featuredPlans.map((plan) => {
+              const service = services.find((item) => item.slug === plan.slug);
+              if (!service) return null;
+              return (
               <article
                 key={service.id}
                 className="flex flex-col rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg sm:p-7"
@@ -75,9 +84,14 @@ export default function Pricing() {
                   <ArrowRight className="h-4 w-4" />
                 </Link>
               </article>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
+        ) : (
+          <p className="rounded-2xl border border-slate-200 bg-white p-6 text-center text-sm text-slate-600" role="status">
+            Pricing will be available when the service catalogue is connected.
+          </p>
+        )}
       </div>
     </section>
   );

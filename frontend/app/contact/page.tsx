@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import { Mail, MessageCircle, MapPin } from "lucide-react";
-import { services } from "@/lib/services";
+import useServiceCatalog from "@/hooks/useServiceCatalog";
 
 export default function ContactPage() {
+  const { services } = useServiceCatalog();
   const [submitted, setSubmitted] = useState(false);
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {

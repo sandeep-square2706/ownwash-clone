@@ -1,8 +1,18 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, BadgeCheck, Clock3, House, Sparkles } from "lucide-react";
+import { formatPrice, getStartingPrice, type Service } from "@/lib/services";
+import { loadServerServices } from "@/lib/server-services";
 
-export default function Hero() {
+export default async function Hero() {
+  let services: Service[] = [];
+  try {
+    services = await loadServerServices();
+  } catch {
+    // The hero remains useful without pricing when the optional catalog API is unavailable.
+  }
+  const startingPrice = getStartingPrice(services);
+
   return (
     <>
       <section className="bg-white px-4 py-5 sm:px-6 lg:px-8">
@@ -38,7 +48,9 @@ export default function Hero() {
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <span className="text-sm font-medium text-white/85">
-                Starting at ₹199
+                {startingPrice !== undefined
+                  ? `Starting at ${formatPrice(startingPrice)}`
+                  : "View service options"}
               </span>
             </div>
             <div className="mt-10 flex flex-wrap gap-x-7 gap-y-3 text-sm text-white/85">
@@ -62,7 +74,7 @@ export default function Hero() {
       <section className="px-4 pb-6 sm:px-6 lg:px-8">
         <div className="mx-auto grid max-w-[1240px] gap-3 sm:grid-cols-3">
           {[
-            ["13", "doorstep services"],
+            [String(services.length), "doorstep services"],
             ["Car", "care and detailing"],
             ["Home", "cleaning and upkeep"],
           ].map(([value, label]) => (

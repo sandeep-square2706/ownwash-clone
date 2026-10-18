@@ -1,5 +1,11 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import Testimonials from "@/components/home/Testimonials";
+
+export const metadata: Metadata = {
+  title: "Customer reviews",
+  description: "See how CleanKart will present verified customer feedback after service bookings are connected.",
+};
 
 export default function ReviewsPage() {
   return (
@@ -7,11 +13,11 @@ export default function ReviewsPage() {
       <section className="bg-blue-950 px-4 py-14 text-white sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <p className="text-sm font-semibold uppercase tracking-[0.16em] text-blue-100">
-            Customer stories
+            Verified customer feedback
           </p>
-          <h1 className="mt-3 text-4xl font-bold sm:text-5xl">Reviews</h1>
+          <h1 className="mt-3 text-4xl font-bold sm:text-5xl">Reviews are coming soon</h1>
           <p className="mt-4 max-w-2xl leading-7 text-blue-100">
-            See what customers value about convenient cleaning at home.
+            Customer reviews will appear here after CleanKart bookings and review collection are connected.
           </p>
         </div>
       </section>

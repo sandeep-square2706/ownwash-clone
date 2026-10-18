@@ -1,6 +1,12 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Cleaning tips",
+  description: "Practical CleanKart guides for vehicle care, furniture cleaning and a fresher home.",
+};
 
 const articles = [
   {

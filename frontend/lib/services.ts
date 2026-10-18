@@ -1,296 +1,84 @@
-export type ServiceVariant = {
-  id: string;
-  name: string;
-  price: number;
-};
+import {
+  getServiceById,
+  getServiceBySlug,
+  mockServices,
+  topServiceSlugs,
+  type Service,
+} from "@/lib/mock-services";
+import { mockCheckoutSettings } from "@/lib/mock-checkout";
 
-export type Service = {
-  id: number;
-  name: string;
-  slug: string;
-  category: string;
-  basePrice?: number;
-  minPrice?: number;
-  maxPrice?: number;
-  description: string;
-  duration: string;
-  images: string[];
-  features: string[];
-  variants?: ServiceVariant[];
-  isActive: boolean;
-};
+export type { Service, ServiceAddon, ServiceFAQ, ServiceVariant } from "@/lib/mock-services";
+export { getServiceById, getServiceBySlug, mockServices, topServiceSlugs };
 
-const localImage = (name: string) => "/images/services/" + name;
-const remoteImage = (id: string) =>
-  "https://images.unsplash.com/" + id + "?auto=format&fit=crop&w=1000&q=82";
+// Kept for local cart and wishlist previews. Network-backed pages use loadServices.
+export const services = mockServices;
 
-export const services: Service[] = [
-  {
-    id: 1,
-    name: "Foam Wash",
-    slug: "foam-washing",
-    category: "Vehicle Care",
-    basePrice: 349,
-    description:
-      "A rich, paint-safe foam wash that lifts everyday dirt and leaves your vehicle fresh and glossy.",
-    duration: "45–60 min",
-    images: [localImage("car-exterior-wash.jpeg"), localImage("bike-foam-wash.jpeg")],
-    features: ["Foam pre-wash", "Wheel and tyre cleaning", "Hand wash and dry"],
-    isActive: true,
-  },
-  {
-    id: 2,
-    name: "Interior Deep Cleaning",
-    slug: "interior-deep-cleaning",
-    category: "Vehicle Care",
-    minPrice: 549,
-    maxPrice: 849,
-    description:
-      "A detailed interior refresh for seats, carpets, dashboard, doors and hard-to-reach areas.",
-    duration: "2–3 hrs",
-    images: [localImage("car-interior-cleaning.jpeg"), localImage("carpet-cleaning.jpeg")],
-    features: ["Seat and carpet cleaning", "Dashboard and console care", "Interior vacuuming"],
-    variants: [
-      { id: "hatchback", name: "Hatchback", price: 549 },
-      { id: "sedan", name: "Sedan", price: 699 },
-      { id: "suv", name: "SUV", price: 849 },
-    ],
-    isActive: true,
-  },
-  {
-    id: 3,
-    name: "Steam Washing",
-    slug: "steam-washing",
-    category: "Vehicle Care",
-    minPrice: 549,
-    maxPrice: 749,
-    description:
-      "A careful steam clean that refreshes your vehicle interior and helps lift stubborn grime.",
-    duration: "60–90 min",
-    images: [localImage("car-interior-cleaning.jpeg"), localImage("car-exterior-wash.jpeg")],
-    features: ["Steam cleaning", "Interior refresh", "Odour-reducing treatment"],
-    variants: [
-      { id: "hatchback", name: "Hatchback", price: 549 },
-      { id: "sedan", name: "Sedan", price: 649 },
-      { id: "suv", name: "SUV", price: 749 },
-    ],
-    isActive: true,
-  },
-  {
-    id: 4,
-    name: "Full Car Detailing",
-    slug: "full-car-detailing",
-    category: "Vehicle Care",
-    minPrice: 849,
-    maxPrice: 1549,
-    description:
-      "A complete inside-and-out detail for a polished finish and a cabin that feels refreshed.",
-    duration: "3–5 hrs",
-    images: [
-      localImage("car-exterior-wash.jpeg"),
-      localImage("car-interior-cleaning.jpeg"),
-      localImage("bike-foam-wash.jpeg"),
-    ],
-    features: ["Interior detailing", "Exterior hand wash", "Finishing and protection"],
-    variants: [
-      { id: "hatchback", name: "Hatchback", price: 849 },
-      { id: "sedan", name: "Sedan", price: 1199 },
-      { id: "suv", name: "SUV", price: 1549 },
-    ],
-    isActive: true,
-  },
-  {
-    id: 5,
-    name: "Exterior Deep Cleaning",
-    slug: "exterior-deep-cleaning",
-    category: "Vehicle Care",
-    minPrice: 549,
-    maxPrice: 849,
-    description:
-      "A deeper exterior clean for paintwork, wheels and trim, finished with a careful hand dry.",
-    duration: "60–90 min",
-    images: [localImage("car-exterior-wash.jpeg"), localImage("bike-foam-wash.jpeg")],
-    features: ["Paint-safe deep wash", "Wheel and tyre detailing", "Hand dry and finish"],
-    variants: [
-      { id: "hatchback", name: "Hatchback", price: 549 },
-      { id: "sedan", name: "Sedan", price: 699 },
-      { id: "suv", name: "SUV", price: 849 },
-    ],
-    isActive: true,
-  },
-  {
-    id: 6,
-    name: "Furniture Cleaning",
-    slug: "furniture-cleaning",
-    category: "Home Cleaning",
-    minPrice: 449,
-    maxPrice: 1449,
-    description:
-      "Freshen up fabric furniture with professional vacuuming, stain care and upholstery cleaning.",
-    duration: "1–2 hrs",
-    images: [
-      localImage("sofa-steam-cleaning.jpeg"),
-      localImage("sofa-cleaning.jpeg"),
-      localImage("carpet-cleaning.jpeg"),
-    ],
-    features: ["Upholstery vacuuming", "Spot and stain treatment", "Fabric-safe cleaning"],
-    variants: [
-      { id: "single", name: "Single item", price: 449 },
-      { id: "medium", name: "Medium set", price: 899 },
-      { id: "large", name: "Large set", price: 1449 },
-    ],
-    isActive: true,
-  },
-  {
-    id: 7,
-    name: "Office Cleaning",
-    slug: "office-cleaning",
-    category: "Home & Office",
-    minPrice: 449,
-    maxPrice: 1849,
-    description:
-      "Reliable cleaning for workspaces, shared areas and office floors, scheduled around your day.",
-    duration: "1–4 hrs",
-    images: [
-      remoteImage("photo-1497366754035-f200968a6e72"),
-      remoteImage("photo-1524758631624-e2822e304c36"),
-    ],
-    features: ["Workspace and surface cleaning", "Floor care", "Waste and touchpoint refresh"],
-    variants: [
-      { id: "small", name: "Small office", price: 449 },
-      { id: "medium", name: "Medium office", price: 999 },
-      { id: "large", name: "Large office", price: 1849 },
-    ],
-    isActive: true,
-  },
-  {
-    id: 8,
-    name: "House Cleaning",
-    slug: "house-cleaning",
-    category: "Home Cleaning",
-    basePrice: 549,
-    description:
-      "A practical home clean for floors, surfaces and everyday spaces, delivered at your doorstep.",
-    duration: "2–4 hrs",
-    images: [
-      localImage("bathroom-cleaning.jpeg"),
-      localImage("kitchen-cleaning.jpeg"),
-      localImage("sofa-cleaning.jpeg"),
-    ],
-    features: ["Surface dusting", "Floor cleaning", "Kitchen and bathroom refresh"],
-    isActive: true,
-  },
-  {
-    id: 9,
-    name: "AC Services",
-    slug: "ac-services",
-    category: "Home Services",
-    minPrice: 449,
-    maxPrice: 1449,
-    description:
-      "A technician visit for AC cleaning and service, with options for routine care or a deeper clean.",
-    duration: "60–90 min",
-    images: [
-      remoteImage("photo-1621905252507-b35492cc74b4"),
-      remoteImage("photo-1581094794329-c8112a89af12"),
-    ],
-    features: ["Filter cleaning", "Indoor unit care", "Service check"],
-    variants: [
-      { id: "routine", name: "Routine service", price: 449 },
-      { id: "deep", name: "Deep cleaning", price: 899 },
-      { id: "premium", name: "Premium service", price: 1449 },
-    ],
-    isActive: true,
-  },
-  {
-    id: 10,
-    name: "Water Tank Cleaning",
-    slug: "water-tank-cleaning",
-    category: "Home Services",
-    minPrice: 449,
-    maxPrice: 1449,
-    description:
-      "A thorough tank clean with scrubbing, residue removal and a final hygiene-focused rinse.",
-    duration: "1–2 hrs",
-    images: [
-      remoteImage("photo-1581244277943-fe4a9c777189"),
-      remoteImage("photo-1584622650111-993a426fbf0a"),
-    ],
-    features: ["Tank scrubbing", "Residue removal", "Rinse and sanitisation"],
-    variants: [
-      { id: "small", name: "Small tank", price: 449 },
-      { id: "medium", name: "Medium tank", price: 899 },
-      { id: "large", name: "Large tank", price: 1449 },
-    ],
-    isActive: true,
-  },
-  {
-    id: 11,
-    name: "Kitchen Cleaning",
-    slug: "kitchen-cleaning",
-    category: "Home Cleaning",
-    basePrice: 549,
-    description:
-      "Give your kitchen a detailed clean, including worktops, surfaces and grease-prone areas.",
-    duration: "1–2 hrs",
-    images: [localImage("kitchen-cleaning.jpeg"), localImage("bathroom-cleaning.jpeg")],
-    features: ["Counter and surface cleaning", "Degreasing", "Sink and backsplash refresh"],
-    isActive: true,
-  },
-  {
-    id: 12,
-    name: "Carpet Cleaning",
-    slug: "carpet-cleaning",
-    category: "Home Cleaning",
-    minPrice: 449,
-    maxPrice: 1849,
-    description:
-      "Deep carpet care that targets dust and everyday marks to leave your room feeling fresh.",
-    duration: "1–3 hrs",
-    images: [localImage("carpet-cleaning.jpeg"), localImage("sofa-steam-cleaning.jpeg")],
-    features: ["Deep vacuuming", "Spot treatment", "Carpet refresh"],
-    variants: [
-      { id: "small", name: "Small carpet", price: 449 },
-      { id: "medium", name: "Medium carpet", price: 999 },
-      { id: "large", name: "Large carpet", price: 1849 },
-    ],
-    isActive: true,
-  },
-  {
-    id: 13,
-    name: "Sofa-Dry Cleaning",
-    slug: "sofa-dry-cleaning",
-    category: "Home Cleaning",
-    minPrice: 199,
-    maxPrice: 1949,
-    description:
-      "Refresh sofa fabric with careful dust removal and spot care, suited to your seating size.",
-    duration: "1–3 hrs",
-    images: [localImage("sofa-cleaning.jpeg"), localImage("sofa-steam-cleaning.jpeg")],
-    features: ["Dry vacuuming", "Spot treatment", "Fabric-safe finish"],
-    variants: [
-      { id: "single", name: "Single seat", price: 199 },
-      { id: "three", name: "3 seater", price: 899 },
-      { id: "full", name: "Full set", price: 1949 },
-    ],
-    isActive: true,
-  },
-];
-
-export const topServiceSlugs = [
-  "foam-washing",
-  "interior-deep-cleaning",
-  "steam-washing",
-  "full-car-detailing",
-  "exterior-deep-cleaning",
-];
-
-export function getServiceBySlug(slug: string) {
-  return services.find((service) => service.slug === slug);
+function getAPIBase() {
+  return process.env.NEXT_PUBLIC_CLEANKART_API_URL?.replace(/\/+$/, "");
 }
 
-export function getServiceById(id: number) {
-  return services.find((service) => service.id === id);
+async function requestAPI<T>(path: string): Promise<T> {
+  const base = getAPIBase();
+  if (!base) throw new Error("CleanKart API URL is not configured.");
+
+  const response = await fetch(`${base}${path}`, { cache: "no-store" });
+  if (!response.ok) {
+    throw new Error(`CleanKart service request failed (${response.status}).`);
+  }
+  return (await response.json()) as T;
+}
+
+function isServiceList(value: unknown): value is Service[] {
+  if (!Array.isArray(value)) return false;
+  return value.every((item: unknown) => {
+    if (!item || typeof item !== "object") return false;
+    const service = item as Partial<Service>;
+    return (
+      typeof service.id === "number" &&
+      typeof service.name === "string" &&
+      typeof service.slug === "string" &&
+      typeof service.category === "string" &&
+      Array.isArray(service.images) &&
+      Array.isArray(service.features)
+    );
+  });
+}
+
+export async function loadServices(): Promise<Service[]> {
+  if (!getAPIBase()) return mockServices.filter((service) => service.isActive);
+
+  const payload = await requestAPI<Service[] | { results: Service[] }>("/api/services/");
+  const list = Array.isArray(payload) ? payload : payload.results;
+  if (!isServiceList(list)) {
+    throw new Error("CleanKart returned an invalid service list.");
+  }
+  return list.filter((service) => service.isActive);
+}
+
+export async function loadServiceBySlug(slug: string): Promise<Service | undefined> {
+  if (!getAPIBase()) return getServiceBySlug(slug);
+
+  try {
+    const service = await requestAPI<Service>(`/api/services/${encodeURIComponent(slug)}/`);
+    if (
+      typeof service?.id !== "number" ||
+      service.slug !== slug ||
+      typeof service.name !== "string"
+    ) {
+      throw new Error("CleanKart returned an invalid service record.");
+    }
+    return service.isActive ? service : undefined;
+  } catch (error) {
+    if (error instanceof Error && error.message.includes("(404)")) return undefined;
+    throw error;
+  }
+}
+
+export function getFeaturedServices(serviceList: Service[] = mockServices) {
+  const bySlug = new Map(serviceList.map((service) => [service.slug, service]));
+  return topServiceSlugs
+    .map((slug) => bySlug.get(slug))
+    .filter((service): service is Service => Boolean(service?.isActive));
 }
 
 export function formatPrice(price: number) {
@@ -310,4 +98,56 @@ export function getServicePrice(service: Service) {
   return minimum === maximum
     ? formatPrice(minimum)
     : formatPrice(minimum) + " – " + formatPrice(maximum);
+}
+
+export function getServiceOriginalPrice(service: Service) {
+  if (service.variants?.length) {
+    if (service.variants.some((variant) => variant.originalPrice === undefined)) return undefined;
+    const prices = service.variants.map((variant) => variant.originalPrice as number);
+    const minimum = Math.min(...prices);
+    const maximum = Math.max(...prices);
+    return minimum === maximum
+      ? formatPrice(minimum)
+      : `${formatPrice(minimum)} – ${formatPrice(maximum)}`;
+  }
+  return service.originalPrice === undefined ? undefined : formatPrice(service.originalPrice);
+}
+
+export function getServiceSavings(service: Service) {
+  const differences = service.variants?.length
+    ? service.variants.map((variant) =>
+        variant.originalPrice === undefined ? undefined : variant.originalPrice - variant.price,
+      )
+    : service.originalPrice === undefined
+      ? []
+      : [service.originalPrice - (service.basePrice ?? service.minPrice ?? 0)];
+
+  if (!differences.length || differences.some((difference) => difference === undefined || difference <= 0)) {
+    return undefined;
+  }
+  return differences.every((difference) => difference === differences[0])
+    ? differences[0]
+    : undefined;
+}
+
+export function getAddonTotal(service: Service, addonIds: string[] = []) {
+  const selected = new Set(addonIds);
+  return (service.addons ?? []).reduce(
+    (total, addon) => total + (selected.has(addon.id) ? addon.price : 0),
+    0,
+  );
+}
+
+export function getStartingPrice(serviceList: Service[]) {
+  const prices = serviceList.flatMap((service) => {
+    const variantPrices = service.variants?.map((variant) => variant.price);
+    return variantPrices?.length
+      ? variantPrices
+      : [service.basePrice ?? service.minPrice].filter((price): price is number => price !== undefined);
+  });
+  return prices.length ? Math.min(...prices) : undefined;
+}
+
+export function getPreviewConvenienceFee() {
+  return mockCheckoutSettings.convenienceFee;
 }

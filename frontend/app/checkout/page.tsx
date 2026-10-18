@@ -20,7 +20,9 @@ import {
 } from "lucide-react";
 
 import { readCart, subscribeToStore, type CartItem } from "@/lib/client-store";
-import { formatPrice, getServiceById } from "@/lib/services";
+import ServiceImageCarousel from "@/components/services/ServiceImageCarousel";
+import useServiceCatalog from "@/hooks/useServiceCatalog";
+import { formatPrice, getAddonTotal, getPreviewConvenienceFee } from "@/lib/services";
 
 type PaymentMethod = "upi" | "card" | "netbanking" | "wallet";
 
@@ -62,12 +64,14 @@ const paymentMethods: {
 ];
 
 export default function CheckoutPage() {
+  const { services: catalog, status: catalogStatus, error: catalogError, retry } = useServiceCatalog();
   const [items, setItems] = useState<CartItem[]>([]);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("upi");
   const [promoCode, setPromoCode] = useState("");
   const [promoMessage, setPromoMessage] = useState("");
   const [promoOpen, setPromoOpen] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const convenienceFee = getPreviewConvenienceFee();
 
   useEffect(() => {
     const syncCart = () => setItems(readCart());
@@ -78,21 +82,26 @@ export default function CheckoutPage() {
   const rows = useMemo(
     () =>
       items.flatMap((item) => {
-        const service = getServiceById(item.serviceId);
+        const service = catalog.find((candidate) => candidate.id === item.serviceId);
         if (!service) return [];
         const variant = service.variants?.find(
           (option) => option.id === item.variantId,
         );
         const unitPrice =
-          variant?.price ?? service.basePrice ?? service.minPrice ?? 0;
-        return [{ item, service, variant, unitPrice }];
+          (variant?.price ?? service.basePrice ?? service.minPrice ?? 0) +
+          getAddonTotal(service, item.addonIds);
+        const selectedAddons = (service.addons ?? []).filter((addon) =>
+          item.addonIds?.includes(addon.id),
+        );
+        return [{ item, service, variant, unitPrice, selectedAddons }];
       }),
-    [items],
+    [catalog, items],
   );
-  const total = rows.reduce(
+  const subtotal = rows.reduce(
     (sum, row) => sum + row.unitPrice * row.item.quantity,
     0,
   );
+  const total = subtotal + convenienceFee;
   const featured = rows[0];
 
   function applyPromo() {
@@ -109,7 +118,7 @@ export default function CheckoutPage() {
         <header className="mb-5 flex flex-wrap items-center justify-between gap-4 rounded-3xl border border-white bg-white px-5 py-4 shadow-sm sm:px-7">
           <Link href="/" className="flex items-center gap-3" aria-label="CleanKart home">
             <Image
-              src="/images/cleankart-logo.png"
+              src="/images/logo/cleankart-logo.png"
               alt=""
               width={72}
               height={72}
@@ -134,7 +143,17 @@ export default function CheckoutPage() {
           </div>
         </header>
 
-        {rows.length === 0 ? (
+        {catalogStatus === "loading" ? (
+          <section className="rounded-3xl border border-white bg-white p-8 text-center shadow-sm sm:p-12" role="status">
+            <p className="text-sm text-slate-600">Loading your booking details…</p>
+          </section>
+        ) : catalogStatus === "error" ? (
+          <section className="rounded-3xl border border-rose-200 bg-white p-8 text-center shadow-sm sm:p-12" role="alert">
+            <h1 className="text-2xl font-bold">Checkout details are unavailable</h1>
+            <p className="mt-2 text-sm text-slate-600">{catalogError}</p>
+            <button type="button" onClick={retry} className="mt-5 rounded-xl bg-blue-600 px-6 py-3 text-sm font-bold text-white hover:bg-blue-700">Try again</button>
+          </section>
+        ) : rows.length === 0 ? (
           <section className="rounded-3xl border border-white bg-white p-8 text-center shadow-sm sm:p-12">
             <h1 className="text-2xl font-bold">Your cart is empty</h1>
             <p className="mt-2 text-sm text-slate-600">
@@ -157,13 +176,12 @@ export default function CheckoutPage() {
           >
             <section className="overflow-hidden rounded-3xl border border-white bg-white shadow-sm">
               <div className="relative h-56 sm:h-[330px]">
-                <Image
-                  src={featured.service.images[0]}
-                  alt={featured.service.name}
-                  fill
+                <ServiceImageCarousel
+                  images={featured.service.images}
+                  title={featured.service.name}
                   priority
                   sizes="(max-width: 1024px) 100vw, 55vw"
-                  className="object-cover"
+                  className="h-full w-full"
                 />
               </div>
               <div className="p-5 sm:p-7">
@@ -191,9 +209,9 @@ export default function CheckoutPage() {
                       Also in your booking
                     </p>
                     <ul className="mt-2 space-y-1.5 text-sm text-slate-700">
-                      {rows.slice(1).map(({ item, service, variant }) => (
+                      {rows.slice(1).map(({ item, service, variant, selectedAddons }) => (
                         <li key={service.id + "-" + (item.variantId ?? "base")}>
-                          {service.name}{variant ? " · " + variant.name : ""} · Qty {item.quantity}
+                          {service.name}{variant ? " · " + variant.name : ""}{selectedAddons.length ? ` · ${selectedAddons.map((addon) => addon.name).join(", ")}` : ""} · Qty {item.quantity}
                         </li>
                       ))}
                     </ul>
@@ -219,15 +237,83 @@ export default function CheckoutPage() {
                     <span className="mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-800">
                       <MapPin className="h-5 w-5" />
                     </span>
-                    <label className="min-w-0 flex-1 text-sm font-bold">
-                      Service address
-                      <input
-                        required
-                        autoComplete="street-address"
-                        placeholder="Enter your service address"
-                        className="mt-1.5 block min-h-9 w-full rounded-lg border border-blue-100 bg-blue-50/40 px-2.5 text-sm font-normal text-slate-700 outline-none placeholder:text-slate-400 focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
-                      />
-                    </label>
+                    <div className="min-w-0 flex-1">
+                      <label className="block text-sm font-bold">
+                        Service address
+                        <input
+                          required
+                          name="address"
+                          autoComplete="street-address"
+                          placeholder="House, street and area"
+                          className="mt-1.5 block min-h-10 w-full rounded-lg border border-blue-100 bg-blue-50/40 px-2.5 text-sm font-normal text-slate-700 outline-none placeholder:text-slate-400 focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                        />
+                      </label>
+                      <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                        <label className="text-sm font-bold">
+                          City
+                          <input
+                            required
+                            name="city"
+                            autoComplete="address-level2"
+                            placeholder="City"
+                            className="mt-1.5 block min-h-10 w-full rounded-lg border border-blue-100 bg-white px-2.5 text-sm font-normal text-slate-700 outline-none placeholder:text-slate-400 focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                          />
+                        </label>
+                        <label className="text-sm font-bold">
+                          PIN code
+                          <input
+                            required
+                            name="postalCode"
+                            inputMode="numeric"
+                            pattern="[0-9]{6}"
+                            maxLength={6}
+                            autoComplete="postal-code"
+                            placeholder="6-digit PIN code"
+                            className="mt-1.5 block min-h-10 w-full rounded-lg border border-blue-100 bg-white px-2.5 text-sm font-normal text-slate-700 outline-none placeholder:text-slate-400 focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                          />
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="py-4">
+                    <h2 className="text-sm font-bold">Contact details</h2>
+                    <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                      <label className="text-sm font-medium text-slate-700">
+                        Full name
+                        <input
+                          required
+                          name="customerName"
+                          autoComplete="name"
+                          placeholder="Your name"
+                          className="mt-1.5 block h-10 w-full rounded-lg border border-blue-100 bg-white px-2.5 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                        />
+                      </label>
+                      <label className="text-sm font-medium text-slate-700">
+                        Mobile number
+                        <input
+                          required
+                          name="phone"
+                          type="tel"
+                          inputMode="numeric"
+                          pattern="[0-9]{10}"
+                          maxLength={10}
+                          autoComplete="tel-national"
+                          placeholder="10-digit mobile number"
+                          className="mt-1.5 block h-10 w-full rounded-lg border border-blue-100 bg-white px-2.5 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                        />
+                      </label>
+                      <label className="text-sm font-medium text-slate-700 sm:col-span-2">
+                        Email address
+                        <input
+                          required
+                          name="email"
+                          type="email"
+                          autoComplete="email"
+                          placeholder="you@example.com"
+                          className="mt-1.5 block h-10 w-full rounded-lg border border-blue-100 bg-white px-2.5 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                        />
+                      </label>
+                    </div>
                   </div>
                   <div className="grid gap-4 py-4 sm:grid-cols-2">
                     <label className="flex min-w-0 gap-3 text-sm font-bold">
@@ -270,15 +356,15 @@ export default function CheckoutPage() {
               <h2 className="text-2xl font-bold sm:text-3xl">Payment Details</h2>
               <div className="mt-5 rounded-2xl bg-[#f2f7ff] p-4 sm:p-5">
                 <div className="space-y-3">
-                  {rows.map(({ item, service, variant, unitPrice }) => (
+                  {rows.map(({ item, service, variant, unitPrice, selectedAddons }) => (
                     <div key={service.id + "-" + (item.variantId ?? "base")} className="flex justify-between gap-3 text-sm text-slate-600">
-                      <span className="min-w-0">{service.name}{variant ? " · " + variant.name : ""} × {item.quantity}</span>
+                      <span className="min-w-0">{service.name}{variant ? " · " + variant.name : ""}{selectedAddons.length ? ` · ${selectedAddons.map((addon) => addon.name).join(", ")}` : ""} × {item.quantity}</span>
                       <span className="shrink-0">{formatPrice(unitPrice * item.quantity)}</span>
                     </div>
                   ))}
                   <div className="flex justify-between gap-3 border-t border-dashed border-blue-200 pt-3 text-sm text-slate-600">
                     <span>Convenience fee</span>
-                    <span>₹0</span>
+                    <span>{formatPrice(convenienceFee)}</span>
                   </div>
                 </div>
                 <div className="mt-4 flex items-end justify-between gap-3 border-t border-dashed border-blue-200 pt-4">

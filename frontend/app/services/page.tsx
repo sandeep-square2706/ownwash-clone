@@ -14,17 +14,18 @@ import {
 } from "lucide-react";
 
 import ServiceCard from "@/components/services/ServiceCard";
-import { services } from "@/lib/services";
+import useServiceCatalog from "@/hooks/useServiceCatalog";
+import type { Service } from "@/lib/services";
 
 type SortOption = "featured" | "price-low" | "price-high" | "name";
 
-function lowestPrice(service: (typeof services)[number]) {
+function lowestPrice(service: Service) {
   return service.variants?.length
     ? Math.min(...service.variants.map((variant) => variant.price))
     : service.minPrice ?? service.basePrice ?? 0;
 }
 
-function highestPrice(service: (typeof services)[number]) {
+function highestPrice(service: Service) {
   return service.variants?.length
     ? Math.max(...service.variants.map((variant) => variant.price))
     : service.maxPrice ?? service.basePrice ?? 0;
@@ -32,6 +33,7 @@ function highestPrice(service: (typeof services)[number]) {
 
 function ServicesContent() {
   const searchParams = useSearchParams();
+  const { services: catalog, status: catalogStatus, error: loadError, retry } = useServiceCatalog();
   const [page, setPage] = useState(1);
   const [sort, setSort] = useState<SortOption>("featured");
   const [itemsPerPage, setItemsPerPage] = useState(12);
@@ -40,13 +42,13 @@ function ServicesContent() {
   const [category, setCategory] = useState("all");
 
   const categories = useMemo(
-    () => Array.from(new Set(services.map((service) => service.category))),
-    [],
+    () => Array.from(new Set(catalog.map((service) => service.category))),
+    [catalog],
   );
 
   const filteredServices = useMemo(() => {
     const normalizedSearch = search.trim().toLowerCase();
-    const result = services.filter((service) => {
+    const result = catalog.filter((service) => {
       const matchesCategory =
         category === "all" || service.category === category;
       const matchesSearch =
@@ -62,7 +64,7 @@ function ServicesContent() {
     if (sort === "price-high") result.sort((a, b) => highestPrice(b) - highestPrice(a));
     if (sort === "name") result.sort((a, b) => a.name.localeCompare(b.name));
     return result;
-  }, [category, search, sort]);
+  }, [catalog, category, search, sort]);
 
   const totalPages = Math.max(1, Math.ceil(filteredServices.length / itemsPerPage));
   const visibleServices = filteredServices.slice(
@@ -247,7 +249,24 @@ function ServicesContent() {
             {" "}of {filteredServices.length} results
           </p>
 
-          {visibleServices.length > 0 ? (
+          {catalogStatus === "loading" ? (
+            <div className="rounded-2xl border border-slate-200 bg-white px-5 py-16 text-center" role="status">
+              <p className="text-lg font-semibold text-blue-950">Loading services…</p>
+              <p className="mt-2 text-sm text-slate-600">Just a moment while we get the catalogue.</p>
+            </div>
+          ) : catalogStatus === "error" ? (
+            <div className="rounded-2xl border border-rose-200 bg-white px-5 py-16 text-center" role="alert">
+              <h3 className="text-xl font-semibold text-blue-950">Services are temporarily unavailable</h3>
+              <p className="mt-2 text-sm text-slate-600">{loadError}</p>
+              <button
+                type="button"
+                onClick={retry}
+                className="mt-5 rounded-full bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-700"
+              >
+                Try again
+              </button>
+            </div>
+          ) : visibleServices.length > 0 ? (
             <div
               className={
                 view === "grid"
