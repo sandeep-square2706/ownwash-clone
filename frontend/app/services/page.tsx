@@ -109,8 +109,8 @@ function ServicesContent() {
       <section className="px-4 pt-5 sm:px-6 lg:px-8">
         <div className="relative mx-auto min-h-[250px] max-w-[1360px] overflow-hidden rounded-3xl bg-blue-950">
           <Image
-            src="/images/services/solar-panel-cleaning.jpeg"
-            alt=""
+            src="/images/services/car-exterior-wash.jpeg"
+            alt="CleanKart professional washing a car"
             fill
             priority
             sizes="100vw"
@@ -129,7 +129,7 @@ function ServicesContent() {
             </p>
             <Link
               href="#service-list"
-              className="mt-6 inline-flex w-fit items-center gap-2 rounded-full bg-blue-600 px-5 py-3 text-sm font-bold text-white transition hover:bg-blue-700"
+              className="mt-6 inline-flex w-fit items-center gap-2 rounded-full bg-[var(--brand-gold)] px-5 py-3 text-sm font-bold text-[var(--brand-navy)] transition hover:bg-amber-300"
             >
               Browse services
               <ChevronRight className="h-4 w-4" />

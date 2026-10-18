@@ -2,6 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
+import HomeSectionHeading from "@/components/home/HomeSectionHeading";
+
 const articles = [
   {
     title: "A few ways to keep your car feeling fresh",
@@ -28,20 +30,13 @@ const articles = [
 
 export default function LatestBlog() {
   return (
-    <section className="bg-white px-4 py-16 sm:px-6 lg:px-8">
+    <section className="bg-white px-4 py-12 sm:px-6 sm:py-14 lg:px-8">
       <div className="mx-auto max-w-[1380px]">
-        <div className="mb-9 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.16em] text-blue-700">
-              Tips & guides
-            </p>
-            <h2 className="mt-2 text-3xl font-bold text-blue-950 sm:text-4xl">
-              A little know-how goes a long way
-            </h2>
-          </div>
+        <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <HomeSectionHeading eyebrow="Latest updates" title="Our latest" accent="news & blog" />
           <Link
             href="/blog"
-            className="inline-flex items-center gap-2 text-sm font-semibold text-blue-900 hover:text-blue-700"
+            className="mb-1 inline-flex min-h-10 items-center gap-2 text-sm font-semibold text-[var(--brand-blue)] hover:text-[var(--brand-navy)]"
           >
             View all guides
             <ArrowRight className="h-4 w-4" />
@@ -52,7 +47,7 @@ export default function LatestBlog() {
           {articles.map((article) => (
             <article
               key={article.href}
-              className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
+              className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_7px_26px_rgba(16,44,95,0.06)] transition hover:-translate-y-1 hover:shadow-[0_14px_32px_rgba(16,44,95,0.13)]"
             >
               <Link href={article.href} className="block">
                 <div className="relative aspect-[16/9] bg-slate-100">
@@ -65,10 +60,10 @@ export default function LatestBlog() {
                   />
                 </div>
                 <div className="p-5">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-blue-700">
+                  <p className="text-xs font-bold uppercase tracking-wide text-[var(--brand-blue)]">
                     {article.label}
                   </p>
-                  <h3 className="mt-2 text-lg font-bold text-blue-950">
+                  <h3 className="mt-2 text-lg font-bold text-[var(--brand-navy)]">
                     {article.title}
                   </h3>
                   <p className="mt-2 text-sm leading-6 text-slate-600">

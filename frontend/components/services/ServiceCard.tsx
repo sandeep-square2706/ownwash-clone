@@ -124,7 +124,7 @@ export default function ServiceCard({ service, listView = false }: ServiceCardPr
         {hasOptions ? (
           <Link
             href={detailHref}
-            className="mt-5 flex min-h-11 items-center justify-between rounded-full bg-blue-600 px-5 text-sm font-semibold text-white transition hover:bg-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+            className="mt-5 flex min-h-11 items-center justify-between rounded-full bg-[var(--brand-gold)] px-5 text-sm font-semibold text-[var(--brand-navy)] transition hover:bg-amber-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--brand-blue)]"
           >
             <span>Select options</span>
             <Plus className="h-4 w-4" aria-hidden="true" />
@@ -133,7 +133,7 @@ export default function ServiceCard({ service, listView = false }: ServiceCardPr
           <button
             type="button"
             onClick={handleAddToCart}
-            className="mt-5 flex min-h-11 items-center justify-between rounded-full bg-blue-600 px-5 text-sm font-semibold text-white transition hover:bg-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+            className="mt-5 flex min-h-11 items-center justify-between rounded-full bg-[var(--brand-gold)] px-5 text-sm font-semibold text-[var(--brand-navy)] transition hover:bg-amber-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--brand-blue)]"
           >
             <span>{added ? "Added to cart" : "Add to cart"}</span>
             <Plus className="h-4 w-4" aria-hidden="true" />

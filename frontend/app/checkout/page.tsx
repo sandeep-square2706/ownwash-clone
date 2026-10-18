@@ -127,18 +127,18 @@ export default function CheckoutPage() {
             />
             <span>
               <span className="block text-2xl font-black leading-none tracking-tight sm:text-3xl">
-                Clean<span className="text-blue-600">Kart</span>
+                Clean<span className="text-[var(--brand-gold)]">Kart</span>
               </span>
               <span className="mt-1 block text-xs text-slate-500 sm:text-sm">
                 Home · Car · Office Cleaning Services
               </span>
             </span>
           </Link>
-          <div className="flex items-center gap-3 rounded-2xl bg-emerald-50 px-3 py-2.5 text-emerald-800 sm:px-4">
-            <ShieldCheck className="h-8 w-8 shrink-0 text-emerald-600" />
+          <div className="flex items-center gap-3 rounded-2xl bg-blue-50 px-3 py-2.5 text-[var(--brand-navy)] sm:px-4">
+            <ShieldCheck className="h-8 w-8 shrink-0 text-[var(--brand-blue)]" />
             <div>
               <p className="text-sm font-bold">Checkout preview</p>
-              <p className="text-xs text-emerald-700">Payment setup is not connected</p>
+              <p className="text-xs text-slate-600">Payment setup is not connected</p>
             </div>
           </div>
         </header>
@@ -411,15 +411,15 @@ export default function CheckoutPage() {
                 </div>
               </fieldset>
 
-              <div className="mt-5 rounded-2xl border border-dashed border-emerald-300 bg-emerald-50/60 p-3.5 sm:p-4">
+              <div className="mt-5 rounded-2xl border border-dashed border-[#e5c75b] bg-[#fff9e6] p-3.5 sm:p-4">
                 <div className="flex items-center gap-3">
-                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--brand-gold)] text-[var(--brand-navy)]">
                     <Percent className="h-5 w-5" />
                   </span>
-                  <label htmlFor="promo-code" className="flex-1 text-sm font-bold text-emerald-800">
+                  <label htmlFor="promo-code" className="flex-1 text-sm font-bold text-[var(--brand-navy)]">
                     Have a promo code?
                   </label>
-                  <button type="button" onClick={() => setPromoOpen((open) => !open)} className="flex items-center gap-1 text-sm font-bold text-emerald-700">
+                  <button type="button" onClick={() => setPromoOpen((open) => !open)} className="flex items-center gap-1 text-sm font-bold text-[var(--brand-blue)]">
                     Apply <ChevronDown className={"h-4 w-4 transition " + (promoOpen ? "rotate-180" : "")} />
                   </button>
                 </div>
@@ -430,14 +430,14 @@ export default function CheckoutPage() {
                       value={promoCode}
                       onChange={(event) => setPromoCode(event.target.value)}
                       placeholder="Enter promo code"
-                      className="h-10 min-w-0 flex-1 rounded-lg border border-emerald-200 bg-white px-3 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100"
+                      className="h-10 min-w-0 flex-1 rounded-lg border border-[#e5c75b] bg-white px-3 text-sm outline-none focus:border-[var(--brand-blue)] focus:ring-2 focus:ring-blue-100"
                     />
-                    <button type="button" onClick={applyPromo} className="rounded-lg bg-emerald-700 px-4 text-sm font-bold text-white hover:bg-emerald-800">
+                    <button type="button" onClick={applyPromo} className="rounded-lg bg-[var(--brand-blue)] px-4 text-sm font-bold text-white hover:bg-blue-700">
                       Apply
                     </button>
                   </div>
                 )}
-                {promoMessage && <p className="mt-2 text-xs leading-5 text-emerald-800" role="status">{promoMessage}</p>}
+                {promoMessage && <p className="mt-2 text-xs leading-5 text-[var(--brand-navy)]" role="status">{promoMessage}</p>}
               </div>
 
               <button
@@ -449,7 +449,7 @@ export default function CheckoutPage() {
                 <ArrowRight className="h-5 w-5" />
               </button>
               <p className="mt-3 flex items-start justify-center gap-2 text-center text-xs leading-5 text-slate-500">
-                <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
+                <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-[var(--brand-blue)]" />
                 This frontend preview does not take payment or create a booking.
               </p>
               {submitted && (

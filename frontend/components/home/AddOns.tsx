@@ -1,46 +1,45 @@
+import Image from "next/image";
 import Link from "next/link";
-import {
-  Armchair,
-  Car,
-  CookingPot,
-  Home,
-  Layers3,
-  Sparkles,
-} from "lucide-react";
+
+import HomeSectionHeading from "@/components/home/HomeSectionHeading";
 
 const serviceLinks = [
-  { title: "Foam Wash", slug: "foam-washing", icon: Car },
-  { title: "Kitchen Cleaning", slug: "kitchen-cleaning", icon: CookingPot },
-  { title: "Interior Deep Cleaning", slug: "interior-deep-cleaning", icon: Sparkles },
-  { title: "Carpet Cleaning", slug: "carpet-cleaning", icon: Layers3 },
-  { title: "Sofa-Dry Cleaning", slug: "sofa-dry-cleaning", icon: Armchair },
-  { title: "House Cleaning", slug: "house-cleaning", icon: Home },
+  { title: "Deep Car Washing", slug: "exterior-deep-cleaning", image: "car-exterior-wash.jpeg" },
+  { title: "Kitchen Cleaning", slug: "kitchen-cleaning", image: "kitchen-cleaning.jpeg" },
+  { title: "Car Interior Cleaning", slug: "interior-deep-cleaning", image: "car-interior-cleaning.jpeg" },
+  { title: "Carpet Cleaning", slug: "carpet-cleaning", image: "carpet-cleaning.jpeg" },
+  { title: "Sofa-Dry Cleaning", slug: "sofa-dry-cleaning", image: "sofa-cleaning.jpeg" },
+  { title: "Bike Foam Wash", slug: "foam-washing", image: "bike-foam-wash.jpeg" },
 ];
 
 export default function AddOns() {
   return (
-    <section className="bg-slate-50 px-4 py-14 sm:px-6 lg:px-8">
+    <section className="bg-[#f6f9fe] px-4 py-12 sm:px-6 sm:py-14 lg:px-8">
       <div className="mx-auto max-w-[1380px]">
-        <div className="mb-9 text-center">
-          <p className="text-sm font-semibold uppercase tracking-[0.16em] text-blue-700">
-            More ways to refresh
-          </p>
-          <h2 className="mt-2 text-3xl font-bold text-blue-950 sm:text-4xl">
-            Find the right service for your space
-          </h2>
+        <div className="mb-8">
+          <HomeSectionHeading eyebrow="Our top services" title="Add-ons to elevate your" accent="clean" />
         </div>
 
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
-          {serviceLinks.map(({ title, slug, icon: Icon }) => (
+        <div className="grid grid-cols-2 gap-x-4 gap-y-6 sm:grid-cols-3 lg:grid-cols-6">
+          {serviceLinks.map(({ title, slug, image }) => (
             <Link
-              key={slug}
+              key={title}
               href={"/services/" + slug}
-              className="group flex min-h-[155px] flex-col items-center justify-center rounded-2xl border border-slate-200 bg-white p-5 text-center shadow-sm transition hover:-translate-y-1 hover:border-blue-500 hover:shadow-lg"
+              className="group text-center focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--brand-blue)]"
             >
-              <span className="flex h-14 w-14 items-center justify-center rounded-full bg-blue-50 text-blue-900 transition group-hover:bg-blue-950 group-hover:text-blue-500">
-                <Icon className="h-7 w-7" />
+              <div className="relative aspect-[1.32] overflow-hidden rounded-2xl bg-slate-200 shadow-sm transition duration-300 group-hover:-translate-y-1 group-hover:shadow-lg">
+                <Image
+                  src={"/images/services/" + image}
+                  alt={title}
+                  fill
+                  sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 17vw"
+                  className="object-cover transition duration-500 group-hover:scale-[1.05]"
+                />
+              </div>
+              <span className="mt-3 inline-flex items-center justify-center gap-1.5 text-sm font-semibold text-slate-900 transition group-hover:text-[var(--brand-blue)]">
+                {title}
+                <span aria-hidden="true">→</span>
               </span>
-              <span className="mt-4 text-sm font-bold text-blue-950">{title}</span>
             </Link>
           ))}
         </div>

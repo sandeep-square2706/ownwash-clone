@@ -144,13 +144,13 @@ export default function BookingPanel({ service }: { service: Service }) {
       <button
         type="button"
         onClick={handleAdd}
-        className="mt-5 flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-blue-600 px-5 text-sm font-bold text-white transition hover:bg-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+        className="mt-5 flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-[var(--brand-gold)] px-5 text-sm font-bold text-[var(--brand-navy)] transition hover:bg-amber-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--brand-blue)]"
       >
         <ShoppingCart className="h-4 w-4" aria-hidden="true" />
         Add to cart
       </button>
       {added && (
-        <div className="mt-3 rounded-xl bg-emerald-50 px-3 py-3 text-center text-sm text-emerald-800" role="status">
+        <div className="mt-3 rounded-xl bg-blue-50 px-3 py-3 text-center text-sm text-[var(--brand-navy)]" role="status">
           Added to this browser’s preview cart. Your selection is not a confirmed booking.
           <Link href="/cart" className="ml-1 font-semibold underline underline-offset-2">
             View cart

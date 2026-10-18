@@ -62,7 +62,7 @@ export default function AccountPage() {
               </p>
             )}
             <p className="mt-4 flex items-start gap-2 text-xs leading-5 text-slate-500">
-              <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" aria-hidden="true" />
+              <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-[var(--brand-blue)]" aria-hidden="true" />
               Your details will only be used after secure account services are connected.
             </p>
           </section>

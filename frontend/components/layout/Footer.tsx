@@ -27,13 +27,18 @@ export default function Footer() {
   const [subscribed, setSubscribed] = useState(false);
 
   return (
-    <footer className="bg-blue-950 text-white">
-      <div className="mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:px-6 md:grid-cols-2 lg:grid-cols-[1.3fr_0.8fr_0.8fr_1fr] lg:px-8">
+    <footer className="bg-[var(--brand-navy)] text-white">
+      <div className="mx-auto grid max-w-[1380px] gap-10 px-4 py-14 sm:px-6 md:grid-cols-2 lg:grid-cols-[1.3fr_0.8fr_0.8fr_1fr] lg:px-8">
         <div>
-          <Link href="/" className="inline-flex items-center gap-3">
-            <Image src="/images/logo/cleankart-logo.png" alt="" width={56} height={56} className="h-14 w-14 object-contain" />
-            <span className="text-2xl font-black tracking-tight">
-              Clean<span className="text-blue-300">Kart</span>
+          <Link href="/" className="inline-flex items-center gap-3" aria-label="CleanKart home">
+            <span className="flex h-14 w-14 items-center justify-center rounded-xl border border-white/75 bg-white p-0.5">
+              <Image src="/images/logo/cleankart-logo.png" alt="" width={56} height={56} className="h-full w-full object-contain" />
+            </span>
+            <span>
+              <span className="block text-[26px] font-black leading-none tracking-tight">
+                Clean<span className="text-[var(--brand-gold)]">Kart</span>
+              </span>
+              <span className="mt-1.5 block text-[10px] text-blue-100">Home · Car · Office Cleaning Services</span>
             </span>
           </Link>
           <p className="mt-4 max-w-sm text-sm leading-6 text-blue-100">
@@ -63,9 +68,9 @@ export default function Footer() {
               type="email"
               required
               placeholder="Email address"
-              className="min-w-0 flex-1 rounded-xl border border-white/20 bg-white/10 px-3 py-2.5 text-sm text-white outline-none placeholder:text-blue-200 focus:border-blue-300 focus:ring-2 focus:ring-blue-300/30"
+              className="min-w-0 flex-1 rounded-xl border border-white/20 bg-white/10 px-3 py-2.5 text-sm text-white outline-none placeholder:text-blue-200 focus:border-[var(--brand-gold)] focus:ring-2 focus:ring-[var(--brand-gold)]/30"
             />
-            <button type="submit" className="rounded-xl bg-blue-600 px-3 text-sm font-bold text-white transition hover:bg-blue-700">
+            <button type="submit" className="rounded-xl bg-[var(--brand-gold)] px-3 text-sm font-bold text-[var(--brand-navy)] transition hover:bg-amber-300">
               Subscribe
             </button>
           </form>
@@ -83,7 +88,7 @@ export default function Footer() {
           </Link>
         </div>
       </div>
-      <div className="border-t border-white/10 px-4 py-4 text-center text-xs text-blue-100">
+        <div className="border-t border-white/10 bg-[#0b2450] px-4 py-4 text-center text-xs text-blue-100">
         © 2026 CleanKart. All rights reserved.
       </div>
     </footer>

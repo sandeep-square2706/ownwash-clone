@@ -70,7 +70,7 @@ export const mockServices: Service[] = [
     description:
       "A detailed interior refresh for seats, carpets, dashboard, doors and hard-to-reach areas.",
     duration: "2–3 hrs",
-    images: [localImage("car-interior-cleaning.jpeg"), localImage("carpet-cleaning.jpeg")],
+    images: [localImage("car-interior-cleaning.jpeg")],
     features: ["Seat and carpet cleaning", "Dashboard and console care", "Interior vacuuming"],
     addons: [{ id: "odor-treatment", name: "Odour treatment", price: 149 }],
     variants: [
@@ -90,7 +90,7 @@ export const mockServices: Service[] = [
     description:
       "A careful steam clean that refreshes your vehicle interior and helps lift stubborn grime.",
     duration: "60–90 min",
-    images: [localImage("car-interior-cleaning.jpeg"), localImage("car-exterior-wash.jpeg")],
+    images: [localImage("car-interior-cleaning.jpeg")],
     features: ["Steam cleaning", "Interior refresh", "Odour-reducing treatment"],
     variants: [
       { id: "hatchback", name: "Hatchback", price: 549, originalPrice: 599 },
@@ -112,7 +112,6 @@ export const mockServices: Service[] = [
     images: [
       localImage("car-exterior-wash.jpeg"),
       localImage("car-interior-cleaning.jpeg"),
-      localImage("bike-foam-wash.jpeg"),
     ],
     features: ["Interior detailing", "Exterior hand wash", "Finishing and protection"],
     variants: [
@@ -132,7 +131,7 @@ export const mockServices: Service[] = [
     description:
       "A deeper exterior clean for paintwork, wheels and trim, finished with a careful hand dry.",
     duration: "60–90 min",
-    images: [localImage("car-exterior-wash.jpeg"), localImage("bike-foam-wash.jpeg")],
+    images: [localImage("car-exterior-wash.jpeg")],
     features: ["Paint-safe deep wash", "Wheel and tyre detailing", "Hand dry and finish"],
     variants: [
       { id: "hatchback", name: "Hatchback", price: 549, originalPrice: 599 },
@@ -154,7 +153,6 @@ export const mockServices: Service[] = [
     images: [
       localImage("sofa-steam-cleaning.jpeg"),
       localImage("sofa-cleaning.jpeg"),
-      localImage("carpet-cleaning.jpeg"),
     ],
     features: ["Upholstery vacuuming", "Spot and stain treatment", "Fabric-safe cleaning"],
     addons: [{ id: "fabric-protection", name: "Fabric protection", price: 199 }],
@@ -195,9 +193,9 @@ export const mockServices: Service[] = [
       "A practical home clean for floors, surfaces and everyday spaces, delivered at your doorstep.",
     duration: "2–4 hrs",
     images: [
-      localImage("bathroom-cleaning.jpeg"),
-      localImage("kitchen-cleaning.jpeg"),
       localImage("sofa-cleaning.jpeg"),
+      localImage("kitchen-cleaning.jpeg"),
+      localImage("bathroom-cleaning.jpeg"),
     ],
     features: ["Surface dusting", "Floor cleaning", "Kitchen and bathroom refresh"],
     isActive: true,
@@ -250,7 +248,7 @@ export const mockServices: Service[] = [
     description:
       "Give your kitchen a detailed clean, including worktops, surfaces and grease-prone areas.",
     duration: "1–2 hrs",
-    images: [localImage("kitchen-cleaning.jpeg"), localImage("bathroom-cleaning.jpeg")],
+    images: [localImage("kitchen-cleaning.jpeg")],
     features: ["Counter and surface cleaning", "Degreasing", "Sink and backsplash refresh"],
     addons: [{ id: "appliance-exterior", name: "Appliance exterior clean", price: 149 }],
     isActive: true,
@@ -265,7 +263,7 @@ export const mockServices: Service[] = [
     description:
       "Deep carpet care that targets dust and everyday marks to leave your room feeling fresh.",
     duration: "1–3 hrs",
-    images: [localImage("carpet-cleaning.jpeg"), localImage("sofa-steam-cleaning.jpeg")],
+    images: [localImage("carpet-cleaning.jpeg")],
     features: ["Deep vacuuming", "Spot treatment", "Carpet refresh"],
     variants: [
       { id: "small", name: "Small carpet", price: 449, originalPrice: 499 },

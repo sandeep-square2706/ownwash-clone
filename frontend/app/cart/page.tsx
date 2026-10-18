@@ -188,7 +188,7 @@ export default function CartPage() {
               </div>
               <div className="mt-3 flex justify-between text-sm text-slate-600">
                 <span>Doorstep visit</span>
-                <span className="font-medium text-emerald-700">Included</span>
+                <span className="font-medium text-[var(--brand-blue)]">Included</span>
               </div>
               <div className="my-5 border-t border-slate-100" />
               <div className="flex justify-between font-bold text-blue-950">
