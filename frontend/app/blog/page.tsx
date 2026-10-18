@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import BrandedPhoto from "@/components/ui/BrandedPhoto";
 
 export const metadata: Metadata = {
   title: "Cleaning tips",
@@ -10,12 +10,12 @@ export const metadata: Metadata = {
 
 const articles = [
   {
-    id: "car-care",
-    category: "Vehicle care",
-    title: "A simple routine for a fresher car interior",
+    id: "solar-care",
+    category: "Solar care",
+    title: "A simple guide to cleaner solar panels",
     summary:
-      "Small habits between professional cleans can help keep your cabin comfortable and tidy.",
-    image: "/images/services/car-interior-cleaning.jpeg",
+      "Why regular panel care helps keep your rooftop system clear of dust and buildup.",
+    image: "/images/services/solar-panel-cleaning.jpeg",
   },
   {
     id: "home-textiles",
@@ -23,7 +23,7 @@ const articles = [
     title: "How to look after sofas and carpets",
     summary:
       "Learn when routine vacuuming is enough and when upholstery needs a deeper refresh.",
-    image: "/images/services/sofa-steam-cleaning.jpeg",
+    image: "/images/generated/blog-sofa-care.webp",
   },
   {
     id: "booking",
@@ -31,7 +31,7 @@ const articles = [
     title: "What to prepare before a doorstep clean",
     summary:
       "A few quick steps can help your cleaning visit start smoothly and stay on schedule.",
-    image: "/images/services/kitchen-cleaning.jpeg",
+    image: "/images/generated/blog-booking-guide.webp",
   },
 ];
 
@@ -57,7 +57,7 @@ export default function BlogPage() {
               className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm"
             >
               <div className="relative aspect-[16/10] bg-slate-100">
-                <Image src={article.image} alt="" fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover" />
+                <BrandedPhoto src={article.image} alt="" sizes="(max-width: 768px) 100vw, 33vw" className="object-cover" />
               </div>
               <div className="p-6">
                 <p className="text-xs font-bold uppercase tracking-[0.14em] text-blue-700">

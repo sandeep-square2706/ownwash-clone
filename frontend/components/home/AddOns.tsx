@@ -1,10 +1,10 @@
-import Image from "next/image";
 import Link from "next/link";
 
 import HomeSectionHeading from "@/components/home/HomeSectionHeading";
+import BrandedPhoto from "@/components/ui/BrandedPhoto";
 
 const serviceLinks = [
-  { title: "Deep Car Washing", slug: "exterior-deep-cleaning", image: "car-exterior-wash.jpeg" },
+  { title: "Bathroom Cleaning", slug: "house-cleaning", image: "bathroom-cleaning.jpeg" },
   { title: "Kitchen Cleaning", slug: "kitchen-cleaning", image: "kitchen-cleaning.jpeg" },
   { title: "Car Interior Cleaning", slug: "interior-deep-cleaning", image: "car-interior-cleaning.jpeg" },
   { title: "Carpet Cleaning", slug: "carpet-cleaning", image: "carpet-cleaning.jpeg" },
@@ -28,10 +28,9 @@ export default function AddOns() {
               className="group text-center focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--brand-blue)]"
             >
               <div className="relative aspect-[1.32] overflow-hidden rounded-2xl bg-slate-200 shadow-sm transition duration-300 group-hover:-translate-y-1 group-hover:shadow-lg">
-                <Image
+                <BrandedPhoto
                   src={"/images/services/" + image}
                   alt={title}
-                  fill
                   sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 17vw"
                   className="object-cover transition duration-500 group-hover:scale-[1.05]"
                 />

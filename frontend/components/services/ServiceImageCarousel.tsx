@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, Images } from "lucide-react";
 import { useRef, useState } from "react";
+import { CleanKartImageStamp } from "@/components/ui/BrandedPhoto";
 
 type ServiceImageCarouselProps = {
   images: string[];
@@ -79,6 +80,8 @@ export default function ServiceImageCarousel({
       ) : (
         photo
       )}
+
+      {image && <CleanKartImageStamp className="bottom-3 right-3 h-7 w-7 rounded-md" />}
 
       {hasMultipleImages && (
         <>

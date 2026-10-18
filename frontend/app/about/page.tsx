@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, BadgeCheck, HeartHandshake, Sparkles } from "lucide-react";
+import BrandedPhoto from "@/components/ui/BrandedPhoto";
 
 export const metadata: Metadata = {
   title: "About CleanKart",
@@ -62,10 +62,9 @@ export default function AboutPage() {
             </Link>
           </div>
           <div className="relative min-h-[300px] overflow-hidden rounded-3xl bg-slate-100">
-            <Image
-              src="/images/services/kitchen-cleaning.jpeg"
-              alt="CleanKart professional cleaning a kitchen"
-              fill
+            <BrandedPhoto
+              src="/images/generated/home-cleaning.webp"
+              alt="CleanKart professional providing home cleaning at a customer’s residence"
               sizes="(max-width: 1024px) 100vw, 50vw"
               className="object-cover"
             />

@@ -6,9 +6,11 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
   ArrowRight,
+  Check,
   ChevronDown,
   Heart,
   Menu,
+  Plus,
   Search,
   ShoppingCart,
   UserRound,
@@ -16,8 +18,18 @@ import {
 } from "lucide-react";
 
 import useServiceCatalog from "@/hooks/useServiceCatalog";
-import { readCart, readWishlist, subscribeToStore } from "@/lib/client-store";
+import { addToCart, readCart, readWishlist, subscribeToStore, toggleWishlist } from "@/lib/client-store";
 import { getFeaturedServices, getServicePrice } from "@/lib/services";
+import type { Service } from "@/lib/services";
+import { CleanKartImageStamp } from "@/components/ui/BrandedPhoto";
+
+const topServicePhotos: Record<string, string> = {
+  "foam-washing": "/images/generated/menu-foam-wash.webp",
+  "interior-deep-cleaning": "/images/generated/blog-car-care.webp",
+  "steam-washing": "/images/generated/menu-steam-wash.webp",
+  "full-car-detailing": "/images/generated/menu-full-detail.webp",
+  "exterior-deep-cleaning": "/images/generated/menu-exterior-deep.webp",
+};
 
 const navItems = [
   ["Home", "/"],
@@ -168,25 +180,22 @@ export default function Navbar() {
               <ChevronDown className="h-4 w-4" />
             </button>
             {topServicesOpen && (
-              <div className="absolute right-0 top-full z-50 w-[340px] rounded-b-2xl border border-slate-200 bg-white p-3 text-slate-800 shadow-xl">
-                {featuredServices.map((service) => (
-                  <Link
-                    key={service.id}
-                    href={"/services/" + service.slug}
-                    onClick={() => setTopServicesOpen(false)}
-                    className="flex items-center justify-between rounded-xl px-3 py-3 transition hover:bg-blue-50"
-                  >
-                    <span className="text-sm font-semibold">{service.name}</span>
-                    <span className="text-xs font-medium text-[var(--brand-blue)]">{getServicePrice(service)}</span>
-                  </Link>
-                ))}
+              <div className="absolute right-0 top-full z-50 w-[min(1380px,calc(100vw-2rem))] rounded-b-2xl border border-slate-200 bg-white p-3 text-slate-800 shadow-xl sm:p-5">
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5 lg:gap-4">
+                  {featuredServices.map((service) => (
+                    <FeaturedServiceCard
+                      key={service.id}
+                      service={service}
+                      onNavigate={() => setTopServicesOpen(false)}
+                    />
+                  ))}
+                </div>
                 <Link
                   href="/services"
                   onClick={() => setTopServicesOpen(false)}
-                  className="mt-2 flex items-center justify-between rounded-xl bg-[var(--brand-blue)] px-4 py-3 text-sm font-semibold text-white transition hover:bg-blue-700"
+                  className="mt-4 flex min-h-11 items-center justify-center gap-2 rounded-xl bg-[var(--brand-blue)] px-4 text-sm font-semibold text-white transition hover:bg-blue-700"
                 >
-                  View all services
-                  <ArrowRight className="h-4 w-4" />
+                  View all services <ArrowRight className="h-4 w-4" />
                 </Link>
               </div>
             )}
@@ -221,17 +230,16 @@ export default function Navbar() {
             </button>
             {mobileTopOpen && (
               <div className="rounded-xl bg-slate-50 p-2">
-                {featuredServices.map((service) => (
-                  <Link
-                    key={service.id}
-                    href={"/services/" + service.slug}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="flex justify-between gap-3 rounded-lg px-3 py-2.5 text-sm text-slate-800"
-                  >
-                    {service.name}
-                    <span className="text-xs text-[var(--brand-blue)]">{getServicePrice(service)}</span>
-                  </Link>
-                ))}
+                <div className="grid grid-cols-2 gap-2">
+                  {featuredServices.map((service) => (
+                    <FeaturedServiceCard
+                      key={service.id}
+                      service={service}
+                      compact
+                      onNavigate={() => setMobileMenuOpen(false)}
+                    />
+                  ))}
+                </div>
               </div>
             )}
             <div className="flex items-center gap-5 px-3 py-4">
@@ -249,6 +257,69 @@ export default function Navbar() {
         </nav>
       )}
     </header>
+  );
+}
+
+function FeaturedServiceCard({
+  service,
+  compact = false,
+  onNavigate,
+}: {
+  service: Service;
+  compact?: boolean;
+  onNavigate: () => void;
+}) {
+  const [saved, setSaved] = useState(false);
+  const [added, setAdded] = useState(false);
+  const image = topServicePhotos[service.slug] ?? service.images[0];
+
+  useEffect(() => {
+    const syncSaved = () => setSaved(readWishlist().includes(service.id));
+    syncSaved();
+    return subscribeToStore(syncSaved);
+  }, [service.id]);
+
+  function handleAdd() {
+    addToCart(service.id, service.variants?.[0]?.id);
+    setAdded(true);
+  }
+
+  return (
+    <article className="group relative min-w-0 overflow-hidden rounded-xl border border-slate-200 bg-white transition hover:border-blue-200 hover:shadow-md">
+      <div className={`relative overflow-hidden bg-blue-50 ${compact ? "aspect-[1.4]" : "aspect-[1.45]"}`}>
+        {image ? (
+          <Image src={image} alt={service.name} fill sizes={compact ? "42vw" : "(max-width: 1024px) 30vw, 250px"} className="object-cover transition duration-500 group-hover:scale-[1.04]" />
+        ) : (
+          <div className="flex h-full items-center justify-center px-3 text-center text-xs font-medium text-slate-500">{service.name}</div>
+        )}
+        {image && <CleanKartImageStamp className="bottom-2 left-2 h-7 w-7 rounded-md" />}
+        <button
+          type="button"
+          onClick={() => setSaved(toggleWishlist(service.id).includes(service.id))}
+          aria-label={saved ? `Remove ${service.name} from wishlist` : `Add ${service.name} to wishlist`}
+          aria-pressed={saved}
+          className="absolute right-2 top-2 z-20 flex h-8 w-8 items-center justify-center rounded-full bg-white/95 text-slate-700 shadow-sm transition hover:text-rose-600"
+        >
+          <Heart className={`h-4 w-4 ${saved ? "fill-rose-500 text-rose-500" : ""}`} aria-hidden="true" />
+        </button>
+        <button
+          type="button"
+          onClick={handleAdd}
+          aria-label={added ? `${service.name} added to cart` : `Add ${service.name} to cart`}
+          className="absolute bottom-2 right-2 z-20 flex h-9 w-9 items-center justify-center rounded-full bg-[var(--brand-blue)] text-white shadow-md transition hover:bg-[var(--brand-navy)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--brand-blue)]"
+        >
+          {added ? <Check className="h-5 w-5" aria-hidden="true" /> : <Plus className="h-5 w-5" aria-hidden="true" />}
+        </button>
+      </div>
+      <Link
+        href={"/services/" + service.slug}
+        onClick={onNavigate}
+        className={`block focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--brand-blue)] ${compact ? "px-2.5 pb-3 pt-5" : "px-3 pb-3 pt-5"}`}
+      >
+        <span className={`block truncate font-medium text-slate-800 ${compact ? "text-xs" : "text-sm"}`}>{service.name}</span>
+        <span className={`mt-1 block font-bold text-slate-950 ${compact ? "text-sm" : "text-base"}`}>{getServicePrice(service)}</span>
+      </Link>
+    </article>
   );
 }
 

@@ -1,6 +1,6 @@
-import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
+import BrandedPhoto from "@/components/ui/BrandedPhoto";
 
 const partnershipPoints = ["Local service opportunity", "A cleaning-focused business", "Talk with the CleanKart team"];
 
@@ -9,10 +9,9 @@ export default function FranchiseCTA() {
     <section className="bg-white px-4 py-8 sm:px-6 lg:px-8">
       <div className="mx-auto grid max-w-[1380px] overflow-hidden rounded-2xl bg-[#fff8e8] p-4 sm:p-6 lg:grid-cols-[290px_1fr_auto] lg:items-center lg:gap-6 lg:p-5">
         <div className="relative aspect-[1.55] overflow-hidden rounded-xl bg-slate-200 lg:aspect-[1.45]">
-          <Image
-            src="/images/services/car-exterior-wash.jpeg"
-            alt="CleanKart professional providing doorstep car washing"
-            fill
+          <BrandedPhoto
+            src="/images/generated/franchise-partner.webp"
+            alt="CleanKart service storefront and franchise location"
             sizes="(max-width: 1024px) 100vw, 290px"
             className="object-cover"
           />

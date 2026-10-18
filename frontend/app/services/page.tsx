@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 
 import ServiceCard from "@/components/services/ServiceCard";
+import { CleanKartImageStamp } from "@/components/ui/BrandedPhoto";
 import useServiceCatalog from "@/hooks/useServiceCatalog";
 import type { Service } from "@/lib/services";
 
@@ -116,6 +117,7 @@ function ServicesContent() {
             sizes="100vw"
             className="object-cover object-center"
           />
+          <CleanKartImageStamp className="bottom-4 right-4 h-10 w-10 rounded-xl" />
           <div className="absolute inset-0 bg-gradient-to-r from-blue-950/95 via-blue-950/75 to-blue-950/15" />
           <div className="relative z-10 flex min-h-[250px] max-w-2xl flex-col justify-center px-7 py-8 text-white sm:px-10 lg:px-14">
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-blue-100">

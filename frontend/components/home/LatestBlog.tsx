@@ -1,28 +1,28 @@
-import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
 import HomeSectionHeading from "@/components/home/HomeSectionHeading";
+import BrandedPhoto from "@/components/ui/BrandedPhoto";
 
 const articles = [
   {
-    title: "A few ways to keep your car feeling fresh",
-    excerpt: "Simple habits that help between professional cleaning visits.",
-    image: "/images/services/car-interior-cleaning.jpeg",
-    href: "/blog#car-care",
-    label: "Car care",
+    title: "A simple guide to cleaner solar panels",
+    excerpt: "Why regular panel care helps keep your rooftop system clear of dust and buildup.",
+    image: "/images/services/solar-panel-cleaning.jpeg",
+    href: "/blog#solar-care",
+    label: "Solar care",
   },
   {
     title: "What to know before cleaning your sofa",
     excerpt: "Understand fabric care, spot treatment and service options.",
-    image: "/images/services/sofa-steam-cleaning.jpeg",
+    image: "/images/generated/blog-sofa-care.webp",
     href: "/blog#home-textiles",
     label: "Home care",
   },
   {
     title: "How to prepare for a doorstep service",
     excerpt: "A quick checklist to help your appointment run smoothly.",
-    image: "/images/services/kitchen-cleaning.jpeg",
+    image: "/images/generated/blog-booking-guide.webp",
     href: "/blog#booking",
     label: "Booking guide",
   },
@@ -51,10 +51,9 @@ export default function LatestBlog() {
             >
               <Link href={article.href} className="block">
                 <div className="relative aspect-[16/9] bg-slate-100">
-                  <Image
+                  <BrandedPhoto
                     src={article.image}
                     alt=""
-                    fill
                     sizes="(max-width: 768px) 100vw, 33vw"
                     className="object-cover transition duration-500 hover:scale-[1.03]"
                   />

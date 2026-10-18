@@ -1,6 +1,6 @@
-import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, BadgeCheck, Sparkles } from "lucide-react";
+import BrandedPhoto from "@/components/ui/BrandedPhoto";
 
 export default function GreatChoice() {
   return (
@@ -53,10 +53,9 @@ export default function GreatChoice() {
         </div>
 
         <div className="relative min-h-[300px] overflow-hidden rounded-3xl bg-blue-950 sm:min-h-[390px]">
-          <Image
+          <BrandedPhoto
             src="/images/services/solar-panel-cleaning.jpeg"
             alt="CleanKart professional cleaning solar panels"
-            fill
             sizes="(max-width: 1024px) 100vw, 40vw"
             className="object-cover"
           />

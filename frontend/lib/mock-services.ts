@@ -52,7 +52,7 @@ export const mockServices: Service[] = [
     description:
       "A rich, paint-safe foam wash that lifts everyday dirt and leaves your vehicle fresh and glossy.",
     duration: "45–60 min",
-    images: [localImage("car-exterior-wash.jpeg"), localImage("bike-foam-wash.jpeg")],
+    images: ["/images/generated/menu-foam-wash.webp", localImage("bike-foam-wash.jpeg")],
     features: ["Foam pre-wash", "Wheel and tyre cleaning", "Hand wash and dry"],
     addons: [
       { id: "spray-wax", name: "Spray wax finish", price: 199 },
@@ -70,7 +70,7 @@ export const mockServices: Service[] = [
     description:
       "A detailed interior refresh for seats, carpets, dashboard, doors and hard-to-reach areas.",
     duration: "2–3 hrs",
-    images: [localImage("car-interior-cleaning.jpeg")],
+    images: ["/images/generated/blog-car-care.webp"],
     features: ["Seat and carpet cleaning", "Dashboard and console care", "Interior vacuuming"],
     addons: [{ id: "odor-treatment", name: "Odour treatment", price: 149 }],
     variants: [
@@ -90,7 +90,7 @@ export const mockServices: Service[] = [
     description:
       "A careful steam clean that refreshes your vehicle interior and helps lift stubborn grime.",
     duration: "60–90 min",
-    images: [localImage("car-interior-cleaning.jpeg")],
+    images: ["/images/generated/menu-steam-wash.webp"],
     features: ["Steam cleaning", "Interior refresh", "Odour-reducing treatment"],
     variants: [
       { id: "hatchback", name: "Hatchback", price: 549, originalPrice: 599 },
@@ -109,10 +109,7 @@ export const mockServices: Service[] = [
     description:
       "A complete inside-and-out detail for a polished finish and a cabin that feels refreshed.",
     duration: "3–5 hrs",
-    images: [
-      localImage("car-exterior-wash.jpeg"),
-      localImage("car-interior-cleaning.jpeg"),
-    ],
+    images: ["/images/generated/menu-full-detail.webp"],
     features: ["Interior detailing", "Exterior hand wash", "Finishing and protection"],
     variants: [
       { id: "hatchback", name: "Hatchback", price: 849, originalPrice: 899 },
@@ -131,7 +128,7 @@ export const mockServices: Service[] = [
     description:
       "A deeper exterior clean for paintwork, wheels and trim, finished with a careful hand dry.",
     duration: "60–90 min",
-    images: [localImage("car-exterior-wash.jpeg")],
+    images: ["/images/generated/menu-exterior-deep.webp"],
     features: ["Paint-safe deep wash", "Wheel and tyre detailing", "Hand dry and finish"],
     variants: [
       { id: "hatchback", name: "Hatchback", price: 549, originalPrice: 599 },

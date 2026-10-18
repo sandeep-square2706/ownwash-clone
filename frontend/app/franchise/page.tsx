@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Building2, Handshake, Sparkles } from "lucide-react";
+import BrandedPhoto from "@/components/ui/BrandedPhoto";
 
 export const metadata: Metadata = {
   title: "Franchise with CleanKart",
@@ -31,10 +31,9 @@ export default function FranchisePage() {
     <main className="bg-slate-50">
       <section className="px-4 py-8 sm:px-6 lg:px-8">
         <div className="relative mx-auto min-h-[390px] max-w-6xl overflow-hidden rounded-3xl bg-blue-950">
-          <Image
-            src="/images/services/solar-panel-cleaning.jpeg"
-            alt="CleanKart team member caring for rooftop solar panels"
-            fill
+          <BrandedPhoto
+            src="/images/generated/franchise-partner.webp"
+            alt="Illustrative CleanKart franchise storefront and service location"
             priority
             sizes="100vw"
             className="object-cover object-center"
