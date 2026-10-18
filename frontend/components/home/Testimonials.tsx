@@ -48,7 +48,7 @@ export default function Testimonials() {
         {/* Heading */}
         <div className="flex items-end justify-between">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-widest text-cyan-700">
+            <p className="text-sm font-semibold uppercase tracking-widest text-blue-700">
               Testimonials
             </p>
 
@@ -85,11 +85,11 @@ export default function Testimonials() {
             <article
               key={testimonial.name}
               className={`rounded-xl border border-slate-200 bg-white p-6 shadow-sm ${
-                index === active ? "ring-1 ring-cyan-200" : ""
+                index === active ? "ring-1 ring-blue-100" : ""
               }`}
             >
               <div className="flex items-center gap-4">
-                <div className="flex h-14 w-14 items-center justify-center rounded-full bg-cyan-100 font-bold text-blue-900">
+                <div className="flex h-14 w-14 items-center justify-center rounded-full bg-blue-100 font-bold text-blue-900">
                   {testimonial.initials}
                 </div>
 

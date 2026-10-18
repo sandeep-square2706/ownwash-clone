@@ -7,7 +7,7 @@ export default function BookAffordable() {
     <section className="bg-white px-4 py-10 sm:px-6 lg:px-8">
       <div className="mx-auto grid max-w-[1380px] overflow-hidden rounded-3xl bg-blue-950 text-white lg:grid-cols-[1.05fr_0.95fr]">
         <div className="flex flex-col justify-center px-6 py-10 sm:px-10 lg:px-14 lg:py-14">
-          <p className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.16em] text-cyan-200">
+          <p className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.16em] text-blue-100">
             <Sparkles className="h-4 w-4" />
             Good care, made simple
           </p>
@@ -20,7 +20,7 @@ export default function BookAffordable() {
           </p>
           <Link
             href="/services"
-            className="mt-7 inline-flex min-h-12 w-fit items-center gap-2 rounded-full bg-cyan-400 px-6 text-sm font-bold text-blue-950 transition hover:bg-cyan-300"
+            className="mt-7 inline-flex min-h-12 w-fit items-center gap-2 rounded-full bg-blue-600 px-6 text-sm font-bold text-white transition hover:bg-blue-700"
           >
             Find your service
             <ArrowRight className="h-4 w-4" />

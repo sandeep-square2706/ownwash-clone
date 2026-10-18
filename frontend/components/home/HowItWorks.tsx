@@ -42,7 +42,7 @@ export default function HowItWorks() {
       <div className="mx-auto max-w-[1200px]">
 
         <div className="mb-12 text-center">
-          <p className="text-sm font-semibold uppercase tracking-[2px] text-cyan-700">
+          <p className="text-sm font-semibold uppercase tracking-[2px] text-blue-700">
             Our Process
           </p>
 
@@ -57,11 +57,11 @@ export default function HowItWorks() {
               key={number}
               className="relative text-center"
             >
-              <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-cyan-50 text-blue-900">
+              <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-blue-50 text-blue-900">
                 <Icon className="h-9 w-9" />
               </div>
 
-              <span className="mt-4 inline-block text-xs font-bold tracking-widest text-cyan-700">
+              <span className="mt-4 inline-block text-xs font-bold tracking-widest text-blue-700">
                 STEP {number}
               </span>
 
@@ -74,7 +74,7 @@ export default function HowItWorks() {
               </p>
 
               {number !== "04" && (
-                <div className="absolute left-[calc(50%+55px)] right-[calc(-50%+55px)] top-10 hidden border-t border-dashed border-cyan-200 md:block" />
+                <div className="absolute left-[calc(50%+55px)] right-[calc(-50%+55px)] top-10 hidden border-t border-dashed border-blue-100 md:block" />
               )}
             </div>
           ))}

@@ -25,7 +25,7 @@ export default function AboutPage() {
     <main className="bg-white">
       <section className="bg-blue-950 px-4 py-16 text-white sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
-          <p className="text-sm font-semibold uppercase tracking-[0.16em] text-cyan-200">
+          <p className="text-sm font-semibold uppercase tracking-[0.16em] text-blue-100">
             About CleanKart
           </p>
           <h1 className="mt-3 max-w-3xl text-4xl font-bold leading-tight sm:text-5xl">
@@ -49,7 +49,7 @@ export default function AboutPage() {
             </p>
             <Link
               href="/services"
-              className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-blue-900 hover:text-cyan-700"
+              className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-blue-900 hover:text-blue-700"
             >
               Browse the catalogue
               <ArrowRight className="h-4 w-4" />
@@ -73,7 +73,7 @@ export default function AboutPage() {
           <div className="mt-7 grid gap-5 md:grid-cols-3">
             {values.map(({ title, text, icon: Icon }) => (
               <article key={title} className="rounded-2xl border border-slate-200 bg-white p-6">
-                <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-cyan-50 text-blue-900">
+                <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-50 text-blue-900">
                   <Icon className="h-6 w-6" />
                 </span>
                 <h3 className="mt-5 text-lg font-bold text-blue-950">{title}</h3>

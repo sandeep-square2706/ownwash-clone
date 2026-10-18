@@ -18,8 +18,8 @@ export default function Hero() {
           <div className="absolute inset-0 bg-gradient-to-r from-blue-950/95 via-blue-950/75 to-blue-950/10" />
 
           <div className="relative z-10 flex min-h-[500px] max-w-3xl flex-col justify-center px-6 py-14 text-white sm:min-h-[560px] sm:px-12 lg:px-16">
-            <span className="inline-flex w-fit items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs font-semibold tracking-wide text-cyan-100 backdrop-blur-sm">
-              <Sparkles className="h-4 w-4 text-cyan-300" />
+            <span className="inline-flex w-fit items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs font-semibold tracking-wide text-blue-100 backdrop-blur-sm">
+              <Sparkles className="h-4 w-4 text-blue-500" />
               CLEAN HOME. CLEAN RIDE. MORE TIME FOR YOU.
             </span>
             <h1 className="mt-6 max-w-2xl text-4xl font-bold leading-[1.05] tracking-tight sm:text-5xl lg:text-6xl">
@@ -32,7 +32,7 @@ export default function Hero() {
             <div className="mt-8 flex flex-wrap items-center gap-4">
               <Link
                 href="/services"
-                className="inline-flex min-h-12 items-center gap-2 rounded-full bg-cyan-400 px-6 text-sm font-bold text-blue-950 transition hover:bg-cyan-300"
+                className="inline-flex min-h-12 items-center gap-2 rounded-full bg-blue-600 px-6 text-sm font-bold text-white transition hover:bg-blue-700"
               >
                 Explore services
                 <ArrowRight className="h-4 w-4" />
@@ -43,15 +43,15 @@ export default function Hero() {
             </div>
             <div className="mt-10 flex flex-wrap gap-x-7 gap-y-3 text-sm text-white/85">
               <span className="inline-flex items-center gap-2">
-                <BadgeCheck className="h-4 w-4 text-cyan-300" />
+                <BadgeCheck className="h-4 w-4 text-blue-500" />
                 Trained professionals
               </span>
               <span className="inline-flex items-center gap-2">
-                <House className="h-4 w-4 text-cyan-300" />
+                <House className="h-4 w-4 text-blue-500" />
                 Doorstep convenience
               </span>
               <span className="inline-flex items-center gap-2">
-                <Clock3 className="h-4 w-4 text-cyan-300" />
+                <Clock3 className="h-4 w-4 text-blue-500" />
                 Flexible service slots
               </span>
             </div>

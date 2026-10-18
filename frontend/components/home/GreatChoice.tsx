@@ -7,7 +7,7 @@ export default function GreatChoice() {
     <section className="bg-white px-4 py-16 sm:px-6 lg:px-8">
       <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
         <div>
-          <p className="text-sm font-semibold uppercase tracking-[0.16em] text-cyan-700">
+          <p className="text-sm font-semibold uppercase tracking-[0.16em] text-blue-700">
             CleanKart care
           </p>
           <h2 className="mt-3 max-w-2xl text-3xl font-bold leading-tight text-blue-950 sm:text-4xl">
@@ -20,7 +20,7 @@ export default function GreatChoice() {
 
           <div className="mt-7 grid gap-4 sm:grid-cols-2">
             <div className="flex gap-3 rounded-2xl border border-slate-200 bg-white p-4">
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-cyan-50 text-blue-900">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-900">
                 <BadgeCheck className="h-5 w-5" />
               </span>
               <div>
@@ -31,7 +31,7 @@ export default function GreatChoice() {
               </div>
             </div>
             <div className="flex gap-3 rounded-2xl border border-slate-200 bg-white p-4">
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-cyan-50 text-blue-900">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-900">
                 <Sparkles className="h-5 w-5" />
               </span>
               <div>
@@ -45,7 +45,7 @@ export default function GreatChoice() {
 
           <Link
             href="/services"
-            className="mt-7 inline-flex items-center gap-2 text-sm font-bold text-blue-900 hover:text-cyan-700"
+            className="mt-7 inline-flex items-center gap-2 text-sm font-bold text-blue-900 hover:text-blue-700"
           >
             Explore all services
             <ArrowRight className="h-4 w-4" />

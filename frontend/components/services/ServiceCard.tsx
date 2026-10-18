@@ -112,7 +112,7 @@ export default function ServiceCard({
                 aria-pressed={imageIndex === index}
                 className={
                   imageIndex === index
-                    ? "h-2 w-2 rounded-full bg-cyan-300"
+                    ? "h-2 w-2 rounded-full bg-blue-500"
                     : "h-2 w-2 rounded-full bg-white/70"
                 }
               />
@@ -147,7 +147,7 @@ export default function ServiceCard({
         {hasOptions ? (
           <Link
             href={"/services/" + service.slug}
-            className="mt-5 flex min-h-11 items-center justify-between rounded-full bg-blue-950 px-5 text-sm font-semibold text-white transition hover:bg-blue-900"
+            className="mt-5 flex min-h-11 items-center justify-between rounded-full bg-blue-600 px-5 text-sm font-semibold text-white transition hover:bg-blue-700"
           >
             <span>Select options</span>
             <Plus className="h-4 w-4" />
@@ -156,7 +156,7 @@ export default function ServiceCard({
           <button
             type="button"
             onClick={handleAddToCart}
-            className="mt-5 flex min-h-11 items-center justify-between rounded-full bg-blue-950 px-5 text-sm font-semibold text-white transition hover:bg-blue-900"
+            className="mt-5 flex min-h-11 items-center justify-between rounded-full bg-blue-600 px-5 text-sm font-semibold text-white transition hover:bg-blue-700"
           >
             <span>{added ? "Added to cart" : "Add to cart"}</span>
             <Plus className="h-4 w-4" />

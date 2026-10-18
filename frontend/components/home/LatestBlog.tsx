@@ -32,7 +32,7 @@ export default function LatestBlog() {
       <div className="mx-auto max-w-[1380px]">
         <div className="mb-9 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.16em] text-cyan-700">
+            <p className="text-sm font-semibold uppercase tracking-[0.16em] text-blue-700">
               Tips & guides
             </p>
             <h2 className="mt-2 text-3xl font-bold text-blue-950 sm:text-4xl">
@@ -41,7 +41,7 @@ export default function LatestBlog() {
           </div>
           <Link
             href="/blog"
-            className="inline-flex items-center gap-2 text-sm font-semibold text-blue-900 hover:text-cyan-700"
+            className="inline-flex items-center gap-2 text-sm font-semibold text-blue-900 hover:text-blue-700"
           >
             View all guides
             <ArrowRight className="h-4 w-4" />
@@ -65,7 +65,7 @@ export default function LatestBlog() {
                   />
                 </div>
                 <div className="p-5">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-cyan-700">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-blue-700">
                     {article.label}
                   </p>
                   <h3 className="mt-2 text-lg font-bold text-blue-950">

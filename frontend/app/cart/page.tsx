@@ -47,14 +47,14 @@ export default function CartPage() {
       <div className="mx-auto max-w-6xl">
         <div className="flex items-end justify-between gap-4">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.16em] text-cyan-700">
+            <p className="text-sm font-semibold uppercase tracking-[0.16em] text-blue-700">
               Your selection
             </p>
             <h1 className="mt-2 text-3xl font-bold text-blue-950">Your cart</h1>
           </div>
           <Link
             href="/services"
-            className="hidden text-sm font-semibold text-blue-900 hover:text-cyan-700 sm:block"
+            className="hidden text-sm font-semibold text-blue-900 hover:text-blue-700 sm:block"
           >
             Continue browsing
           </Link>
@@ -62,7 +62,7 @@ export default function CartPage() {
 
         {rows.length === 0 ? (
           <div className="mt-8 rounded-3xl border border-slate-200 bg-white px-5 py-16 text-center shadow-sm">
-            <span className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-cyan-50 text-blue-900">
+            <span className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-blue-50 text-blue-900">
               <ShoppingBag className="h-7 w-7" />
             </span>
             <h2 className="mt-5 text-xl font-semibold text-blue-950">
@@ -73,7 +73,7 @@ export default function CartPage() {
             </p>
             <Link
               href="/services"
-              className="mt-6 inline-flex rounded-full bg-blue-950 px-6 py-3 text-sm font-bold text-white hover:bg-blue-900"
+              className="mt-6 inline-flex rounded-full bg-blue-600 px-6 py-3 text-sm font-bold text-white hover:bg-blue-700"
             >
               Browse services
             </Link>
@@ -98,7 +98,7 @@ export default function CartPage() {
                   <div className="min-w-0 flex-1">
                     <Link
                       href={"/services/" + service.slug}
-                      className="font-semibold text-blue-950 hover:text-cyan-700"
+                      className="font-semibold text-blue-950 hover:text-blue-700"
                     >
                       {service.name}
                     </Link>
@@ -178,7 +178,7 @@ export default function CartPage() {
               </div>
               <Link
                 href="/checkout"
-                className="mt-6 flex min-h-12 items-center justify-center rounded-full bg-blue-950 px-5 text-sm font-bold text-white transition hover:bg-blue-900"
+                className="mt-6 flex min-h-12 items-center justify-center rounded-full bg-blue-600 px-5 text-sm font-bold text-white transition hover:bg-blue-700"
               >
                 Continue to booking
               </Link>

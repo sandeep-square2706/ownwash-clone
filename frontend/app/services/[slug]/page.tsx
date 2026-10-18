@@ -53,7 +53,7 @@ export default async function ServiceDetails({ params }: ServiceDetailsProps) {
           </div>
 
           <div className="flex flex-col justify-center">
-            <p className="text-sm font-bold uppercase tracking-[0.16em] text-cyan-700">
+            <p className="text-sm font-bold uppercase tracking-[0.16em] text-blue-700">
               CleanKart doorstep service
             </p>
             <h1 className="mt-3 text-3xl font-bold leading-tight text-blue-950 sm:text-4xl">
@@ -75,7 +75,7 @@ export default async function ServiceDetails({ params }: ServiceDetailsProps) {
                   key={feature}
                   className="flex items-center gap-2 text-sm text-slate-700"
                 >
-                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-cyan-100 text-cyan-800">
+                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-100 text-blue-800">
                     <Check className="h-3.5 w-3.5" />
                   </span>
                   {feature}
@@ -102,7 +102,7 @@ function InfoPill({
 }) {
   return (
     <span className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-700">
-      <span className="text-cyan-700 [&>svg]:h-4 [&>svg]:w-4">{icon}</span>
+      <span className="text-blue-700 [&>svg]:h-4 [&>svg]:w-4">{icon}</span>
       {text}
     </span>
   );

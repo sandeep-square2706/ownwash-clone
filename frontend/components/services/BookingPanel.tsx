@@ -31,7 +31,7 @@ export default function BookingPanel({ service }: { service: Service }) {
           <select
             value={variantId}
             onChange={(event) => setVariantId(event.target.value)}
-            className="h-12 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm font-medium text-slate-900 outline-none focus:border-cyan-500 focus:ring-4 focus:ring-cyan-100"
+            className="h-12 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm font-medium text-slate-900 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
           >
             {service.variants.map((variant) => (
               <option key={variant.id} value={variant.id}>
@@ -55,7 +55,7 @@ export default function BookingPanel({ service }: { service: Service }) {
       <button
         type="button"
         onClick={handleAdd}
-        className="mt-5 flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-blue-950 px-5 text-sm font-bold text-white transition hover:bg-blue-900"
+        className="mt-5 flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-blue-600 px-5 text-sm font-bold text-white transition hover:bg-blue-700"
       >
         <ShoppingCart className="h-4 w-4" />
         {added ? "Added to cart" : "Add to cart"}

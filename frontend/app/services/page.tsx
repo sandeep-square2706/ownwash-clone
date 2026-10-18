@@ -2,7 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import {
   ChevronLeft,
   ChevronRight,
@@ -29,18 +30,14 @@ function highestPrice(service: (typeof services)[number]) {
     : service.maxPrice ?? service.basePrice ?? 0;
 }
 
-export default function ServicesPage() {
+function ServicesContent() {
+  const searchParams = useSearchParams();
   const [page, setPage] = useState(1);
   const [sort, setSort] = useState<SortOption>("featured");
   const [itemsPerPage, setItemsPerPage] = useState(12);
   const [view, setView] = useState<"grid" | "list">("grid");
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState(searchParams.get("q") ?? "");
   const [category, setCategory] = useState("all");
-
-  useEffect(() => {
-    const initialQuery = new URLSearchParams(window.location.search).get("q");
-    if (initialQuery) setSearch(initialQuery);
-  }, []);
 
   const categories = useMemo(
     () => Array.from(new Set(services.map((service) => service.category))),
@@ -119,7 +116,7 @@ export default function ServicesPage() {
           />
           <div className="absolute inset-0 bg-gradient-to-r from-blue-950/95 via-blue-950/75 to-blue-950/15" />
           <div className="relative z-10 flex min-h-[250px] max-w-2xl flex-col justify-center px-7 py-8 text-white sm:px-10 lg:px-14">
-            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-cyan-200">
+            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-blue-100">
               CleanKart services
             </p>
             <h1 className="mt-3 text-3xl font-bold leading-tight sm:text-4xl">
@@ -130,7 +127,7 @@ export default function ServicesPage() {
             </p>
             <Link
               href="#service-list"
-              className="mt-6 inline-flex w-fit items-center gap-2 rounded-full bg-cyan-400 px-5 py-3 text-sm font-bold text-blue-950 transition hover:bg-cyan-300"
+              className="mt-6 inline-flex w-fit items-center gap-2 rounded-full bg-blue-600 px-5 py-3 text-sm font-bold text-white transition hover:bg-blue-700"
             >
               Browse services
               <ChevronRight className="h-4 w-4" />
@@ -143,7 +140,7 @@ export default function ServicesPage() {
         <div className="mx-auto max-w-[1360px]">
           <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.16em] text-cyan-700">
+              <p className="text-sm font-semibold uppercase tracking-[0.16em] text-blue-700">
                 Made for your space
               </p>
               <h2 className="mt-2 text-2xl font-bold text-blue-950 sm:text-3xl">
@@ -165,7 +162,7 @@ export default function ServicesPage() {
                   onChange={(event) => updateSearch(event.target.value)}
                   placeholder="Search cleaning services"
                   aria-label="Search services"
-                  className="h-11 w-full rounded-xl border border-slate-200 bg-white pl-10 pr-4 text-sm outline-none transition focus:border-cyan-500 focus:ring-4 focus:ring-cyan-100"
+                  className="h-11 w-full rounded-xl border border-slate-200 bg-white pl-10 pr-4 text-sm outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
                 />
               </label>
 
@@ -274,7 +271,7 @@ export default function ServicesPage() {
                   updateSearch("");
                   updateCategory("all");
                 }}
-                className="mt-5 rounded-full bg-blue-950 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-900"
+                className="mt-5 rounded-full bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-700"
               >
                 Clear filters
               </button>
@@ -326,5 +323,13 @@ export default function ServicesPage() {
         </div>
       </section>
     </main>
+  );
+}
+
+export default function ServicesPage() {
+  return (
+    <Suspense fallback={<main className="min-h-screen bg-slate-50" />}>
+      <ServicesContent />
+    </Suspense>
   );
 }

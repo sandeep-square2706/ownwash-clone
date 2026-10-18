@@ -29,7 +29,7 @@ export default function WishlistPage() {
   return (
     <main className="min-h-[70vh] bg-slate-50 px-4 py-10 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
-        <p className="text-sm font-semibold uppercase tracking-[0.16em] text-cyan-700">
+        <p className="text-sm font-semibold uppercase tracking-[0.16em] text-blue-700">
           Saved for later
         </p>
         <h1 className="mt-2 text-3xl font-bold text-blue-950">Your wishlist</h1>
@@ -44,7 +44,7 @@ export default function WishlistPage() {
             </p>
             <Link
               href="/services"
-              className="mt-6 inline-flex rounded-full bg-blue-950 px-6 py-3 text-sm font-bold text-white hover:bg-blue-900"
+              className="mt-6 inline-flex rounded-full bg-blue-600 px-6 py-3 text-sm font-bold text-white hover:bg-blue-700"
             >
               Explore services
             </Link>

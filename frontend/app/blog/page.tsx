@@ -34,7 +34,7 @@ export default function BlogPage() {
     <main className="min-h-screen bg-slate-50 px-4 py-12 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-6xl">
         <div className="max-w-2xl">
-          <p className="text-sm font-semibold uppercase tracking-[0.16em] text-cyan-700">
+          <p className="text-sm font-semibold uppercase tracking-[0.16em] text-blue-700">
             The CleanKart journal
           </p>
           <h1 className="mt-2 text-4xl font-bold text-blue-950">Simple care, made easier.</h1>
@@ -54,7 +54,7 @@ export default function BlogPage() {
                 <Image src={article.image} alt="" fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover" />
               </div>
               <div className="p-6">
-                <p className="text-xs font-bold uppercase tracking-[0.14em] text-cyan-700">
+                <p className="text-xs font-bold uppercase tracking-[0.14em] text-blue-700">
                   {article.category}
                 </p>
                 <h2 className="mt-3 text-xl font-bold leading-snug text-blue-950">
@@ -63,7 +63,7 @@ export default function BlogPage() {
                 <p className="mt-3 text-sm leading-6 text-slate-600">{article.summary}</p>
                 <Link
                   href="/services"
-                  className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-blue-900 hover:text-cyan-700"
+                  className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-blue-900 hover:text-blue-700"
                 >
                   Explore services <ArrowRight className="h-4 w-4" />
                 </Link>

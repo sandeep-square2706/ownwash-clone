@@ -14,7 +14,7 @@ export default function TopServices() {
       <div className="mx-auto max-w-[1380px]">
         <div className="mb-9 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[2px] text-cyan-700">
+            <p className="text-sm font-semibold uppercase tracking-[2px] text-blue-700">
               Professional Cleaning
             </p>
             <h2 className="mt-2 text-3xl font-bold text-blue-950 sm:text-4xl">
@@ -26,7 +26,7 @@ export default function TopServices() {
           </div>
           <Link
             href="/services"
-            className="inline-flex items-center gap-2 text-sm font-semibold text-blue-900 transition hover:text-cyan-700"
+            className="inline-flex items-center gap-2 text-sm font-semibold text-blue-900 transition hover:text-blue-700"
           >
             Explore all services
             <ArrowRight className="h-4 w-4" />

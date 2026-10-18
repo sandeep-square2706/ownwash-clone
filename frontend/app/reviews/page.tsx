@@ -6,7 +6,7 @@ export default function ReviewsPage() {
     <main className="min-h-screen bg-white">
       <section className="bg-blue-950 px-4 py-14 text-white sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
-          <p className="text-sm font-semibold uppercase tracking-[0.16em] text-cyan-200">
+          <p className="text-sm font-semibold uppercase tracking-[0.16em] text-blue-100">
             Customer stories
           </p>
           <h1 className="mt-3 text-4xl font-bold sm:text-5xl">Reviews</h1>
@@ -19,7 +19,7 @@ export default function ReviewsPage() {
       <div className="px-4 pb-14 text-center">
         <Link
           href="/services"
-          className="inline-flex min-h-12 items-center rounded-full bg-blue-950 px-6 text-sm font-bold text-white hover:bg-blue-900"
+          className="inline-flex min-h-12 items-center rounded-full bg-blue-600 px-6 text-sm font-bold text-white hover:bg-blue-700"
         >
           Explore services
         </Link>

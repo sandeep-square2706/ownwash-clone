@@ -38,13 +38,13 @@ export default function WhyChooseUs() {
       <div className="mx-auto max-w-[1380px]">
 
         <div className="mb-10">
-          <p className="text-sm font-semibold uppercase tracking-[2px] text-cyan-700">
+          <p className="text-sm font-semibold uppercase tracking-[2px] text-blue-700">
             Why Choose Us?
           </p>
 
           <h2 className="mt-2 text-3xl font-bold text-blue-950 sm:text-4xl">
             Why choose our
-            <span className="block text-cyan-700">
+            <span className="block text-blue-700">
               Cleaning Solutions
             </span>
           </h2>
@@ -56,7 +56,7 @@ export default function WhyChooseUs() {
               key={title}
               className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
             >
-              <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-cyan-50 text-blue-900">
+              <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-blue-50 text-blue-900">
                 <Icon className="h-7 w-7" />
               </div>
 

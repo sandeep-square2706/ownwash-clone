@@ -16,7 +16,7 @@ export default function ContactPage() {
     <main className="min-h-screen bg-slate-50">
       <section className="bg-blue-950 px-4 py-14 text-white sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
-          <p className="text-sm font-semibold uppercase tracking-[0.16em] text-cyan-200">
+          <p className="text-sm font-semibold uppercase tracking-[0.16em] text-blue-100">
             We’re here to help
           </p>
           <h1 className="mt-3 text-4xl font-bold sm:text-5xl">Contact CleanKart</h1>
@@ -65,7 +65,7 @@ export default function ContactPage() {
                   required
                   name="name"
                   autoComplete="name"
-                  className="mt-2 h-12 w-full rounded-xl border border-slate-200 px-4 outline-none focus:border-cyan-500 focus:ring-4 focus:ring-cyan-100"
+                  className="mt-2 h-12 w-full rounded-xl border border-slate-200 px-4 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
                   placeholder="Name"
                 />
               </label>
@@ -76,7 +76,7 @@ export default function ContactPage() {
                   type="email"
                   name="email"
                   autoComplete="email"
-                  className="mt-2 h-12 w-full rounded-xl border border-slate-200 px-4 outline-none focus:border-cyan-500 focus:ring-4 focus:ring-cyan-100"
+                  className="mt-2 h-12 w-full rounded-xl border border-slate-200 px-4 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
                   placeholder="you@example.com"
                 />
               </label>
@@ -85,7 +85,7 @@ export default function ContactPage() {
                 <select
                   name="service"
                   defaultValue=""
-                  className="mt-2 h-12 w-full rounded-xl border border-slate-200 bg-white px-4 outline-none focus:border-cyan-500 focus:ring-4 focus:ring-cyan-100"
+                  className="mt-2 h-12 w-full rounded-xl border border-slate-200 bg-white px-4 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
                 >
                   <option value="">Choose a service (optional)</option>
                   {services.map((service) => (
@@ -102,14 +102,14 @@ export default function ContactPage() {
                   required
                   name="message"
                   rows={5}
-                  className="mt-2 w-full resize-y rounded-xl border border-slate-200 px-4 py-3 outline-none focus:border-cyan-500 focus:ring-4 focus:ring-cyan-100"
+                  className="mt-2 w-full resize-y rounded-xl border border-slate-200 px-4 py-3 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
                   placeholder="Tell us how we can help"
                 />
               </label>
             </div>
             <button
               type="submit"
-              className="mt-5 min-h-12 rounded-full bg-blue-950 px-6 text-sm font-bold text-white transition hover:bg-blue-900"
+              className="mt-5 min-h-12 rounded-full bg-blue-600 px-6 text-sm font-bold text-white transition hover:bg-blue-700"
             >
               Prepare enquiry
             </button>
@@ -136,7 +136,7 @@ function ContactNote({
 }) {
   return (
     <div className="flex gap-3">
-      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/10 text-cyan-200 [&>svg]:h-5 [&>svg]:w-5">
+      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/10 text-blue-100 [&>svg]:h-5 [&>svg]:w-5">
         {icon}
       </span>
       <div>

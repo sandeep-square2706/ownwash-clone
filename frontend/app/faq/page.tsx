@@ -34,7 +34,7 @@ export default function FAQPage() {
     <main className="min-h-screen bg-slate-50">
       <section className="bg-blue-950 px-4 py-14 text-white sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
-          <p className="text-sm font-semibold uppercase tracking-[0.16em] text-cyan-200">
+          <p className="text-sm font-semibold uppercase tracking-[0.16em] text-blue-100">
             Help centre
           </p>
           <h1 className="mt-3 text-4xl font-bold sm:text-5xl">
@@ -55,7 +55,7 @@ export default function FAQPage() {
             >
               <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-semibold text-blue-950">
                 {question}
-                <ChevronDown className="h-5 w-5 shrink-0 text-cyan-700 transition group-open:rotate-180" />
+                <ChevronDown className="h-5 w-5 shrink-0 text-blue-700 transition group-open:rotate-180" />
               </summary>
               <p className="mt-4 max-w-2xl text-sm leading-6 text-slate-600">
                 {answer}

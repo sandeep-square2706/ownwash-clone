@@ -1,12 +1,12 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
   ArrowRight,
   ChevronDown,
-  Droplets,
   Heart,
   Menu,
   Search,
@@ -50,18 +50,16 @@ export default function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 bg-white shadow-sm">
-      <div className="bg-blue-950 text-white">
+      <div className="border-b border-blue-100 bg-white text-blue-950">
         <div className="mx-auto flex min-h-[76px] max-w-[1440px] items-center gap-5 px-4 sm:px-6 lg:px-10">
           <Link href="/" className="flex shrink-0 items-center gap-2.5" aria-label="CleanKart home">
-            <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-cyan-400 text-blue-950">
-              <Droplets className="h-6 w-6" />
-            </span>
+            <Image src="/images/cleankart-logo.png" alt="" width={52} height={52} priority className="h-12 w-12 object-contain" />
             <span>
               <span className="block text-[25px] font-black leading-none tracking-tight">
-                Clean<span className="text-cyan-300">Kart</span>
+                Clean<span className="text-blue-600">Kart</span>
               </span>
-              <span className="mt-1 block text-[10px] tracking-[0.12em] text-blue-100">
-                CARE AT YOUR DOORSTEP
+              <span className="mt-1 block text-[10px] tracking-[0.08em] text-slate-500">
+                Home · Car · Office Cleaning Services
               </span>
             </span>
           </Link>
@@ -72,7 +70,7 @@ export default function Navbar() {
             className="hidden min-w-0 flex-1 md:block"
             role="search"
           >
-            <label className="flex h-11 items-center rounded-xl bg-white px-4 text-slate-700 focus-within:ring-2 focus-within:ring-cyan-300">
+            <label className="flex h-11 items-center rounded-xl border border-blue-100 bg-blue-50/60 px-4 text-slate-700 focus-within:ring-2 focus-within:ring-blue-200">
               <Search className="mr-3 h-4 w-4 shrink-0 text-slate-400" />
               <input
                 type="search"
@@ -83,7 +81,7 @@ export default function Navbar() {
               />
               <button
                 type="submit"
-                className="rounded-full bg-cyan-400 px-4 py-2 text-xs font-bold text-blue-950 transition hover:bg-cyan-300"
+                className="rounded-full bg-blue-600 px-4 py-2 text-xs font-bold text-white transition hover:bg-blue-700"
               >
                 Search
               </button>
@@ -91,7 +89,7 @@ export default function Navbar() {
           </form>
 
           <div className="ml-auto hidden shrink-0 items-center gap-5 lg:flex">
-            <Link href="/account" className="flex items-center gap-2 hover:text-cyan-200">
+            <Link href="/account" className="flex items-center gap-2 hover:text-blue-700">
               <UserRound className="h-5 w-5" />
               <span className="text-sm font-semibold">Account</span>
             </Link>
@@ -106,7 +104,7 @@ export default function Navbar() {
           <button
             type="button"
             onClick={() => setMobileMenuOpen((open) => !open)}
-            className="ml-auto rounded-lg p-2 text-white transition hover:bg-white/10 lg:hidden"
+            className="ml-auto rounded-lg p-2 text-blue-950 transition hover:bg-blue-50 lg:hidden"
             aria-label={mobileMenuOpen ? "Close navigation" : "Open navigation"}
             aria-expanded={mobileMenuOpen}
           >
@@ -114,8 +112,8 @@ export default function Navbar() {
           </button>
         </div>
 
-        <form action="/services" method="get" className="border-t border-white/10 px-4 py-3 md:hidden">
-          <label className="flex h-10 items-center rounded-xl bg-white px-3 text-slate-700">
+        <form action="/services" method="get" className="border-t border-blue-100 px-4 py-3 md:hidden">
+          <label className="flex h-10 items-center rounded-xl border border-blue-100 bg-blue-50/60 px-3 text-slate-700">
             <Search className="mr-2 h-4 w-4 text-slate-400" />
             <input
               type="search"
@@ -150,7 +148,7 @@ export default function Navbar() {
               type="button"
               onClick={() => setTopServicesOpen((open) => !open)}
               aria-expanded={topServicesOpen}
-              className="flex items-center gap-2 text-sm font-semibold text-blue-950 transition hover:text-cyan-700"
+              className="flex items-center gap-2 text-sm font-semibold text-blue-950 transition hover:text-blue-700"
             >
               Top Services
               <ChevronDown className="h-4 w-4" />
@@ -162,7 +160,7 @@ export default function Navbar() {
                     key={service.id}
                     href={"/services/" + service.slug}
                     onClick={() => setTopServicesOpen(false)}
-                    className="flex items-center justify-between rounded-xl px-3 py-3 transition hover:bg-cyan-50"
+                    className="flex items-center justify-between rounded-xl px-3 py-3 transition hover:bg-blue-50"
                   >
                     <span className="text-sm font-semibold">{service.name}</span>
                     <span className="text-xs font-medium text-blue-900">
@@ -173,7 +171,7 @@ export default function Navbar() {
                 <Link
                   href="/services"
                   onClick={() => setTopServicesOpen(false)}
-                  className="mt-2 flex items-center justify-between rounded-xl bg-blue-950 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-900"
+                  className="mt-2 flex items-center justify-between rounded-xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-700"
                 >
                   View all services
                   <ArrowRight className="h-4 w-4" />
@@ -194,7 +192,7 @@ export default function Navbar() {
                 onClick={() => setMobileMenuOpen(false)}
                 className={
                   "border-b border-slate-100 px-3 py-3 text-sm font-semibold " +
-                  (pathname === href ? "text-cyan-700" : "text-slate-800")
+                  (pathname === href ? "text-blue-700" : "text-slate-800")
                 }
               >
                 {name}
@@ -271,10 +269,10 @@ function CountLink({
     <Link
       href={href}
       aria-label={label + ", " + count + " items"}
-      className="relative flex h-9 w-9 items-center justify-center rounded-full transition hover:bg-white/10"
+      className="relative flex h-9 w-9 items-center justify-center rounded-full transition hover:bg-blue-50"
     >
       {children}
-      <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-cyan-400 px-1 text-[10px] font-bold text-blue-950">
+      <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-blue-600 px-1 text-[10px] font-bold text-white">
         {count}
       </span>
     </Link>
@@ -300,7 +298,7 @@ function NavLink({
       }
     >
       {children}
-      {active && <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-cyan-500" />}
+      {active && <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-500" />}
     </Link>
   );
 }

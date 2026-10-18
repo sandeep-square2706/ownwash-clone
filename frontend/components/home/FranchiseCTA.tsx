@@ -13,7 +13,7 @@ export default function FranchiseCTA() {
     <section className="px-4 py-12 sm:px-6 lg:px-8">
       <div className="mx-auto grid max-w-[1380px] overflow-hidden rounded-3xl bg-blue-950 text-white lg:grid-cols-[1.1fr_0.9fr]">
         <div className="flex flex-col justify-center p-7 sm:p-10 lg:p-14">
-          <p className="text-sm font-semibold uppercase tracking-[0.16em] text-cyan-200">
+          <p className="text-sm font-semibold uppercase tracking-[0.16em] text-blue-100">
             Partner with CleanKart
           </p>
           <h2 className="mt-3 max-w-xl text-3xl font-bold leading-tight sm:text-4xl">
@@ -29,14 +29,14 @@ export default function FranchiseCTA() {
                 key={title}
                 className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-2 text-xs font-medium text-white"
               >
-                <Icon className="h-4 w-4 text-cyan-300" />
+                <Icon className="h-4 w-4 text-blue-500" />
                 {title}
               </span>
             ))}
           </div>
           <Link
             href="/franchise"
-            className="mt-7 inline-flex min-h-12 w-fit items-center gap-2 rounded-full bg-cyan-400 px-6 text-sm font-bold text-blue-950 transition hover:bg-cyan-300"
+            className="mt-7 inline-flex min-h-12 w-fit items-center gap-2 rounded-full bg-blue-600 px-6 text-sm font-bold text-white transition hover:bg-blue-700"
           >
             Explore partnership
             <ArrowRight className="h-4 w-4" />
