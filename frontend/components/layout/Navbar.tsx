@@ -1,9 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import {
+  ArrowRight,
   ChevronDown,
+  Droplets,
   Heart,
   Menu,
   Search,
@@ -12,205 +15,240 @@ import {
   X,
 } from "lucide-react";
 
+import { readCart, readWishlist, subscribeToStore } from "@/lib/client-store";
+import { getServicePrice, services, topServiceSlugs } from "@/lib/services";
+
+const featuredServices = topServiceSlugs
+  .map((slug) => services.find((service) => service.slug === slug))
+  .filter((service) => service !== undefined);
+
 export default function Navbar() {
+  const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [topServicesOpen, setTopServicesOpen] = useState(false);
+  const [mobileTopOpen, setMobileTopOpen] = useState(false);
+  const [cartCount, setCartCount] = useState(0);
+  const [wishlistCount, setWishlistCount] = useState(0);
+
+  useEffect(() => {
+    const syncCounts = () => {
+      setCartCount(readCart().reduce((total, item) => total + item.quantity, 0));
+      setWishlistCount(readWishlist().length);
+    };
+    syncCounts();
+    return subscribeToStore(syncCounts);
+  }, []);
+
+  const navItems = [
+    ["Home", "/"],
+    ["Services", "/services"],
+    ["About", "/about"],
+    ["Contact", "/contact"],
+    ["Franchise", "/franchise"],
+    ["Reviews", "/reviews"],
+  ];
 
   return (
     <header className="sticky top-0 z-50 bg-white shadow-sm">
-
-      {/* =========================
-          MAIN TEAL HEADER
-      ========================== */}
-      <div className="bg-[#0C706A] text-white">
-        <div className="mx-auto flex h-[58px] max-w-[1440px] items-center px-4 sm:px-6 lg:px-12">
-
-          {/* LOGO */}
-          <Link
-            href="/"
-            className="flex w-[220px] shrink-0 flex-col justify-center"
-          >
-            <div className="text-[30px] font-black leading-none tracking-[-1.5px]">
-              Ownwash
-              <sup className="ml-0.5 align-top text-[8px]">®</sup>
-            </div>
-
-            <div className="ml-[40px] mt-0.5 text-[7px] tracking-[0.8px] text-white/90">
-              The Art of Detailing
-            </div>
+      <div className="bg-blue-950 text-white">
+        <div className="mx-auto flex min-h-[76px] max-w-[1440px] items-center gap-5 px-4 sm:px-6 lg:px-10">
+          <Link href="/" className="flex shrink-0 items-center gap-2.5" aria-label="CleanKart home">
+            <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-cyan-400 text-blue-950">
+              <Droplets className="h-6 w-6" />
+            </span>
+            <span>
+              <span className="block text-[25px] font-black leading-none tracking-tight">
+                Clean<span className="text-cyan-300">Kart</span>
+              </span>
+              <span className="mt-1 block text-[10px] tracking-[0.12em] text-blue-100">
+                CARE AT YOUR DOORSTEP
+              </span>
+            </span>
           </Link>
 
-          {/* SEARCH */}
-          <div className="hidden flex-1 px-3 md:block">
-            <div className="flex h-[44px] items-center rounded-[8px] border border-white/20 bg-[#1F7B76] px-4">
-
+          <form
+            action="/services"
+            method="get"
+            className="hidden min-w-0 flex-1 md:block"
+            role="search"
+          >
+            <label className="flex h-11 items-center rounded-xl bg-white px-4 text-slate-700 focus-within:ring-2 focus-within:ring-cyan-300">
+              <Search className="mr-3 h-4 w-4 shrink-0 text-slate-400" />
               <input
                 type="search"
-                placeholder="Search for products, categories or brands..."
-                className="min-w-0 flex-1 bg-transparent text-[14px] text-white outline-none placeholder:text-white"
+                name="q"
+                placeholder="Search cleaning services"
+                aria-label="Search cleaning services"
+                className="min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-slate-400"
               />
+              <button
+                type="submit"
+                className="rounded-full bg-cyan-400 px-4 py-2 text-xs font-bold text-blue-950 transition hover:bg-cyan-300"
+              >
+                Search
+              </button>
+            </label>
+          </form>
 
-              <Search className="ml-3 h-[24px] w-[24px] shrink-0 text-white" />
-            </div>
+          <div className="ml-auto hidden shrink-0 items-center gap-5 lg:flex">
+            <Link href="/account" className="flex items-center gap-2 hover:text-cyan-200">
+              <UserRound className="h-5 w-5" />
+              <span className="text-sm font-semibold">Account</span>
+            </Link>
+            <CountLink href="/wishlist" label="Wishlist" count={wishlistCount}>
+              <Heart className="h-5 w-5" />
+            </CountLink>
+            <CountLink href="/cart" label="Cart" count={cartCount}>
+              <ShoppingCart className="h-5 w-5" />
+            </CountLink>
           </div>
 
-          {/* ACCOUNT / WISHLIST / CART */}
-          <div className="hidden shrink-0 items-center gap-5 lg:flex">
-
-            {/* Account */}
-            <Link
-              href="/account"
-              className="flex items-center gap-2"
-            >
-              <UserRound className="h-[25px] w-[25px]" />
-
-              <div className="leading-none">
-                <div className="text-[10px] text-white/80">
-                  Sign In
-                </div>
-
-                <div className="mt-0.5 text-[13px] font-semibold">
-                  Account
-                </div>
-              </div>
-            </Link>
-
-            {/* Wishlist */}
-            <Link
-              href="/wishlist"
-              aria-label="Wishlist"
-              className="relative"
-            >
-              <Heart className="h-[25px] w-[25px]" />
-
-              <span className="absolute -right-[7px] -top-[7px] flex h-[16px] min-w-[16px] items-center justify-center rounded-full bg-red-600 px-1 text-[9px] font-bold text-white">
-                0
-              </span>
-            </Link>
-
-            {/* Cart */}
-            <Link
-              href="/cart"
-              aria-label="Cart"
-              className="relative"
-            >
-              <ShoppingCart className="h-[25px] w-[25px]" />
-
-              <span className="absolute -right-[7px] -top-[7px] flex h-[16px] min-w-[16px] items-center justify-center rounded-full bg-red-600 px-1 text-[9px] font-bold text-white">
-                0
-              </span>
-            </Link>
-          </div>
-
-          {/* MOBILE MENU BUTTON */}
           <button
             type="button"
             onClick={() => setMobileMenuOpen((open) => !open)}
-            className="ml-auto rounded-md p-2 lg:hidden"
-            aria-label="Toggle navigation"
+            className="ml-auto rounded-lg p-2 text-white transition hover:bg-white/10 lg:hidden"
+            aria-label={mobileMenuOpen ? "Close navigation" : "Open navigation"}
+            aria-expanded={mobileMenuOpen}
           >
-            {mobileMenuOpen ? (
-              <X className="h-6 w-6" />
-            ) : (
-              <Menu className="h-6 w-6" />
-            )}
+            {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
         </div>
 
-        {/* MOBILE SEARCH */}
-        <div className="border-t border-white/10 px-4 py-2.5 md:hidden">
-          <div className="flex h-10 items-center rounded-md bg-white px-3">
-            <Search className="mr-2 h-4 w-4 text-gray-500" />
-
+        <form action="/services" method="get" className="border-t border-white/10 px-4 py-3 md:hidden">
+          <label className="flex h-10 items-center rounded-xl bg-white px-3 text-slate-700">
+            <Search className="mr-2 h-4 w-4 text-slate-400" />
             <input
               type="search"
-              placeholder="Search for products, categories or brands..."
-              className="w-full bg-transparent text-sm text-gray-800 outline-none placeholder:text-gray-500"
+              name="q"
+              placeholder="Search services"
+              aria-label="Search services"
+              className="w-full bg-transparent text-sm outline-none placeholder:text-slate-400"
             />
-          </div>
-        </div>
+          </label>
+        </form>
       </div>
 
-      {/* =========================
-          WHITE NAVIGATION
-      ========================== */}
-      <nav className="hidden h-[44px] border-b border-gray-200 bg-white lg:block">
-        <div className="mx-auto flex h-full max-w-[1440px] items-center justify-between px-4 sm:px-6 lg:px-12">
-
-          {/* LEFT NAVIGATION */}
-          <div className="flex h-full items-center gap-[30px]">
-
-            <NavLink
-              href="/"
-              active
-            >
-              Home
-            </NavLink>
-
-            <NavLink href="/services">
-              Service
-            </NavLink>
-
-            <NavLink href="/about">
-              About Us
-            </NavLink>
-
-            <NavLink href="/contact">
-              Contact
-            </NavLink>
-
-            <NavLink href="/franchise">
-              Franchise
-            </NavLink>
-
-            <NavLink href="/reviews">
-              Review
-            </NavLink>
-          </div>
-
-          {/* TOP SERVICES */}
-          <button
-            type="button"
-            className="flex items-center gap-2 text-[14px] font-semibold text-gray-900 transition hover:text-[#0C706A]"
-          >
-            Top Services
-            <ChevronDown className="h-[16px] w-[16px]" />
-          </button>
-        </div>
-      </nav>
-
-      {/* =========================
-          MOBILE NAVIGATION
-      ========================== */}
-      {mobileMenuOpen && (
-        <nav className="border-b border-gray-200 bg-white px-4 py-4 lg:hidden">
-          <div className="flex flex-col">
-
-            {[
-              ["Home", "/"],
-              ["Service", "/services"],
-              ["About Us", "/about"],
-              ["Contact", "/contact"],
-              ["Franchise", "/franchise"],
-              ["Review", "/reviews"],
-            ].map(([name, href]) => (
-              <Link
+      <nav className="hidden h-12 border-b border-slate-200 bg-white lg:block">
+        <div className="mx-auto flex h-full max-w-[1440px] items-center justify-between px-4 sm:px-6 lg:px-10">
+          <div className="flex h-full items-center gap-7">
+            {navItems.map(([name, href]) => (
+              <NavLink
                 key={href}
                 href={href}
-                onClick={() => setMobileMenuOpen(false)}
-                className="border-b border-gray-100 px-3 py-3 text-sm font-semibold text-gray-800 transition hover:bg-teal-50 hover:text-[#0C706A]"
+                active={href === "/" ? pathname === "/" : pathname.startsWith(href)}
               >
                 {name}
-              </Link>
+              </NavLink>
             ))}
+          </div>
 
+          <div
+            className="relative flex h-full items-center"
+            onMouseLeave={() => setTopServicesOpen(false)}
+          >
             <button
               type="button"
-              className="flex items-center justify-between px-3 py-3 text-left text-sm font-semibold text-gray-800"
+              onClick={() => setTopServicesOpen((open) => !open)}
+              aria-expanded={topServicesOpen}
+              className="flex items-center gap-2 text-sm font-semibold text-blue-950 transition hover:text-cyan-700"
             >
               Top Services
               <ChevronDown className="h-4 w-4" />
             </button>
+            {topServicesOpen && (
+              <div className="absolute right-0 top-full z-50 w-[340px] rounded-b-2xl border border-slate-200 bg-white p-3 text-slate-800 shadow-xl">
+                {featuredServices.map((service) => (
+                  <Link
+                    key={service.id}
+                    href={"/services/" + service.slug}
+                    onClick={() => setTopServicesOpen(false)}
+                    className="flex items-center justify-between rounded-xl px-3 py-3 transition hover:bg-cyan-50"
+                  >
+                    <span className="text-sm font-semibold">{service.name}</span>
+                    <span className="text-xs font-medium text-blue-900">
+                      {getServicePrice(service)}
+                    </span>
+                  </Link>
+                ))}
+                <Link
+                  href="/services"
+                  onClick={() => setTopServicesOpen(false)}
+                  className="mt-2 flex items-center justify-between rounded-xl bg-blue-950 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-900"
+                >
+                  View all services
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </div>
+            )}
+          </div>
+        </div>
+      </nav>
 
+      {mobileMenuOpen && (
+        <nav className="border-b border-slate-200 bg-white px-4 py-3 lg:hidden">
+          <div className="flex flex-col">
+            {navItems.map(([name, href]) => (
+              <Link
+                key={href}
+                href={href}
+                onClick={() => setMobileMenuOpen(false)}
+                className={
+                  "border-b border-slate-100 px-3 py-3 text-sm font-semibold " +
+                  (pathname === href ? "text-cyan-700" : "text-slate-800")
+                }
+              >
+                {name}
+              </Link>
+            ))}
+            <button
+              type="button"
+              onClick={() => setMobileTopOpen((open) => !open)}
+              aria-expanded={mobileTopOpen}
+              className="flex items-center justify-between px-3 py-3 text-left text-sm font-semibold text-slate-800"
+            >
+              Top Services
+              <ChevronDown className="h-4 w-4" />
+            </button>
+            {mobileTopOpen && (
+              <div className="rounded-xl bg-slate-50 p-2">
+                {featuredServices.map((service) => (
+                  <Link
+                    key={service.id}
+                    href={"/services/" + service.slug}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex justify-between gap-3 rounded-lg px-3 py-2.5 text-sm text-slate-800"
+                  >
+                    {service.name}
+                    <span className="text-xs text-blue-900">
+                      {getServicePrice(service)}
+                    </span>
+                  </Link>
+                ))}
+              </div>
+            )}
+            <div className="flex items-center gap-5 px-3 py-4">
+              <Link
+                href="/account"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center gap-2 text-sm font-semibold text-blue-950"
+              >
+                <UserRound className="h-4 w-4" /> Account
+              </Link>
+              <Link
+                href="/wishlist"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center gap-2 text-sm font-semibold text-blue-950"
+              >
+                <Heart className="h-4 w-4" /> Wishlist ({wishlistCount})
+              </Link>
+              <Link
+                href="/cart"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center gap-2 text-sm font-semibold text-blue-950"
+              >
+                <ShoppingCart className="h-4 w-4" /> Cart ({cartCount})
+              </Link>
+            </div>
           </div>
         </nav>
       )}
@@ -218,34 +256,51 @@ export default function Navbar() {
   );
 }
 
-
-/* =================================
-   NAVIGATION LINK
-================================= */
-
-function NavLink({
+function CountLink({
   href,
+  label,
+  count,
   children,
-  active = false,
 }: {
   href: string;
+  label: string;
+  count: number;
   children: React.ReactNode;
-  active?: boolean;
 }) {
   return (
     <Link
       href={href}
-      className={`relative flex h-full items-center text-[14px] font-semibold transition ${
-        active
-          ? "text-[#2A9D96]"
-          : "text-gray-900 hover:text-[#0C706A]"
-      }`}
+      aria-label={label + ", " + count + " items"}
+      className="relative flex h-9 w-9 items-center justify-center rounded-full transition hover:bg-white/10"
     >
       {children}
+      <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-cyan-400 px-1 text-[10px] font-bold text-blue-950">
+        {count}
+      </span>
+    </Link>
+  );
+}
 
-      {active && (
-        <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#2A9D96]" />
-      )}
+function NavLink({
+  href,
+  children,
+  active,
+}: {
+  href: string;
+  children: React.ReactNode;
+  active: boolean;
+}) {
+  return (
+    <Link
+      href={href}
+      aria-current={active ? "page" : undefined}
+      className={
+        "relative flex h-full items-center text-sm font-semibold transition " +
+        (active ? "text-blue-950" : "text-slate-600 hover:text-blue-900")
+      }
+    >
+      {children}
+      {active && <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-cyan-500" />}
     </Link>
   );
 }

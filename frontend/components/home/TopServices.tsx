@@ -1,72 +1,43 @@
-import ServiceCard from "./ServiceCard";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 
-const services = [
-  {
-    title: "Foam Washing",
-    description:
-      "Professional foam-based exterior cleaning that removes dirt while giving your vehicle a fresh shine.",
-    price: "₹399",
-    category: "Car Washing",
-  },
-  {
-    title: "Interior Deep Cleaning",
-    description:
-      "Deep interior cleaning for seats, carpets, dashboard and other areas of your car.",
-    price: "₹599 – ₹899",
-    category: "Interior",
-  },
-  {
-    title: "Steam Washing",
-    description:
-      "Steam-powered cleaning designed to refresh your vehicle while helping remove odour and bacteria.",
-    price: "₹599 – ₹799",
-    category: "Car Washing",
-  },
-  {
-    title: "Full Car Detailing",
-    description:
-      "Complete interior and exterior detailing for a premium, polished vehicle finish.",
-    price: "₹899 – ₹1,599",
-    category: "Detailing",
-  },
-  {
-    title: "Exterior Deep Cleaning",
-    description:
-      "Detailed exterior cleaning to remove stubborn dirt and restore your vehicle's appearance.",
-    price: "₹599 – ₹899",
-    category: "Exterior",
-  },
-];
+import ServiceCard from "@/components/services/ServiceCard";
+import { services, topServiceSlugs } from "@/lib/services";
 
 export default function TopServices() {
+  const featuredServices = topServiceSlugs
+    .map((slug) => services.find((service) => service.slug === slug))
+    .filter((service) => service !== undefined);
+
   return (
-    <section className="bg-white px-4 py-14 sm:px-6 lg:px-8">
+    <section className="bg-white px-4 py-16 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-[1380px]">
-
-        {/* Heading */}
-        <div className="mb-9 text-center">
-          <p className="text-sm font-semibold uppercase tracking-[2px] text-teal-600">
-            Professional Cleaning
-          </p>
-
-          <h2 className="mt-2 text-3xl font-bold text-gray-900 sm:text-4xl">
-            Our Top Services
-          </h2>
+        <div className="mb-9 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-[2px] text-cyan-700">
+              Professional Cleaning
+            </p>
+            <h2 className="mt-2 text-3xl font-bold text-blue-950 sm:text-4xl">
+              Popular services
+            </h2>
+            <p className="mt-3 max-w-xl text-sm leading-6 text-slate-600">
+              Trusted doorstep care for your car, home and everyday spaces.
+            </p>
+          </div>
+          <Link
+            href="/services"
+            className="inline-flex items-center gap-2 text-sm font-semibold text-blue-900 transition hover:text-cyan-700"
+          >
+            Explore all services
+            <ArrowRight className="h-4 w-4" />
+          </Link>
         </div>
 
-        {/* Services */}
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-          {services.map((service) => (
-            <ServiceCard
-              key={service.title}
-              title={service.title}
-              description={service.description}
-              price={service.price}
-              category={service.category}
-            />
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+          {featuredServices.map((service) => (
+            <ServiceCard key={service.id} service={service} />
           ))}
         </div>
-
       </div>
     </section>
   );

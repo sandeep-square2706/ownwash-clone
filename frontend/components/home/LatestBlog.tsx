@@ -1,91 +1,81 @@
-import { ArrowRight, CalendarDays } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 
-const blogs = [
+const articles = [
   {
-    date: "31",
-    month: "DEC",
-    title:
-      "Ownwash Franchise Reviews: Is It Worth Starting an...",
-    description:
-      "Introduction If you are searching for Ownwash Franchise Reviews, you are likely...",
+    title: "A few ways to keep your car feeling fresh",
+    excerpt: "Simple habits that help between professional cleaning visits.",
+    image: "/images/services/car-interior-cleaning.jpeg",
+    href: "/blog#car-care",
+    label: "Car care",
   },
   {
-    date: "31",
-    month: "DEC",
-    title:
-      "Unlocking Success: The Power of OwnWash Reviews and...",
-    description:
-      "Ownwash Reviews: In the bustling world of car care, one name...",
+    title: "What to know before cleaning your sofa",
+    excerpt: "Understand fabric care, spot treatment and service options.",
+    image: "/images/services/sofa-steam-cleaning.jpeg",
+    href: "/blog#home-textiles",
+    label: "Home care",
   },
   {
-    date: "31",
-    month: "DEC",
-    title:
-      "Elevate Your Car Care Routine: Unveiling Ownwash Reviews",
-    description:
-      "In today’s fast-paced world, maintaining a clean and fresh car is not...",
+    title: "How to prepare for a doorstep service",
+    excerpt: "A quick checklist to help your appointment run smoothly.",
+    image: "/images/services/kitchen-cleaning.jpeg",
+    href: "/blog#booking",
+    label: "Booking guide",
   },
 ];
 
 export default function LatestBlog() {
   return (
-    <section className="bg-gray-50 px-4 py-16 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-7xl">
-        <div className="text-center">
-          <p className="text-sm font-semibold uppercase tracking-widest text-teal-700">
-            Our Blogs
-          </p>
-
-          <h2 className="mt-2 text-3xl font-bold text-gray-900 sm:text-4xl">
-            Our Latest News & Blog
-          </h2>
+    <section className="bg-white px-4 py-16 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-[1380px]">
+        <div className="mb-9 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-[0.16em] text-cyan-700">
+              Tips & guides
+            </p>
+            <h2 className="mt-2 text-3xl font-bold text-blue-950 sm:text-4xl">
+              A little know-how goes a long way
+            </h2>
+          </div>
+          <Link
+            href="/blog"
+            className="inline-flex items-center gap-2 text-sm font-semibold text-blue-900 hover:text-cyan-700"
+          >
+            View all guides
+            <ArrowRight className="h-4 w-4" />
+          </Link>
         </div>
 
-        <div className="mt-10 grid gap-6 md:grid-cols-3">
-          {blogs.map((blog) => (
+        <div className="grid gap-5 md:grid-cols-3">
+          {articles.map((article) => (
             <article
-              key={blog.title}
-              className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-md"
+              key={article.href}
+              className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
             >
-              {/* Temporary image until client assets arrive */}
-              <div className="relative aspect-[16/9] bg-gradient-to-br from-teal-800 to-slate-700">
-                <div className="absolute left-4 top-4 z-10 flex min-w-14 flex-col items-center rounded-md bg-white px-3 py-2 shadow-md">
-                  <span className="text-xl font-bold text-teal-700">
-                    {blog.date}
-                  </span>
-
-                  <span className="text-[10px] font-bold text-gray-500">
-                    {blog.month}
-                  </span>
+              <Link href={article.href} className="block">
+                <div className="relative aspect-[16/9] bg-slate-100">
+                  <Image
+                    src={article.image}
+                    alt=""
+                    fill
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                    className="object-cover transition duration-500 hover:scale-[1.03]"
+                  />
                 </div>
-
-                <div className="flex h-full items-center justify-center text-sm text-white/70">
-                  Blog Image
+                <div className="p-5">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-cyan-700">
+                    {article.label}
+                  </p>
+                  <h3 className="mt-2 text-lg font-bold text-blue-950">
+                    {article.title}
+                  </h3>
+                  <p className="mt-2 text-sm leading-6 text-slate-600">
+                    {article.excerpt}
+                  </p>
                 </div>
-              </div>
-
-              <div className="p-6">
-                <div className="flex items-center gap-2 text-xs text-gray-500">
-                  <CalendarDays className="h-4 w-4" />
-                  31 Dec
-                </div>
-
-                <h3 className="mt-3 text-lg font-bold leading-7 text-gray-900">
-                  {blog.title}
-                </h3>
-
-                <p className="mt-3 text-sm leading-6 text-gray-600">
-                  {blog.description}
-                </p>
-
-                <a
-                  href="/blog"
-                  className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-teal-700 hover:text-teal-900"
-                >
-                  Learn more
-                  <ArrowRight className="h-4 w-4" />
-                </a>
-              </div>
+              </Link>
             </article>
           ))}
         </div>

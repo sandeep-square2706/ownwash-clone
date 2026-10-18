@@ -42,12 +42,12 @@ export default function HowItWorks() {
       <div className="mx-auto max-w-[1200px]">
 
         <div className="mb-12 text-center">
-          <p className="text-sm font-semibold uppercase tracking-[2px] text-teal-600">
+          <p className="text-sm font-semibold uppercase tracking-[2px] text-cyan-700">
             Our Process
           </p>
 
-          <h2 className="mt-2 text-3xl font-bold text-gray-900 sm:text-4xl">
-            Here How It Works?
+          <h2 className="mt-2 text-3xl font-bold text-blue-950 sm:text-4xl">
+            How it works
           </h2>
         </div>
 
@@ -57,15 +57,15 @@ export default function HowItWorks() {
               key={number}
               className="relative text-center"
             >
-              <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-teal-50 text-teal-700">
+              <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-cyan-50 text-blue-900">
                 <Icon className="h-9 w-9" />
               </div>
 
-              <span className="mt-4 inline-block text-xs font-bold tracking-widest text-teal-600">
+              <span className="mt-4 inline-block text-xs font-bold tracking-widest text-cyan-700">
                 STEP {number}
               </span>
 
-              <h3 className="mt-2 text-lg font-bold text-gray-900">
+              <h3 className="mt-2 text-lg font-bold text-blue-950">
                 {title}
               </h3>
 
@@ -74,7 +74,7 @@ export default function HowItWorks() {
               </p>
 
               {number !== "04" && (
-                <div className="absolute left-[calc(50%+55px)] right-[calc(-50%+55px)] top-10 hidden border-t border-dashed border-teal-200 md:block" />
+                <div className="absolute left-[calc(50%+55px)] right-[calc(-50%+55px)] top-10 hidden border-t border-dashed border-cyan-200 md:block" />
               )}
             </div>
           ))}

@@ -5,9 +5,9 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 
 export const metadata: Metadata = {
-  title: "Ownwash | Doorstep Cleaning Services",
+  title: "CleanKart | Doorstep Cleaning Services",
   description:
-    "Professional doorstep car cleaning and detailing services.",
+    "Book trusted doorstep cleaning for your car, home and everyday spaces.",
 };
 
 export default function RootLayout({

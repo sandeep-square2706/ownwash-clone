@@ -1,35 +1,86 @@
+import Image from "next/image";
+import Link from "next/link";
+import { ArrowRight, BadgeCheck, HeartHandshake, Sparkles } from "lucide-react";
+
+const values = [
+  {
+    title: "Clear choices",
+    text: "Service descriptions, options and starting prices are easy to compare.",
+    icon: BadgeCheck,
+  },
+  {
+    title: "Care for your space",
+    text: "Every booking is built around the home, vehicle or furniture you want refreshed.",
+    icon: Sparkles,
+  },
+  {
+    title: "Doorstep convenience",
+    text: "Explore services designed to fit around your day and your location.",
+    icon: HeartHandshake,
+  },
+];
+
 export default function AboutPage() {
   return (
-    <main>
-      <section className="bg-[#0C706A] px-4 py-16 text-white sm:px-6 lg:px-8">
+    <main className="bg-white">
+      <section className="bg-blue-950 px-4 py-16 text-white sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
-          <p className="text-sm font-semibold uppercase tracking-[2px] text-teal-100">
-            About Us
+          <p className="text-sm font-semibold uppercase tracking-[0.16em] text-cyan-200">
+            About CleanKart
           </p>
-
-          <h1 className="mt-3 text-4xl font-bold sm:text-5xl">
-            About OwnWash
+          <h1 className="mt-3 max-w-3xl text-4xl font-bold leading-tight sm:text-5xl">
+            A simpler way to care for the places you call yours.
           </h1>
-
-          <p className="mt-5 max-w-2xl leading-7 text-teal-50">
-            Professional cleaning services designed to make doorstep
-            cleaning convenient, reliable and simple.
+          <p className="mt-5 max-w-2xl text-base leading-7 text-blue-100">
+            CleanKart brings vehicle and home cleaning services together in one
+            easy-to-use doorstep catalogue.
           </p>
         </div>
       </section>
 
-      <section className="px-4 py-16 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-4xl">
-          <h2 className="text-3xl font-bold text-gray-900">
-            Professional Cleaning at Your Doorstep
-          </h2>
+      <section className="px-4 py-14 sm:px-6 lg:px-8">
+        <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-2 lg:items-center">
+          <div>
+            <h2 className="text-3xl font-bold text-blue-950">Clean, made convenient</h2>
+            <p className="mt-4 leading-7 text-slate-600">
+              From a foam wash to a refreshed sofa, the service catalogue helps
+              you find the right kind of care, compare options and prepare a
+              booking from home.
+            </p>
+            <Link
+              href="/services"
+              className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-blue-900 hover:text-cyan-700"
+            >
+              Browse the catalogue
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+          <div className="relative min-h-[300px] overflow-hidden rounded-3xl bg-slate-100">
+            <Image
+              src="/images/services/kitchen-cleaning.jpeg"
+              alt="CleanKart professional cleaning a kitchen"
+              fill
+              sizes="(max-width: 1024px) 100vw, 50vw"
+              className="object-cover"
+            />
+          </div>
+        </div>
+      </section>
 
-          <p className="mt-5 leading-8 text-gray-600">
-            OwnWash provides convenient cleaning solutions delivered
-            directly to customers. Our platform makes it easier to
-            discover services, select a suitable option and schedule
-            professional cleaning.
-          </p>
+      <section className="bg-slate-50 px-4 py-14 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl">
+          <h2 className="text-3xl font-bold text-blue-950">What guides us</h2>
+          <div className="mt-7 grid gap-5 md:grid-cols-3">
+            {values.map(({ title, text, icon: Icon }) => (
+              <article key={title} className="rounded-2xl border border-slate-200 bg-white p-6">
+                <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-cyan-50 text-blue-900">
+                  <Icon className="h-6 w-6" />
+                </span>
+                <h3 className="mt-5 text-lg font-bold text-blue-950">{title}</h3>
+                <p className="mt-2 text-sm leading-6 text-slate-600">{text}</p>
+              </article>
+            ))}
+          </div>
         </div>
       </section>
     </main>

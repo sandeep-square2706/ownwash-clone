@@ -9,14 +9,14 @@ const testimonials = [
     service: "Car Washing",
     initials: "SD",
     review:
-      "Ownwash's doorstep car washing service is convenient and professional. The team arrived on time and cleaned the car very well.",
+      "CleanKart's doorstep car washing service is convenient and professional. The team arrived on time and cleaned the car very well.",
   },
   {
     name: "Saket",
     service: "Foam Washing",
     initials: "SK",
     review:
-      "Ownwash's foam washing made the car spotless. The team cleaned difficult areas carefully and the service was convenient at home.",
+      "CleanKart's foam washing made the car spotless. The team cleaned difficult areas carefully and the service was convenient at home.",
   },
   {
     name: "Anjali",
@@ -48,12 +48,12 @@ export default function Testimonials() {
         {/* Heading */}
         <div className="flex items-end justify-between">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-widest text-teal-700">
+            <p className="text-sm font-semibold uppercase tracking-widest text-cyan-700">
               Testimonials
             </p>
 
-            <h2 className="mt-2 text-3xl font-bold text-gray-900 sm:text-4xl">
-              What Our Clients Says?
+            <h2 className="mt-2 text-3xl font-bold text-blue-950 sm:text-4xl">
+              What customers say
             </h2>
           </div>
 
@@ -63,7 +63,7 @@ export default function Testimonials() {
               type="button"
               onClick={previous}
               aria-label="Previous testimonial"
-              className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-300 transition hover:bg-teal-700 hover:text-white"
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-300 transition hover:bg-blue-950 hover:text-white"
             >
               <ChevronLeft className="h-5 w-5" />
             </button>
@@ -72,7 +72,7 @@ export default function Testimonials() {
               type="button"
               onClick={next}
               aria-label="Next testimonial"
-              className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-300 transition hover:bg-teal-700 hover:text-white"
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-300 transition hover:bg-blue-950 hover:text-white"
             >
               <ChevronRight className="h-5 w-5" />
             </button>
@@ -84,12 +84,12 @@ export default function Testimonials() {
           {testimonials.map((testimonial, index) => (
             <article
               key={testimonial.name}
-              className={`rounded-xl border border-gray-200 bg-white p-6 shadow-sm ${
-                index === active ? "ring-1 ring-teal-200" : ""
+              className={`rounded-xl border border-slate-200 bg-white p-6 shadow-sm ${
+                index === active ? "ring-1 ring-cyan-200" : ""
               }`}
             >
               <div className="flex items-center gap-4">
-                <div className="flex h-14 w-14 items-center justify-center rounded-full bg-teal-100 font-bold text-teal-700">
+                <div className="flex h-14 w-14 items-center justify-center rounded-full bg-cyan-100 font-bold text-blue-900">
                   {testimonial.initials}
                 </div>
 
@@ -125,7 +125,7 @@ export default function Testimonials() {
           <button
             type="button"
             onClick={previous}
-            className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-300"
+            className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-300"
             aria-label="Previous testimonial"
           >
             <ChevronLeft className="h-5 w-5" />
@@ -134,7 +134,7 @@ export default function Testimonials() {
           <button
             type="button"
             onClick={next}
-            className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-300"
+            className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-300"
             aria-label="Next testimonial"
           >
             <ChevronRight className="h-5 w-5" />

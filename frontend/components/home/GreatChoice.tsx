@@ -1,147 +1,71 @@
-import {
-  Clock3,
-  Mail,
-  MapPin,
-  Phone,
-  Play,
-} from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { ArrowRight, BadgeCheck, Sparkles } from "lucide-react";
 
 export default function GreatChoice() {
   return (
     <section className="bg-white px-4 py-16 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-7xl">
-        <div className="grid gap-10 lg:grid-cols-[1.5fr_0.8fr]">
-          {/* Left */}
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-widest text-teal-700">
-              Great Choice
-            </p>
+      <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
+        <div>
+          <p className="text-sm font-semibold uppercase tracking-[0.16em] text-cyan-700">
+            CleanKart care
+          </p>
+          <h2 className="mt-3 max-w-2xl text-3xl font-bold leading-tight text-blue-950 sm:text-4xl">
+            Thoughtful cleaning for the places you use every day.
+          </h2>
+          <p className="mt-5 max-w-2xl leading-7 text-slate-600">
+            From a freshly washed car to a comfortable home, choose the service
+            you need and let a CleanKart professional take care of the details.
+          </p>
 
-            <h2 className="mt-3 text-3xl font-bold leading-tight text-gray-900 sm:text-4xl">
-              See why Ownwash is
-              <span className="block text-teal-700">
-                India’s go-to for doorstep car washing.
+          <div className="mt-7 grid gap-4 sm:grid-cols-2">
+            <div className="flex gap-3 rounded-2xl border border-slate-200 bg-white p-4">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-cyan-50 text-blue-900">
+                <BadgeCheck className="h-5 w-5" />
               </span>
-            </h2>
-
-            <p className="mt-5 max-w-3xl leading-7 text-gray-600">
-              You care about your car, and so do we. Ownwash makes
-              doorstep car washing convenient, professional and
-              hassle-free, with trained cleaners coming directly to
-              your location.
-            </p>
-
-            {/* Videos */}
-            <div className="mt-8 grid gap-5 sm:grid-cols-2">
-              <VideoCard />
-              <VideoCard />
+              <div>
+                <h3 className="font-semibold text-blue-950">Careful service</h3>
+                <p className="mt-1 text-sm leading-5 text-slate-600">
+                  Clear options and service details before you book.
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-3 rounded-2xl border border-slate-200 bg-white p-4">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-cyan-50 text-blue-900">
+                <Sparkles className="h-5 w-5" />
+              </span>
+              <div>
+                <h3 className="font-semibold text-blue-950">One easy catalogue</h3>
+                <p className="mt-1 text-sm leading-5 text-slate-600">
+                  Car, home and furniture cleaning in one place.
+                </p>
+              </div>
             </div>
           </div>
 
-          {/* Customer Support */}
-          <aside className="rounded-2xl bg-teal-800 p-7 text-white">
-            <h3 className="text-2xl font-bold">
-              Customer Support
-            </h3>
+          <Link
+            href="/services"
+            className="mt-7 inline-flex items-center gap-2 text-sm font-bold text-blue-900 hover:text-cyan-700"
+          >
+            Explore all services
+            <ArrowRight className="h-4 w-4" />
+          </Link>
+        </div>
 
-            <div className="mt-7 space-y-6">
-              <div className="flex gap-4">
-                <Phone className="mt-1 h-5 w-5 shrink-0" />
-
-                <div>
-                  <p className="text-sm text-teal-200">Mobile :</p>
-                  <a
-                    href="tel:+917286082860"
-                    className="font-semibold hover:underline"
-                  >
-                    72860 82860
-                  </a>
-                </div>
-              </div>
-
-              <div className="flex gap-4">
-                <Mail className="mt-1 h-5 w-5 shrink-0" />
-
-                <div>
-                  <p className="text-sm text-teal-200">Email :</p>
-                  <a
-                    href="mailto:support@ownwash.com"
-                    className="font-semibold hover:underline"
-                  >
-                    support@ownwash.com
-                  </a>
-                </div>
-              </div>
-
-              <div className="flex gap-4">
-                <MapPin className="mt-1 h-5 w-5 shrink-0" />
-
-                <div>
-                  <p className="text-sm text-teal-200">
-                    Registred Address
-                  </p>
-
-                  <p className="mt-1 text-sm leading-6">
-                    At: 305, Satguru Parinay,
-                    <br />
-                    Vijay Nagar, Indore,
-                    <br />
-                    Madhya Pradesh - 452010
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex gap-4">
-                <Clock3 className="mt-1 h-5 w-5 shrink-0" />
-
-                <div>
-                  <p className="text-sm text-teal-200">
-                    Service Time
-                  </p>
-
-                  <p className="mt-1 text-sm leading-6">
-                    Tuesday - Sunday : 07 : 00 AM - 05 : 00 PM
-                    <br />
-                    Monday (Only as per your special Request)
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-8 border-t border-white/20 pt-6">
-              <p className="font-semibold">Stay connected</p>
-
-              <div className="mt-4 flex gap-3">
-                {["f", "◎", "▶"].map((icon) => (
-                  <button
-                    key={icon}
-                    type="button"
-                    className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 font-bold transition hover:bg-white hover:text-teal-800"
-                  >
-                    {icon}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </aside>
+        <div className="relative min-h-[300px] overflow-hidden rounded-3xl bg-blue-950 sm:min-h-[390px]">
+          <Image
+            src="/images/services/solar-panel-cleaning.jpeg"
+            alt="CleanKart professional cleaning solar panels"
+            fill
+            sizes="(max-width: 1024px) 100vw, 40vw"
+            className="object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-blue-950/80 via-transparent to-transparent" />
+          <p className="absolute bottom-5 left-5 right-5 text-lg font-semibold text-white">
+            Care for your space, from the floor to the rooftop.
+          </p>
         </div>
       </div>
     </section>
-  );
-}
-
-function VideoCard() {
-  return (
-    <div className="group relative aspect-video overflow-hidden rounded-xl bg-gradient-to-br from-slate-700 to-teal-800">
-      <div className="flex h-full items-center justify-center">
-        <button
-          type="button"
-          aria-label="Play Ownwash video"
-          className="flex h-14 w-14 items-center justify-center rounded-full bg-white text-teal-700 shadow-xl transition group-hover:scale-110"
-        >
-          <Play className="ml-1 h-6 w-6 fill-current" />
-        </button>
-      </div>
-    </div>
   );
 }

@@ -38,13 +38,13 @@ export default function WhyChooseUs() {
       <div className="mx-auto max-w-[1380px]">
 
         <div className="mb-10">
-          <p className="text-sm font-semibold uppercase tracking-[2px] text-teal-600">
+          <p className="text-sm font-semibold uppercase tracking-[2px] text-cyan-700">
             Why Choose Us?
           </p>
 
-          <h2 className="mt-2 text-3xl font-bold text-gray-900 sm:text-4xl">
-            Why Choose Our
-            <span className="block text-teal-700">
+          <h2 className="mt-2 text-3xl font-bold text-blue-950 sm:text-4xl">
+            Why choose our
+            <span className="block text-cyan-700">
               Cleaning Solutions
             </span>
           </h2>
@@ -54,13 +54,13 @@ export default function WhyChooseUs() {
           {benefits.map(({ title, description, icon: Icon }) => (
             <article
               key={title}
-              className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
+              className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
             >
-              <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-teal-50 text-teal-700">
+              <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-cyan-50 text-blue-900">
                 <Icon className="h-7 w-7" />
               </div>
 
-              <h3 className="mt-5 text-lg font-bold text-gray-900">
+              <h3 className="mt-5 text-lg font-bold text-blue-950">
                 {title}
               </h3>
 
