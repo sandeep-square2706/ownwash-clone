@@ -17,15 +17,18 @@ function getAPIBase() {
   return process.env.NEXT_PUBLIC_CLEANKART_API_URL?.replace(/\/+$/, "");
 }
 
-async function requestAPI<T>(path: string): Promise<T> {
-  const base = getAPIBase();
-  if (!base) throw new Error("CleanKart API URL is not configured.");
-
-  const response = await fetch(`${base}${path}`, { cache: "no-store" });
+async function requestAPIAt<T>(url: string): Promise<T> {
+  const response = await fetch(url, { cache: "no-store" });
   if (!response.ok) {
     throw new Error(`CleanKart service request failed (${response.status}).`);
   }
   return (await response.json()) as T;
+}
+
+async function requestAPI<T>(path: string): Promise<T> {
+  const base = getAPIBase();
+  if (!base) throw new Error("CleanKart API URL is not configured.");
+  return requestAPIAt<T>(`${base}${path}`);
 }
 
 function isServiceList(value: unknown): value is Service[] {
@@ -45,21 +48,56 @@ function isServiceList(value: unknown): value is Service[] {
 }
 
 export async function loadServices(): Promise<Service[]> {
-  if (!getAPIBase()) return mockServices.filter((service) => service.isActive);
+  const base = getAPIBase();
+  if (!base) return mockServices.filter((service) => service.isActive);
 
-  const payload = await requestAPI<Service[] | { results: Service[] }>("/api/services/");
-  const list = Array.isArray(payload) ? payload : payload.results;
-  if (!isServiceList(list)) {
-    throw new Error("CleanKart returned an invalid service list.");
+  const apiOrigin = new URL(base).origin;
+  let nextUrl: string | null = `${base}/services/`;
+  const visitedPages = new Set<string>();
+  const services: Service[] = [];
+
+  while (nextUrl) {
+    const pageUrl: string = new URL(nextUrl, `${base}/`).toString();
+    if (new URL(pageUrl).origin !== apiOrigin) {
+      throw new Error("CleanKart returned a service page outside the configured API host.");
+    }
+    if (visitedPages.has(pageUrl)) {
+      throw new Error("CleanKart returned a repeated service page link.");
+    }
+    visitedPages.add(pageUrl);
+
+    const payload = await requestAPIAt<
+      Service[] | { results: Service[]; next?: string | null }
+    >(pageUrl);
+    if (Array.isArray(payload)) {
+      if (!isServiceList(payload)) throw new Error("CleanKart returned an invalid service list.");
+      services.push(...payload);
+      nextUrl = null;
+      continue;
+    }
+
+    if (!payload || !isServiceList(payload.results)) {
+      throw new Error("CleanKart returned an invalid service list.");
+    }
+    services.push(...payload.results);
+
+    if (payload.next === undefined || payload.next === null || payload.next === "") {
+      nextUrl = null;
+    } else if (typeof payload.next === "string") {
+      nextUrl = new URL(payload.next, pageUrl).toString();
+    } else {
+      throw new Error("CleanKart returned an invalid service page link.");
+    }
   }
-  return list.filter((service) => service.isActive);
+
+  return services.filter((service) => service.isActive);
 }
 
 export async function loadServiceBySlug(slug: string): Promise<Service | undefined> {
   if (!getAPIBase()) return getServiceBySlug(slug);
 
   try {
-    const service = await requestAPI<Service>(`/api/services/${encodeURIComponent(slug)}/`);
+    const service = await requestAPI<Service>(`/services/${encodeURIComponent(slug)}/`);
     if (
       typeof service?.id !== "number" ||
       service.slug !== slug ||
@@ -87,47 +125,24 @@ export function formatPrice(price: number) {
 
 export function getServicePrice(service: Service) {
   const prices = service.variants?.map((variant) => variant.price);
-  const minimum = prices?.length
+  const startingPrice = prices?.length
     ? Math.min(...prices)
     : service.minPrice ?? service.basePrice;
-  const maximum = prices?.length
-    ? Math.max(...prices)
-    : service.maxPrice ?? service.basePrice;
 
-  if (minimum === undefined || maximum === undefined) return "Price on request";
-  return minimum === maximum
-    ? formatPrice(minimum)
-    : formatPrice(minimum) + " – " + formatPrice(maximum);
+  if (startingPrice === undefined) return "Price on request";
+  return formatPrice(startingPrice);
 }
 
 export function getServiceOriginalPrice(service: Service) {
   if (service.variants?.length) {
-    if (service.variants.some((variant) => variant.originalPrice === undefined)) return undefined;
-    const prices = service.variants.map((variant) => variant.originalPrice as number);
-    const minimum = Math.min(...prices);
-    const maximum = Math.max(...prices);
-    return minimum === maximum
-      ? formatPrice(minimum)
-      : `${formatPrice(minimum)} – ${formatPrice(maximum)}`;
+    const lowestPricedVariant = service.variants.reduce((lowest, variant) =>
+      variant.price < lowest.price ? variant : lowest,
+    );
+    return lowestPricedVariant.originalPrice === undefined
+      ? undefined
+      : formatPrice(lowestPricedVariant.originalPrice);
   }
   return service.originalPrice === undefined ? undefined : formatPrice(service.originalPrice);
-}
-
-export function getServiceSavings(service: Service) {
-  const differences = service.variants?.length
-    ? service.variants.map((variant) =>
-        variant.originalPrice === undefined ? undefined : variant.originalPrice - variant.price,
-      )
-    : service.originalPrice === undefined
-      ? []
-      : [service.originalPrice - (service.basePrice ?? service.minPrice ?? 0)];
-
-  if (!differences.length || differences.some((difference) => difference === undefined || difference <= 0)) {
-    return undefined;
-  }
-  return differences.every((difference) => difference === differences[0])
-    ? differences[0]
-    : undefined;
 }
 
 export function getAddonTotal(service: Service, addonIds: string[] = []) {

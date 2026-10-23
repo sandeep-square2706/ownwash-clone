@@ -1,0 +1,8 @@
+"use client";
+import Link from "next/link";
+import type { ReactNode } from "react";
+export function Logo(){return <Link href="/partner" className="ckp-logo" aria-label="CleanKart Partner home">Clean<span>Kart</span></Link>}
+export function PartnerShell({children}:{children:ReactNode}){return <div className="ckp-shell"><header className="ckp-header"><Logo/><Link href="/partner/login" className="ckp-login-link">Partner Login</Link></header>{children}</div>}
+export function Button({children,href,onClick,secondary=false,disabled=false,type="button"}:{children:ReactNode;href?:string;onClick?:()=>void;secondary?:boolean;disabled?:boolean;type?:"button"|"submit"}){const cls=`ckp-btn${secondary?" ckp-btn-secondary":""}`;return href?<Link className={cls} href={href}>{children}</Link>:<button className={cls} type={type} onClick={onClick} disabled={disabled}>{children}</button>}
+export function Field({label,value,onChange,placeholder="",type="text",required=false,options}:{label:string;value:string;onChange:(e:any)=>void;placeholder?:string;type?:string;required?:boolean;options?:string[]}){return <label className="ckp-field">{label}{options?<select value={value} onChange={onChange} required={required}><option value="">Select…</option>{options.map(x=><option key={x}>{x}</option>)}</select>:<input type={type} value={value} onChange={onChange} placeholder={placeholder} required={required} />}</label>}
+export function Stepper({current}:{current:number}){return <div className="ckp-stepper" aria-label={`Registration step ${current} of 7`}>{Array.from({length:7},(_,i)=><div key={i} className={`ckp-step ${i<current?"active":""}`} />)}</div>}

@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, Images } from "lucide-react";
 import { useRef, useState } from "react";
+import { CleanKartImageStamp } from "@/components/ui/BrandedPhoto";
 
 type ServiceImageCarouselProps = {
   images: string[];
@@ -12,6 +13,7 @@ type ServiceImageCarouselProps = {
   sizes: string;
   priority?: boolean;
   className?: string;
+  showThumbnails?: boolean;
 };
 
 export default function ServiceImageCarousel({
@@ -21,6 +23,7 @@ export default function ServiceImageCarousel({
   sizes,
   priority = false,
   className = "",
+  showThumbnails = false,
 }: ServiceImageCarouselProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const touchStartX = useRef<number | null>(null);
@@ -29,6 +32,22 @@ export default function ServiceImageCarousel({
 
   function moveImage(direction: -1 | 1) {
     setActiveIndex((current) => (current + direction + images.length) % images.length);
+  }
+
+  function handlePointerMove(event: React.PointerEvent<HTMLDivElement>) {
+    if (!hasMultipleImages || event.pointerType !== "mouse") return;
+    if (
+      event.target instanceof Element &&
+      event.target.closest("[data-carousel-control]")
+    ) {
+      return;
+    }
+
+    const bounds = event.currentTarget.getBoundingClientRect();
+    if (bounds.width <= 0) return;
+    const position = Math.min(0.999, Math.max(0, (event.clientX - bounds.left) / bounds.width));
+    const nextIndex = Math.floor(position * images.length);
+    setActiveIndex((current) => (current === nextIndex ? current : nextIndex));
   }
 
   function handleTouchEnd(event: React.TouchEvent<HTMLDivElement>) {
@@ -61,24 +80,31 @@ export default function ServiceImageCarousel({
     </div>
   );
 
-  return (
+  const carousel = (
     <div
       className={`relative overflow-hidden ${className}`}
       role="region"
       aria-roledescription="carousel"
       aria-label={`${title} photos`}
+      onPointerMove={handlePointerMove}
       onTouchStart={(event) => {
         touchStartX.current = event.touches[0]?.clientX ?? null;
       }}
       onTouchEnd={handleTouchEnd}
     >
       {href ? (
-        <Link href={href} aria-label={`View ${title}`} className="absolute inset-0 z-0">
+        <Link
+          href={href}
+          aria-label={`View ${title}`}
+          className="absolute inset-0 z-0 cursor-ew-resize"
+        >
           {photo}
         </Link>
       ) : (
         photo
       )}
+
+      {image && <CleanKartImageStamp className="left-3 top-3 h-7 w-7 rounded-md" />}
 
       {hasMultipleImages && (
         <>
@@ -86,6 +112,7 @@ export default function ServiceImageCarousel({
             type="button"
             onClick={() => moveImage(-1)}
             aria-label={`Previous ${title} photo`}
+            data-carousel-control
             className="absolute left-2 top-1/2 z-10 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white/95 text-blue-950 shadow-md transition hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
           >
             <ChevronLeft className="h-5 w-5" aria-hidden="true" />
@@ -94,11 +121,12 @@ export default function ServiceImageCarousel({
             type="button"
             onClick={() => moveImage(1)}
             aria-label={`Next ${title} photo`}
+            data-carousel-control
             className="absolute right-2 top-1/2 z-10 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white/95 text-blue-950 shadow-md transition hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
           >
             <ChevronRight className="h-5 w-5" aria-hidden="true" />
           </button>
-          <div className="absolute bottom-3 left-1/2 z-10 flex -translate-x-1/2 items-center gap-1.5 rounded-full bg-blue-950/75 px-2.5 py-1.5">
+          <div className="absolute bottom-3 right-3 z-10 flex items-center gap-1 rounded-full bg-blue-950/75 px-2.5 py-1.5">
             {images.map((_, index) => (
               <button
                 key={`${title}-photo-${index}`}
@@ -106,10 +134,17 @@ export default function ServiceImageCarousel({
                 onClick={() => setActiveIndex(index)}
                 aria-label={`Show ${title} photo ${index + 1}`}
                 aria-current={activeIndex === index ? "true" : undefined}
-                className={`h-2.5 w-2.5 rounded-full transition ${
-                  activeIndex === index ? "bg-cyan-300" : "bg-white/70 hover:bg-white"
+                data-carousel-control
+                className={`flex h-6 w-6 items-center justify-center rounded-full transition focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-white ${
+                  activeIndex === index ? "bg-white/15" : "hover:bg-white/15"
                 }`}
-              />
+              >
+                <span
+                  className={`h-2 w-2 rounded-full ${
+                    activeIndex === index ? "bg-[var(--brand-gold)]" : "bg-white/80"
+                  }`}
+                />
+              </button>
             ))}
           </div>
           <span className="sr-only" aria-live="polite">
@@ -117,6 +152,43 @@ export default function ServiceImageCarousel({
           </span>
         </>
       )}
+    </div>
+  );
+
+  if (!showThumbnails || !hasMultipleImages) return carousel;
+
+  return (
+    <div className="flex flex-col gap-3">
+      {carousel}
+      <div
+        className="flex gap-2 overflow-x-auto pb-1"
+        role="group"
+        aria-label={`${title} photo thumbnails`}
+      >
+        {images.map((thumbnail, index) => (
+          <button
+            key={`${title}-thumbnail-${index}`}
+            type="button"
+            onClick={() => setActiveIndex(index)}
+            onPointerEnter={(event) => {
+              if (event.pointerType === "mouse") setActiveIndex(index);
+            }}
+            aria-label={`Show ${title} photo ${index + 1}`}
+            aria-current={activeIndex === index ? "true" : undefined}
+            className={`relative h-16 w-20 shrink-0 overflow-hidden rounded-lg border-2 bg-white transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 sm:h-20 sm:w-24 ${
+              activeIndex === index ? "border-blue-700" : "border-slate-200 hover:border-blue-300"
+            }`}
+          >
+            <Image
+              src={thumbnail}
+              alt=""
+              fill
+              sizes="96px"
+              className="object-cover"
+            />
+          </button>
+        ))}
+      </div>
     </div>
   );
 }

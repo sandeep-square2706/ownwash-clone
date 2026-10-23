@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowRight, BadgeCheck, Clock3, House, Sparkles } from "lucide-react";
 import { formatPrice, getStartingPrice, type Service } from "@/lib/services";
 import { loadServerServices } from "@/lib/server-services";
+import { CleanKartImageStamp } from "@/components/ui/BrandedPhoto";
 
 export default async function Hero() {
   let services: Service[] = [];
@@ -25,6 +26,7 @@ export default async function Hero() {
             sizes="100vw"
             className="object-cover object-[58%_center]"
           />
+          <CleanKartImageStamp className="bottom-4 right-4 h-10 w-10 rounded-xl sm:bottom-5 sm:right-5" />
           <div className="absolute inset-0 bg-gradient-to-r from-[#092451]/95 via-[#0d3471]/82 to-[#0d3471]/5" />
 
           <div className="relative z-10 flex min-h-[440px] max-w-[760px] flex-col justify-center px-6 py-12 text-white sm:min-h-[470px] sm:px-10 lg:px-14">

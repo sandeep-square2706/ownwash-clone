@@ -1,0 +1,3 @@
+import DashboardShell from "../../../components/partner/DashboardShell";
+import PartnerSection from "../../../components/partner/PartnerSection";
+export default function Page(){return <DashboardShell><PartnerSection title={'My Bookings'} description={'Assigned or offered bookings will appear here when the booking API is connected.'}><div className="ckp-list"><div className="ckp-row"><b>Active</b><span>API required</span></div><div className="ckp-row"><b>Completed</b><span>API required</span></div><div className="ckp-row"><b>Cancelled</b><span>API required</span></div></div></PartnerSection></DashboardShell>}
