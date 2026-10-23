@@ -36,7 +36,6 @@ const navItems = [
   ["Services", "/services"],
   ["About Us", "/about"],
   ["Contact", "/contact"],
-  ["Franchise", "/franchise"],
   ["Reviews", "/reviews"],
 ];
 
@@ -49,12 +48,17 @@ export default function Navbar() {
   const [mobileTopOpen, setMobileTopOpen] = useState(false);
   const [cartCount, setCartCount] = useState(0);
   const [wishlistCount, setWishlistCount] = useState(0);
+  const [cartOpen, setCartOpen] = useState(false);
+  const [cartItems, setCartItems] = useState<ReturnType<typeof readCart>>([]);
 
   useEffect(() => {
     const syncCounts = () => {
-      setCartCount(readCart().reduce((total, item) => total + item.quantity, 0));
-      setWishlistCount(readWishlist().length);
-    };
+  const cart = readCart();
+
+  setCartItems(cart);
+  setCartCount(cart.reduce((total, item) => total + item.quantity, 0));
+  setWishlistCount(readWishlist().length);
+};
     syncCounts();
     return subscribeToStore(syncCounts);
   }, []);
@@ -125,9 +129,18 @@ export default function Navbar() {
             <CountLink href="/wishlist" label="Wishlist" count={wishlistCount}>
               <Heart className="h-6 w-6" />
             </CountLink>
-            <CountLink href="/cart" label="Cart" count={cartCount}>
-              <ShoppingCart className="h-6 w-6" />
-            </CountLink>
+            <button
+  type="button"
+  onClick={() => setCartOpen(true)}
+  aria-label={`Cart, ${cartCount} items`}
+  className="relative flex h-9 w-9 items-center justify-center rounded-full transition hover:bg-white/10"
+>
+  <ShoppingCart className="h-6 w-6" />
+
+  <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-[var(--brand-gold)] px-1 text-[10px] font-bold text-[var(--brand-navy)]">
+    {cartCount}
+  </span>
+</button>
           </div>
 
           <button
@@ -256,6 +269,172 @@ export default function Navbar() {
           </div>
         </nav>
       )}
+      {cartOpen && (
+  <>
+    {/* Dark overlay */}
+    <button
+      type="button"
+      aria-label="Close shopping cart"
+      onClick={() => setCartOpen(false)}
+      className="fixed inset-0 z-[90] bg-black/35"
+    />
+
+    {/* Cart drawer */}
+    <aside
+      className="fixed right-0 top-0 z-[100] flex h-screen w-full max-w-[390px] flex-col bg-white shadow-2xl"
+      aria-label="Shopping Cart"
+    >
+      {/* Header */}
+      <div className="flex h-16 shrink-0 items-center justify-between border-b border-slate-200 px-5">
+        <h2 className="text-xl font-semibold text-slate-900">
+          Shopping Cart
+        </h2>
+
+        <button
+          type="button"
+          onClick={() => setCartOpen(false)}
+          aria-label="Close shopping cart"
+          className="flex h-9 w-9 items-center justify-center rounded-full text-slate-700 transition hover:bg-slate-100"
+        >
+          <X className="h-5 w-5" />
+        </button>
+      </div>
+
+      {/* Cart items */}
+      <div className="flex-1 overflow-y-auto">
+        {cartItems.length === 0 ? (
+          <div className="flex h-full flex-col items-center justify-center px-6 text-center">
+            <ShoppingCart className="h-12 w-12 text-slate-300" />
+
+            <h3 className="mt-4 text-lg font-bold text-slate-900">
+              Your cart is empty
+            </h3>
+
+            <p className="mt-2 text-sm text-slate-500">
+              Add a cleaning service to your cart and it will appear here.
+            </p>
+
+            <Link
+              href="/services"
+              onClick={() => setCartOpen(false)}
+              className="mt-5 rounded-lg bg-[var(--brand-blue)] px-5 py-3 text-sm font-bold text-white transition hover:bg-[var(--brand-navy)]"
+            >
+              Browse services
+            </Link>
+          </div>
+        ) : (
+          <div className="px-5 py-5">
+            {cartItems.map((item) => {
+              const service = catalog.find(
+                (entry) => String(entry.id) === String(item.serviceId)
+              );
+
+              if (!service) return null;
+
+              const variant = service.variants?.find(
+                (entry) => String(entry.id) === String(item.variantId)
+              );
+
+              const unitPrice = Number(
+                variant?.price ?? service.price ?? 0
+              );
+
+              return (
+                <div
+                  key={`${item.serviceId}-${item.variantId ?? "default"}`}
+                  className="flex gap-3 border-b border-slate-200 pb-4 mb-4"
+                >
+                  <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-slate-100">
+                    {service.images?.[0] ? (
+                      <Image
+                        src={service.images[0]}
+                        alt={service.name}
+                        fill
+                        sizes="64px"
+                        className="object-cover"
+                      />
+                    ) : null}
+                  </div>
+
+                  <div className="min-w-0 flex-1">
+                    <p className="font-semibold leading-5 text-slate-900">
+                      {service.name}
+                    </p>
+
+                    {variant?.name ? (
+                      <p className="mt-1 text-xs text-slate-500">
+                        {variant.name}
+                      </p>
+                    ) : null}
+
+                    <p className="mt-1 text-sm text-slate-500">
+                      Qty: {item.quantity}
+                    </p>
+                  </div>
+
+                  <div className="shrink-0 text-sm font-bold text-[var(--brand-blue)]">
+                    ₹{(unitPrice * item.quantity).toFixed(2)}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      {/* Bottom */}
+      {cartItems.length > 0 && (
+        <div className="shrink-0 border-t border-slate-200 bg-white px-5 py-5">
+          <div className="flex items-center justify-between">
+            <span className="text-base font-bold text-slate-900">
+              Subtotal:
+            </span>
+
+            <span className="text-lg font-extrabold text-slate-900">
+              ₹
+              {cartItems
+                .reduce((total, item) => {
+                  const service = catalog.find(
+                    (entry) =>
+                      String(entry.id) === String(item.serviceId)
+                  );
+
+                  if (!service) return total;
+
+                  const variant = service.variants?.find(
+  (entry) => String(entry.id) === String(item.variantId)
+);
+
+const unitPrice =
+  variant?.price ?? service.minPrice ?? service.basePrice ?? 0;
+                  return total + unitPrice * item.quantity;
+                }, 0)
+                .toFixed(2)}
+            </span>
+          </div>
+
+          <div className="mt-5 grid grid-cols-2 gap-3">
+            <Link
+              href="/cart"
+              onClick={() => setCartOpen(false)}
+              className="flex h-12 items-center justify-center rounded-lg bg-[var(--brand-blue)] text-sm font-bold text-white transition hover:bg-[var(--brand-navy)]"
+            >
+              View cart
+            </Link>
+
+            <Link
+              href="/checkout"
+              onClick={() => setCartOpen(false)}
+              className="flex h-12 items-center justify-center rounded-lg bg-[var(--brand-blue)] text-sm font-bold text-white transition hover:bg-[var(--brand-navy)]"
+            >
+              Checkout
+            </Link>
+          </div>
+        </div>
+      )}
+    </aside>
+  </>
+  )}
     </header>
   );
 }

@@ -17,6 +17,8 @@ import {
 } from "@/lib/services";
 import { loadServerServiceBySlug, loadServerServices } from "@/lib/server-services";
 
+
+
 type ServiceDetailsProps = {
   params: Promise<{ slug: string }>;
 };

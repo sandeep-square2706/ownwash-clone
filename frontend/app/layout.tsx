@@ -4,6 +4,8 @@ import "./globals.css";
 import SiteChrome from "@/components/layout/SiteChrome";
 import { getSiteUrl } from "@/lib/site-url";
 
+import WhatsAppButton from "@/components/WhatsAppButton";
+
 const siteUrl = getSiteUrl();
 const logoUrl = siteUrl
   ? new URL("/images/logo/cleankart-logo.png", siteUrl).toString()
@@ -61,6 +63,7 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <SiteChrome>{children}</SiteChrome>
+        <WhatsAppButton />
       </body>
     </html>
   );

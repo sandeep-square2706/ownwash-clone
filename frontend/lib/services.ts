@@ -52,12 +52,12 @@ export async function loadServices(): Promise<Service[]> {
   if (!base) return mockServices.filter((service) => service.isActive);
 
   const apiOrigin = new URL(base).origin;
-  let nextUrl: string | null = `${base}/api/services/`;
+  let nextUrl: string | null = `${base}/services/`;
   const visitedPages = new Set<string>();
   const services: Service[] = [];
 
   while (nextUrl) {
-    const pageUrl = new URL(nextUrl, `${base}/`).toString();
+    const pageUrl: string = new URL(nextUrl, `${base}/`).toString();
     if (new URL(pageUrl).origin !== apiOrigin) {
       throw new Error("CleanKart returned a service page outside the configured API host.");
     }
@@ -97,7 +97,7 @@ export async function loadServiceBySlug(slug: string): Promise<Service | undefin
   if (!getAPIBase()) return getServiceBySlug(slug);
 
   try {
-    const service = await requestAPI<Service>(`/api/services/${encodeURIComponent(slug)}/`);
+    const service = await requestAPI<Service>(`/services/${encodeURIComponent(slug)}/`);
     if (
       typeof service?.id !== "number" ||
       service.slug !== slug ||

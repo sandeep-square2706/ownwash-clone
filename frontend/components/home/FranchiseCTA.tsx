@@ -31,9 +31,9 @@ export default function FranchiseCTA() {
           </ul>
         </div>
         <Link
-          href="/franchise"
-          className="inline-flex min-h-12 w-fit items-center gap-2 rounded-full bg-[var(--brand-gold)] px-5 text-sm font-bold text-[var(--brand-navy)] transition hover:bg-amber-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--brand-blue)]"
-        >
+  href="/partner"
+  className="inline-flex min-h-12 w-fit items-center gap-2 rounded-full bg-[var(--brand-gold)] px-5 text-sm font-bold text-[var(--brand-navy)] transition hover:bg-amber-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--brand-blue)]"
+>
           Become a partner <ArrowRight className="h-4 w-4" aria-hidden="true" />
         </Link>
       </div>
