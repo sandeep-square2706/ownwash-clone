@@ -298,8 +298,9 @@ export default function AboutPage() {
               <div className="ck-person">
 
                 <Image
-                  src="/images/about/cleankart-person.png"
-                  alt="CleanKart professional"
+  src="/images/about/person.png"
+  alt="CleanKart professional"
+
                   fill
                   className="ck-person-image"
                   sizes="420px"
@@ -1121,18 +1122,21 @@ export default function AboutPage() {
         }
 
         .ck-person {
-          position: absolute;
-          left: 50%;
-          bottom: 0;
-          width: 390px;
-          height: 500px;
-          transform: translateX(-50%);
-        }
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
 
-        .ck-person-image {
-          object-fit: contain;
-          object-position: bottom center;
-        }
+.ck-person-image {
+  object-fit: contain;
+  object-position: center center;
+  width: 72%;
+  height: 72%;
+}
 
         .ck-top-badge {
           position: absolute;

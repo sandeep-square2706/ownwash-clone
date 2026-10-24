@@ -47,6 +47,39 @@ function isServiceList(value: unknown): value is Service[] {
   });
 }
 
+const LOCAL_SERVICE_IMAGES: Record<string, string> = {
+  "foam-washing": "/images/services/foam-washing.jpeg",
+  "interior-deep-cleaning": "/images/services/interior-deep-cleaning.jpeg",
+  "steam-washing": "/images/services/steam-washing.jpeg",
+  "full-car-detailing": "/images/services/full-car-detailing.jpeg",
+  "exterior-deep-cleaning": "/images/services/exterior-deep-cleaning.jpeg",
+  "furniture-cleaning": "/images/services/furniture-cleaning.jpeg",
+  "office-cleaning": "/images/services/office-cleaning.jpeg",
+  "house-cleaning": "/images/services/house-cleaning.jpeg",
+  "ac-services": "/images/services/ac-services.jpeg",
+  "water-tank-cleaning": "/images/services/water-tank-cleaning.jpeg",
+  "kitchen-cleaning": "/images/services/kitchen-cleaning.jpeg",
+  "carpet-cleaning": "/images/services/carpet-cleaning.jpeg",
+  "sofa-dry-cleaning": "/images/services/sofa-dry-cleaning.jpeg",
+};
+
+
+function attachLocalImages(serviceList: Service[]): Service[] {
+  return serviceList.map((service) => {
+    const localService = mockServices.find(
+      (item) => item.slug === service.slug,
+    );
+
+    return {
+      ...service,
+      images:
+        service.images?.length
+          ? service.images
+          : localService?.images ?? [],
+    };
+  });
+}
+
 export async function loadServices(): Promise<Service[]> {
   const base = getAPIBase();
   if (!base) return mockServices.filter((service) => service.isActive);
@@ -90,7 +123,9 @@ export async function loadServices(): Promise<Service[]> {
     }
   }
 
-  return services.filter((service) => service.isActive);
+  return attachLocalImages(
+  services.filter((service) => service.isActive),
+);
 }
 
 export async function loadServiceBySlug(slug: string): Promise<Service | undefined> {
@@ -105,7 +140,9 @@ export async function loadServiceBySlug(slug: string): Promise<Service | undefin
     ) {
       throw new Error("CleanKart returned an invalid service record.");
     }
-    return service.isActive ? service : undefined;
+    return service.isActive
+  ? attachLocalImages([service])[0]
+  : undefined;
   } catch (error) {
     if (error instanceof Error && error.message.includes("(404)")) return undefined;
     throw error;
@@ -142,7 +179,7 @@ export function getServiceOriginalPrice(service: Service) {
       ? undefined
       : formatPrice(lowestPricedVariant.originalPrice);
   }
-  return service.originalPrice === undefined ? undefined : formatPrice(service.originalPrice);
+  if (!service.isActive) return undefined;
 }
 
 export function getAddonTotal(service: Service, addonIds: string[] = []) {

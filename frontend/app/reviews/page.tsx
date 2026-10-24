@@ -1,6 +1,6 @@
-
 "use client";
-import { FormEvent, useState } from "react";
+
+import { FormEvent, useEffect, useState } from "react";
 
 type Review = {
   name: string;
@@ -116,8 +116,8 @@ function Stars({ rating = 5 }: { rating?: number }) {
 function ReviewCard({ review }: { review: Review }) {
   return (
     <article className="group relative overflow-hidden rounded-[18px] border border-slate-200 bg-white p-5 shadow-[0_5px_20px_rgba(16,44,95,0.08)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_14px_32px_rgba(16,44,95,0.14)]">
-      {/* Decorative yellow circle */}
       <div className="pointer-events-none absolute -bottom-16 -right-16 h-36 w-36 rounded-full bg-[#f4c542]/10 transition duration-300 group-hover:scale-125" />
+
       <div className="pointer-events-none absolute -bottom-7 -right-7 h-24 w-24 rounded-full border-[8px] border-[#f4c542]/10" />
 
       <div className="relative">
@@ -130,6 +130,7 @@ function ReviewCard({ review }: { review: Review }) {
             <h3 className="text-[20px] font-bold text-[#117c79]">
               {review.name}
             </h3>
+
             <p className="mt-1 text-sm font-medium text-slate-700">
               {review.service}
             </p>
@@ -151,31 +152,139 @@ function ReviewCard({ review }: { review: Review }) {
 export default function ReviewsPage() {
   const [submitted, setSubmitted] = useState(false);
   const [rating, setRating] = useState(5);
+  const API_URL = (
+  process.env.NEXT_PUBLIC_CLEANKART_API_URL ||
+  "http://127.0.0.1:8000"
+).replace(/\/+$/, "").replace(/\/api$/, "");
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setSubmitted(true);
-  }
+  const [reviews, setReviews] = useState<Review[]>(customerReviews);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
 
-const reviewsPerPage = 6;
-const totalPages = Math.ceil(customerReviews.length / reviewsPerPage);
+  /*
+   * Load approved reviews from Django
+   */
+  useEffect(() => {
+    async function loadApprovedReviews() {
+      try {
+        const response = await fetch(`${API_URL}/api/reviews/approved/`);
 
-const startIndex = (currentPage - 1) * reviewsPerPage;
-const currentReviews = customerReviews.slice(
-  startIndex,
-  startIndex + reviewsPerPage
-);
+        if (!response.ok) {
+          throw new Error("Could not load reviews.");
+        }
+
+        const data = await response.json();
+
+        const backendReviews: Review[] = data.map(
+          (review: {
+            id: number;
+            name: string;
+            service: string;
+            rating: number;
+            text: string;
+            avatar?: string;
+          }) => ({
+            name: review.name,
+            service: review.service || "CleanKart Service",
+            text: review.text,
+            rating: review.rating,
+            avatar: review.avatar || "👤",
+          }),
+        );
+
+        setReviews([...backendReviews, ...customerReviews]);
+      } catch {
+        setReviews(customerReviews);
+      }
+    }
+
+    loadApprovedReviews();
+  }, [API_URL]);
+
+  /*
+   * Submit review to Django
+   */
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    setIsSubmitting(true);
+    setSubmitError("");
+    setSubmitted(false);
+
+    const form = event.currentTarget;
+    const formData = new FormData(form);
+
+    formData.set("rating", String(rating));
+
+    try {
+      const response = await fetch(`${API_URL}/api/reviews/`, {
+        method: "POST",
+        body: formData,
+      });
+
+      const result = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(
+          result.detail ||
+            "Could not submit your review. Please try again.",
+        );
+      }
+
+      setSubmitted(true);
+      form.reset();
+      setRating(5);
+    } catch (error) {
+      setSubmitError(
+        error instanceof Error
+          ? error.message
+          : "Could not submit your review. Please try again.",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  /*
+   * Pagination
+   */
+  const reviewsPerPage = 6;
+  const totalPages = Math.max(
+    1,
+    Math.ceil(reviews.length / reviewsPerPage),
+  );
+
+  const startIndex = (currentPage - 1) * reviewsPerPage;
+
+  const currentReviews = reviews.slice(
+    startIndex,
+    startIndex + reviewsPerPage,
+  );
+
+  function goToPage(page: number) {
+    const safePage = Math.min(Math.max(page, 1), totalPages);
+
+    setCurrentPage(safePage);
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  }
+
   return (
     <main className="min-h-screen bg-white text-slate-950">
       {/* =========================================================
           HERO
       ========================================================= */}
+
       <section className="relative overflow-hidden bg-[#17366d]">
         <div className="mx-auto max-w-[1380px] px-5 py-16 sm:px-8 sm:py-20 lg:px-10 lg:py-24">
           <div className="max-w-3xl">
             <div className="mb-5 flex items-center gap-3 text-sm font-semibold text-blue-100">
               <span>CleanKart Reviews</span>
+
               <span
                 className="h-px w-24 bg-[#f4c542]"
                 aria-hidden="true"
@@ -196,18 +305,19 @@ const currentReviews = customerReviews.slice(
           </div>
         </div>
 
-        {/* Bottom yellow accent */}
         <div className="h-1.5 bg-[#f4c542]" />
       </section>
 
       {/* =========================================================
           REVIEWS INTRO
       ========================================================= */}
+
       <section className="px-5 py-14 sm:px-8 sm:py-16 lg:px-10">
         <div className="mx-auto max-w-[1380px]">
           <div className="mb-10">
             <div className="mb-3 flex items-center gap-3 text-sm font-semibold text-slate-600">
               <span>Customer feedback</span>
+
               <span
                 className="h-px w-24 bg-[#1769e8]"
                 aria-hidden="true"
@@ -227,9 +337,9 @@ const currentReviews = customerReviews.slice(
 
           {/* Review cards */}
           <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-            {customerReviews.map((review) => (
+            {currentReviews.map((review, index) => (
               <ReviewCard
-                key={`${review.name}-${review.service}`}
+                key={`${review.name}-${review.service}-${index}`}
                 review={review}
               />
             ))}
@@ -240,9 +350,11 @@ const currentReviews = customerReviews.slice(
       {/* =========================================================
           REVIEW + ABOUT SECTION
       ========================================================= */}
+
       <section className="bg-[#f5f8fd] px-5 py-14 sm:px-8 sm:py-16 lg:px-10">
         <div className="mx-auto grid max-w-[1380px] gap-8 lg:grid-cols-[0.95fr_1.05fr]">
           {/* Review form */}
+
           <div className="overflow-hidden rounded-[18px] bg-[#102c5f] p-2 shadow-[0_14px_35px_rgba(16,44,95,0.16)]">
             <div className="rounded-[14px] bg-white p-6 sm:p-8">
               <h2 className="text-center text-3xl font-extrabold text-[#102c5f] sm:text-4xl">
@@ -263,13 +375,17 @@ const currentReviews = customerReviews.slice(
                   </h3>
 
                   <p className="mt-2 text-sm leading-6 text-green-700">
-                    Your feedback has been received. We appreciate you taking
-                    the time to share your CleanKart experience.
+                    Your feedback has been received and is waiting for
+                    approval. We appreciate you taking the time to share your
+                    CleanKart experience.
                   </p>
 
                   <button
                     type="button"
-                    onClick={() => setSubmitted(false)}
+                    onClick={() => {
+                      setSubmitted(false);
+                      setSubmitError("");
+                    }}
                     className="mt-5 rounded-full bg-[#1769e8] px-6 py-3 text-sm font-bold text-white transition hover:bg-[#102c5f]"
                   >
                     Submit another review
@@ -285,9 +401,11 @@ const currentReviews = customerReviews.slice(
                   </p>
 
                   {/* Rating */}
+
                   <div className="mt-6">
                     <label className="block text-sm font-bold text-slate-800">
-                      Star rating <span className="text-red-500">*</span>
+                      Star rating{" "}
+                      <span className="text-red-500">*</span>
                     </label>
 
                     <div className="mt-3 flex gap-1">
@@ -312,6 +430,7 @@ const currentReviews = customerReviews.slice(
                   </div>
 
                   {/* Title */}
+
                   <div className="mt-6">
                     <label
                       htmlFor="review-title"
@@ -331,6 +450,7 @@ const currentReviews = customerReviews.slice(
                   </div>
 
                   {/* Name */}
+
                   <div className="mt-4">
                     <label
                       htmlFor="review-name"
@@ -350,6 +470,7 @@ const currentReviews = customerReviews.slice(
                   </div>
 
                   {/* Email */}
+
                   <div className="mt-4">
                     <label
                       htmlFor="review-email"
@@ -368,7 +489,27 @@ const currentReviews = customerReviews.slice(
                     />
                   </div>
 
+                  {/* Service */}
+
+                  <div className="mt-4">
+                    <label
+                      htmlFor="review-service"
+                      className="sr-only"
+                    >
+                      Service
+                    </label>
+
+                    <input
+                      id="review-service"
+                      name="service"
+                      type="text"
+                      placeholder="Service Used"
+                      className="h-12 w-full rounded-xl border border-slate-300 bg-white px-4 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1769e8] focus:ring-4 focus:ring-[#1769e8]/10"
+                    />
+                  </div>
+
                   {/* Review content */}
+
                   <div className="mt-4">
                     <label
                       htmlFor="review-content"
@@ -379,7 +520,7 @@ const currentReviews = customerReviews.slice(
 
                     <textarea
                       id="review-content"
-                      name="content"
+                      name="review_text"
                       required
                       rows={7}
                       placeholder="What do you think about us?"
@@ -388,6 +529,7 @@ const currentReviews = customerReviews.slice(
                   </div>
 
                   {/* Photo */}
+
                   <div className="mt-5">
                     <label
                       htmlFor="review-photo"
@@ -405,21 +547,32 @@ const currentReviews = customerReviews.slice(
                     />
                   </div>
 
+                  {/* Submit */}
+
                   <button
                     type="submit"
-                    className="mt-6 w-full rounded-xl bg-[#f4c542] px-6 py-3.5 text-sm font-extrabold text-[#102c5f] transition hover:-translate-y-0.5 hover:bg-[#eeb72a] hover:shadow-lg"
+                    disabled={isSubmitting}
+                    className="mt-6 w-full rounded-xl bg-[#f4c542] px-6 py-3.5 text-sm font-extrabold text-[#102c5f] transition hover:-translate-y-0.5 hover:bg-[#eeb72a] hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60"
                   >
-                    Add Testimonial
+                    {isSubmitting ? "Submitting..." : "Add Testimonial"}
                   </button>
+
+                  {submitError && (
+                    <p className="mt-3 text-sm text-red-600">
+                      {submitError}
+                    </p>
+                  )}
                 </form>
               )}
             </div>
           </div>
 
           {/* Information */}
+
           <div className="rounded-[18px] bg-white p-7 shadow-sm sm:p-9">
             <div className="mb-4 flex items-center gap-3 text-sm font-semibold text-slate-600">
               <span>Why your feedback matters</span>
+
               <span
                 className="h-px w-20 bg-[#1769e8]"
                 aria-hidden="true"
@@ -459,11 +612,13 @@ const currentReviews = customerReviews.slice(
             </div>
 
             {/* Small stats */}
+
             <div className="mt-8 grid gap-4 sm:grid-cols-3">
               <div className="rounded-2xl border border-[#1769e8]/15 bg-[#f5f9ff] p-5 text-center">
                 <div className="text-3xl font-extrabold text-[#102c5f]">
                   4.7+
                 </div>
+
                 <div className="mt-1 text-sm font-semibold text-[#1769e8]">
                   Customer Rating
                 </div>
@@ -473,6 +628,7 @@ const currentReviews = customerReviews.slice(
                 <div className="text-3xl font-extrabold text-[#102c5f]">
                   5★
                 </div>
+
                 <div className="mt-1 text-sm font-semibold text-[#1769e8]">
                   Quality Focus
                 </div>
@@ -482,6 +638,7 @@ const currentReviews = customerReviews.slice(
                 <div className="text-3xl font-extrabold text-[#102c5f]">
                   24/7
                 </div>
+
                 <div className="mt-1 text-sm font-semibold text-[#1769e8]">
                   Easy Booking
                 </div>
@@ -494,11 +651,13 @@ const currentReviews = customerReviews.slice(
       {/* =========================================================
           CUSTOMER STORIES
       ========================================================= */}
+
       <section className="px-5 py-14 sm:px-8 sm:py-16 lg:px-10">
         <div className="mx-auto max-w-[1380px]">
           <div className="mb-10">
             <div className="mb-3 flex items-center gap-3 text-sm font-semibold text-slate-600">
               <span>More customer experiences</span>
+
               <span
                 className="h-px w-24 bg-[#1769e8]"
                 aria-hidden="true"
@@ -517,7 +676,6 @@ const currentReviews = customerReviews.slice(
                 key={story.title}
                 className="relative min-h-[250px] overflow-hidden rounded-[16px] border border-slate-200 bg-white p-7 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg"
               >
-                {/* Quote */}
                 <div className="absolute left-5 top-1 text-[90px] font-serif leading-none text-slate-100">
                   “
                 </div>
@@ -548,56 +706,47 @@ const currentReviews = customerReviews.slice(
       {/* =========================================================
           PAGINATION
       ========================================================= */}
+
       <section className="px-5 pb-16 sm:px-8 lg:px-10">
         <div className="mx-auto flex max-w-[1380px] items-center justify-center gap-2">
           <button
             type="button"
-            className="flex h-10 min-w-10 items-center justify-center rounded-md bg-[#102c5f] px-3 text-sm font-bold text-white"
+            disabled={currentPage === 1}
+            onClick={() => goToPage(currentPage - 1)}
+            className="flex h-10 items-center justify-center rounded-md border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 transition hover:border-[#1769e8] hover:text-[#1769e8] disabled:cursor-not-allowed disabled:opacity-40"
           >
-            1
+            ← Previous
           </button>
+
+          {Array.from({ length: totalPages }).map((_, index) => {
+            const page = index + 1;
+
+            return (
+              <button
+                key={page}
+                type="button"
+                onClick={() => goToPage(page)}
+                className={`flex h-10 min-w-10 items-center justify-center rounded-md px-3 text-sm font-bold transition ${
+                  currentPage === page
+                    ? "bg-[#102c5f] text-white"
+                    : "border border-slate-200 bg-white text-slate-700 hover:border-[#1769e8] hover:text-[#1769e8]"
+                }`}
+              >
+                {page}
+              </button>
+            );
+          })}
 
           <button
             type="button"
-            className="flex h-10 min-w-10 items-center justify-center rounded-md border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-700 transition hover:border-[#1769e8] hover:text-[#1769e8]"
-          >
-            2
-          </button>
-
-          <button
-            type="button"
-            className="flex h-10 min-w-10 items-center justify-center rounded-md border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-700 transition hover:border-[#1769e8] hover:text-[#1769e8]"
-          >
-            3
-          </button>
-
-          <span className="px-2 text-slate-500">...</span>
-
-          <button
-            type="button"
-            className="flex h-10 items-center justify-center rounded-md border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 transition hover:border-[#1769e8] hover:text-[#1769e8]"
+            disabled={currentPage === totalPages}
+            onClick={() => goToPage(currentPage + 1)}
+            className="flex h-10 items-center justify-center rounded-md border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 transition hover:border-[#1769e8] hover:text-[#1769e8] disabled:cursor-not-allowed disabled:opacity-40"
           >
             Next →
           </button>
         </div>
       </section>
-
-      {/* =========================================================
-          FINAL CTA
-      ========================================================= */}
-      
-      {/* =========================================================
-          WHATSAPP BUTTON
-      ========================================================= */}
-      <a
-        href="https://wa.me/917286082860"
-        target="_blank"
-        rel="noreferrer"
-        aria-label="Chat with CleanKart on WhatsApp"
-        className="fixed bottom-5 right-5 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-[0_8px_25px_rgba(0,0,0,0.2)] transition hover:scale-105"
-      >
-        <span className="text-2xl font-bold">◔</span>
-      </a>
     </main>
   );
 }

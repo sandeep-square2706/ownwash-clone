@@ -208,14 +208,61 @@ export default function ContactPage() {
 
   const [submitted, setSubmitted] = useState(false);
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setSubmitted(true);
+  const handleSubmit = async (
+  event: React.FormEvent<HTMLFormElement>
+) => {
+  event.preventDefault();
 
-    window.setTimeout(() => {
+  setSubmitted(false);
+
+  const form = event.currentTarget;
+  const formData = new FormData(form);
+
+  const payload = {
+    name: String(formData.get("name") || "").trim(),
+    email: String(formData.get("email") || "").trim(),
+    phone: String(formData.get("phone") || "").trim(),
+    service: String(formData.get("service") || "").trim(),
+    message: String(formData.get("message") || "").trim(),
+  };
+
+  try {
+    const API_URL =
+      process.env.NEXT_PUBLIC_CLEANKART_API_URL ||
+      "http://127.0.0.1:8000/api";
+
+    const response = await fetch(`${API_URL}/contact/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        data?.detail || "Failed to submit your message."
+      );
+    }
+
+    setSubmitted(true);
+    form.reset();
+
+    setTimeout(() => {
       setSubmitted(false);
     }, 3500);
+  } catch (error) {
+    console.error("Contact form submission failed:", error);
+
+    alert(
+      error instanceof Error
+        ? error.message
+        : "Something went wrong. Please try again."
+    );
   }
+};
 
   return (
     <main className="min-h-screen bg-white text-slate-950">

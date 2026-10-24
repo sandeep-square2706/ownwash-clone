@@ -1,7 +1,7 @@
 const API_URL = (
   process.env.NEXT_PUBLIC_CLEANKART_API_URL ||
-  "http://127.0.0.1:8000"
-).replace(/\/+$/, "");
+  "http://127.0.0.1:8000/api"
+).replace(/\/$/, "");
 
 export type AuthUser = {
   id: number;
@@ -21,9 +21,9 @@ type AuthResponse = {
   refresh: string;
 };
 
-let accessToken: string | null = null;
-let refreshToken: string | null = null;
-let currentUser: AuthUser | null = null;
+const ACCESS_TOKEN_KEY = "cleankart_access_token";
+const REFRESH_TOKEN_KEY = "cleankart_refresh_token";
+const USER_KEY = "cleankart_user";
 
 /* -------------------------------------------------------
    DISPLAY NAME STORAGE
@@ -39,7 +39,9 @@ function getStoredCustomerNames(): CustomerNames {
   }
 
   try {
-    const stored = window.localStorage.getItem(NAME_STORAGE_KEY);
+    const stored = window.localStorage.getItem(
+      NAME_STORAGE_KEY,
+    );
 
     if (!stored) {
       return {};
@@ -107,28 +109,109 @@ export function getStoredCustomerName(
 }
 
 /* -------------------------------------------------------
+   AUTH STORAGE
+------------------------------------------------------- */
+
+function getStoredAccessToken(): string | null {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
+  return window.localStorage.getItem(
+    ACCESS_TOKEN_KEY,
+  );
+}
+
+function getStoredRefreshToken(): string | null {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
+  return window.localStorage.getItem(
+    REFRESH_TOKEN_KEY,
+  );
+}
+
+function getStoredUser(): AuthUser | null {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
+  try {
+    const stored = window.localStorage.getItem(
+      USER_KEY,
+    );
+
+    if (!stored) {
+      return null;
+    }
+
+    return JSON.parse(stored) as AuthUser;
+  } catch {
+    return null;
+  }
+}
+
+function saveAuth(
+  access: string,
+  refresh: string,
+  user: AuthUser,
+) {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  window.localStorage.setItem(
+    ACCESS_TOKEN_KEY,
+    access,
+  );
+
+  window.localStorage.setItem(
+    REFRESH_TOKEN_KEY,
+    refresh,
+  );
+
+  window.localStorage.setItem(
+    USER_KEY,
+    JSON.stringify(user),
+  );
+}
+
+/* -------------------------------------------------------
    AUTH STATE
 ------------------------------------------------------- */
 
 export function getAccessToken() {
-  return accessToken;
+  return getStoredAccessToken();
 }
 
 export function getCurrentUserData() {
-  return currentUser;
+  return getStoredUser();
 }
 
 export function clearAuth() {
-  accessToken = null;
-  refreshToken = null;
-  currentUser = null;
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  window.localStorage.removeItem(
+    ACCESS_TOKEN_KEY,
+  );
+
+  window.localStorage.removeItem(
+    REFRESH_TOKEN_KEY,
+  );
+
+  window.localStorage.removeItem(USER_KEY);
 }
 
 /* -------------------------------------------------------
    RESPONSE HANDLER
 ------------------------------------------------------- */
 
-async function readResponse(response: Response) {
+async function readResponse(
+  response: Response,
+) {
   const result = await response
     .json()
     .catch(() => ({}));
@@ -187,7 +270,7 @@ export async function submitAuth(
         };
 
   const response = await fetch(
-    `${API_URL}/api/auth/${
+    `${API_URL}/auth/${
       mode === "register"
         ? "register"
         : "login"
@@ -203,17 +286,12 @@ export async function submitAuth(
 
   const result = await readResponse(response);
 
-  accessToken = result.access;
-  refreshToken = result.refresh;
-  currentUser = result.user;
+  saveAuth(
+    result.access,
+    result.refresh,
+    result.user,
+  );
 
-  /*
-    Save the customer's name locally.
-
-    We intentionally do this on the frontend for now,
-    so your existing Django authentication does not
-    need to be changed.
-  */
   if (
     mode === "register" &&
     data.full_name?.trim()

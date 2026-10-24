@@ -332,12 +332,11 @@ export default function Navbar() {
               if (!service) return null;
 
               const variant = service.variants?.find(
-                (entry) => String(entry.id) === String(item.variantId)
-              );
+  (entry) => String(entry.id) === String(item.variantId)
+);
 
-              const unitPrice = Number(
-                variant?.price ?? service.price ?? 0
-              );
+const unitPrice =
+  variant?.price ?? service.minPrice ?? service.basePrice ?? 0;
 
               return (
                 <div

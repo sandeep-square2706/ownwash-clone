@@ -1,7 +1,7 @@
 from django.contrib.auth import authenticate
 from rest_framework import serializers
 
-from .models import User
+from .models import Address, User
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -50,6 +50,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
+
     password = serializers.CharField(
         write_only=True,
     )
@@ -81,6 +82,7 @@ class LoginSerializer(serializers.Serializer):
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
+
         fields = [
             "id",
             "username",
@@ -91,6 +93,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
         ]
+
         read_only_fields = [
             "id",
             "email",
@@ -99,3 +102,62 @@ class UserProfileSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
         ]
+
+
+class AddressSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Address
+
+        fields = [
+            "id",
+            "full_name",
+            "phone",
+            "house_number",
+            "street",
+            "area",
+            "landmark",
+            "city",
+            "district",
+            "state",
+            "pincode",
+            "address_type",
+            "is_default",
+            "created_at",
+            "updated_at",
+        ]
+
+        read_only_fields = [
+            "id",
+            "created_at",
+            "updated_at",
+        ]
+
+    def validate_pincode(self, value):
+        value = str(value).strip()
+
+        if not value.isdigit():
+            raise serializers.ValidationError(
+                "PIN code must contain only numbers."
+            )
+
+        if len(value) != 6:
+            raise serializers.ValidationError(
+                "PIN code must be exactly 6 digits."
+            )
+
+        return value
+
+    def validate_phone(self, value):
+        value = str(value).strip()
+
+        if not value.isdigit():
+            raise serializers.ValidationError(
+                "Phone number must contain only numbers."
+            )
+
+        if len(value) != 10:
+            raise serializers.ValidationError(
+                "Phone number must be exactly 10 digits."
+            )
+
+        return value

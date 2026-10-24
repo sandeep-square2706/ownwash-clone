@@ -52,7 +52,7 @@ export const mockServices: Service[] = [
     description:
       "A rich, paint-safe foam wash that lifts everyday dirt and leaves your vehicle fresh and glossy.",
     duration: "45–60 min",
-    images: ["/images/generated/menu-foam-wash.webp", localImage("bike-foam-wash.jpeg")],
+    images: [localImage("foam-washing.jpeg")],
     features: ["Foam pre-wash", "Wheel and tyre cleaning", "Hand wash and dry"],
     addons: [
       { id: "spray-wax", name: "Spray wax finish", price: 199 },
@@ -70,7 +70,7 @@ export const mockServices: Service[] = [
     description:
       "A detailed interior refresh for seats, carpets, dashboard, doors and hard-to-reach areas.",
     duration: "2–3 hrs",
-    images: ["/images/generated/blog-car-care.webp", localImage("car-interior-cleaning.jpeg")],
+    images: [localImage("interior-deep-cleaning.jpeg")],
     features: ["Seat and carpet cleaning", "Dashboard and console care", "Interior vacuuming"],
     addons: [{ id: "odor-treatment", name: "Odour treatment", price: 149 }],
     variants: [
@@ -90,7 +90,7 @@ export const mockServices: Service[] = [
     description:
       "A careful steam clean that refreshes your vehicle interior and helps lift stubborn grime.",
     duration: "60–90 min",
-    images: ["/images/generated/menu-steam-wash.webp", "/images/generated/steam-washing-2.webp"],
+    images: [localImage("steam-washing.jpeg")],
     features: ["Steam cleaning", "Interior refresh", "Odour-reducing treatment"],
     variants: [
       { id: "hatchback", name: "Hatchback", price: 549, originalPrice: 599 },
@@ -109,7 +109,7 @@ export const mockServices: Service[] = [
     description:
       "A complete inside-and-out detail for a polished finish and a cabin that feels refreshed.",
     duration: "3–5 hrs",
-    images: ["/images/generated/menu-full-detail.webp"],
+    images: [localImage("full-car-detailing.jpeg")],
     features: ["Interior detailing", "Exterior hand wash", "Finishing and protection"],
     variants: [
       { id: "hatchback", name: "Hatchback", price: 849, originalPrice: 899 },
@@ -128,7 +128,7 @@ export const mockServices: Service[] = [
     description:
       "A deeper exterior clean for paintwork, wheels and trim, finished with a careful hand dry.",
     duration: "60–90 min",
-    images: ["/images/generated/menu-exterior-deep.webp"],
+    images: [localImage("exterior-deep-cleaning.jpeg")],
     features: ["Paint-safe deep wash", "Wheel and tyre detailing", "Hand dry and finish"],
     variants: [
       { id: "hatchback", name: "Hatchback", price: 549, originalPrice: 599 },
@@ -147,10 +147,7 @@ export const mockServices: Service[] = [
     description:
       "Freshen up fabric furniture with professional vacuuming, stain care and upholstery cleaning.",
     duration: "1–2 hrs",
-    images: [
-      localImage("sofa-steam-cleaning.jpeg"),
-      "/images/generated/blog-sofa-care.webp",
-    ],
+    images: [localImage("furniture-cleaning.jpeg")],
     features: ["Upholstery vacuuming", "Spot and stain treatment", "Fabric-safe cleaning"],
     addons: [{ id: "fabric-protection", name: "Fabric protection", price: 199 }],
     variants: [
@@ -170,13 +167,7 @@ export const mockServices: Service[] = [
     description:
       "Reliable cleaning for workspaces, shared areas and office floors, scheduled around your day.",
     duration: "1–4 hrs",
-    images: [
-      "/images/generated/office-cleaning.webp",
-      "/images/generated/office-cleaning-2.webp",
-      "/images/generated/office-cleaning-3.webp",
-      "/images/generated/office-cleaning-4.webp",
-      "/images/generated/office-cleaning-5.webp",
-    ],
+    images: [localImage("office-cleaning.jpeg")],
     features: ["Workspace and surface cleaning", "Floor care", "Waste and touchpoint refresh"],
     variants: [
       { id: "small", name: "Small office", price: 449, originalPrice: 499 },
@@ -195,7 +186,7 @@ export const mockServices: Service[] = [
     description:
       "A practical home clean for floors, surfaces and everyday spaces, delivered at your doorstep.",
     duration: "2–4 hrs",
-    images: ["/images/generated/home-cleaning.webp", localImage("bathroom-cleaning.jpeg")],
+    images: [localImage("house-cleaning.jpeg"), localImage("bathroom-cleaning.jpeg")],
     features: ["Surface dusting", "Floor cleaning", "Kitchen and bathroom refresh"],
     isActive: true,
   },
@@ -209,7 +200,7 @@ export const mockServices: Service[] = [
     description:
       "A technician visit for AC cleaning and service, with options for routine care or a deeper clean.",
     duration: "60–90 min",
-    images: ["/images/generated/ac-cleaning.webp"],
+    images: [localImage("ac-services.jpeg")],
     features: ["Filter cleaning", "Indoor unit care", "Service check"],
     variants: [
       { id: "routine", name: "Routine service", price: 449, originalPrice: 499 },
@@ -228,7 +219,7 @@ export const mockServices: Service[] = [
     description:
       "A thorough tank clean with scrubbing, residue removal and a final hygiene-focused rinse.",
     duration: "1–2 hrs",
-    images: ["/images/generated/water-tank-cleaning.webp"],
+    images: [localImage("water-tank-cleaning.jpeg")],
     features: ["Tank scrubbing", "Residue removal", "Rinse and sanitisation"],
     variants: [
       { id: "small", name: "Small tank", price: 449, originalPrice: 499 },

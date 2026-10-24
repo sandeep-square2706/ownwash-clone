@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from django.conf import settings
 from django.core.validators import MinValueValidator
 from django.db import models
@@ -20,7 +22,7 @@ class PartnerProfile(models.Model):
     languages=models.JSONField(default=list,blank=True); emergency_contact=models.CharField(max_length=20,blank=True)
     experience=models.CharField(max_length=80,blank=True); team_size=models.PositiveIntegerField(default=1)
     service_areas=models.JSONField(default=list,blank=True)
-    max_travel_km=models.DecimalField(max_digits=6,decimal_places=2,default=10,validators=[MinValueValidator(0)])
+    max_travel_km=models.DecimalField(max_digits=6,decimal_places=2,default=Decimal("10.00"),validators=[MinValueValidator(0)])
     working_days=models.JSONField(default=list,blank=True); start_time=models.TimeField(null=True,blank=True); end_time=models.TimeField(null=True,blank=True)
     blackout_dates=models.JSONField(default=list,blank=True); equipment=models.JSONField(default=dict,blank=True)
     bank_holder=models.CharField(max_length=160,blank=True); bank_name=models.CharField(max_length=160,blank=True)
