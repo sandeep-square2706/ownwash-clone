@@ -11,8 +11,10 @@ https://docs.djangoproject.com/en/5.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
-
+import os
 from pathlib import Path
+
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -51,6 +53,8 @@ INSTALLED_APPS = [
     "payments",
     "reviews",
     "partners",
+    "admin_api",
+    "contact",
 ]
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -142,10 +146,11 @@ AUTH_USER_MODEL = "accounts.User"
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
-
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
+    "http://localhost:3001",
+    "http://127.0.0.1:3001",
 ]
 CORS_ALLOW_CREDENTIALS = True
 REST_FRAMEWORK = {
@@ -156,3 +161,11 @@ REST_FRAMEWORK = {
         "rest_framework.permissions.AllowAny",
     ],
 }
+
+# Razorpay payment gateway
+RAZORPAY_KEY_ID = os.getenv("RAZORPAY_KEY_ID", "rzp_test_TrgOFfLkAeQXTK")
+RAZORPAY_KEY_SECRET = os.getenv("RAZORPAY_KEY_SECRET", "vhNWwY1Hi0V6bokSYA74MLro")
+BOOKING_CONVENIENCE_FEE = os.getenv(
+    "BOOKING_CONVENIENCE_FEE",
+    "0.00",
+)

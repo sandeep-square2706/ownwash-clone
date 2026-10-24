@@ -1,3 +1,6 @@
+
+import { Suspense } from "react";
+
 import AddOns from "@/components/home/AddOns";
 import BookAffordable from "@/components/home/BookAffordable";
 import CleanKartPromise from "@/components/home/CleanKartPromise";
@@ -14,7 +17,9 @@ import WhyChooseUs from "@/components/home/WhyChooseUs";
 export default function Home() {
   return (
     <main>
-      <Hero />
+      <Suspense fallback={<div className="min-h-[440px]" />}>
+        <Hero />
+      </Suspense>
 
       <TopServices />
 
@@ -32,7 +37,9 @@ export default function Home() {
 
       <WhyChooseUs />
 
-      <Pricing />
+      <Suspense fallback={<div className="min-h-[300px]" />}>
+        <Pricing />
+      </Suspense>
 
       <Testimonials />
 

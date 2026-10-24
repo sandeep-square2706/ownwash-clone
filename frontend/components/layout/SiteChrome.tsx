@@ -1,11 +1,16 @@
 "use client";
 
+import { Suspense } from "react";
 import { usePathname } from "next/navigation";
 
 import Footer from "@/components/layout/Footer";
 import Navbar from "@/components/layout/Navbar";
 
-export default function SiteChrome({ children }: { children: React.ReactNode }) {
+function SiteChromeContent({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const pathname = usePathname();
   const isCheckout = pathname === "/checkout";
 
@@ -17,5 +22,17 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
       {children}
       <Footer />
     </>
+  );
+}
+
+export default function SiteChrome({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <Suspense fallback={null}>
+      <SiteChromeContent>{children}</SiteChromeContent>
+    </Suspense>
   );
 }

@@ -62,10 +62,12 @@ class CartItemCreateView(APIView):
         service: Any = data["service"]
         variant: Any = data.get("variant")
 
-        selected_addons: list[Any] = data.get(
-            "selected_addons",
-            [],
-        )
+        selected_addons: list[str] = sorted(
+    {
+        str(addon_id)
+        for addon_id in data.get("selected_addons", [])
+    }
+)
 
         quantity: int = int(
             data.get(
@@ -132,11 +134,11 @@ class CartItemCreateView(APIView):
         # -----------------------------------------
 
         item = CartItem.objects.filter(
-            cart=cart,
-            service=service,
-            variant=variant,
-        ).first()
-
+    cart=cart,
+    service=service,
+    variant=variant,
+    selected_addons=selected_addons,
+).first()
         if item is None:
             item = CartItem.objects.create(
                 cart=cart,

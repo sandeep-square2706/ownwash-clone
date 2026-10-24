@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 
+
 import SiteChrome from "@/components/layout/SiteChrome";
 import { getSiteUrl } from "@/lib/site-url";
 
