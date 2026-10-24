@@ -1,0 +1,353 @@
+[
+{
+  "model": "services.category",
+  "pk": 1,
+  "fields": {
+    "name": "Car Cleaning",
+    "slug": "car-cleaning",
+    "description": "",
+    "is_active": true,
+    "display_order": 0,
+    "created_at": "2026-10-22T10:36:31.935Z",
+    "updated_at": "2026-10-22T10:36:31.935Z"
+  }
+},
+{
+  "model": "services.category",
+  "pk": 2,
+  "fields": {
+    "name": "Home Cleaning",
+    "slug": "home-cleaning",
+    "description": "",
+    "is_active": true,
+    "display_order": 0,
+    "created_at": "2026-10-22T10:36:32.014Z",
+    "updated_at": "2026-10-22T10:36:32.014Z"
+  }
+},
+{
+  "model": "services.category",
+  "pk": 3,
+  "fields": {
+    "name": "Commercial Cleaning",
+    "slug": "commercial-cleaning",
+    "description": "",
+    "is_active": true,
+    "display_order": 0,
+    "created_at": "2026-10-22T10:36:32.022Z",
+    "updated_at": "2026-10-22T10:36:32.022Z"
+  }
+},
+{
+  "model": "services.category",
+  "pk": 4,
+  "fields": {
+    "name": "Appliance Services",
+    "slug": "appliance-services",
+    "description": "",
+    "is_active": true,
+    "display_order": 0,
+    "created_at": "2026-10-22T10:36:32.036Z",
+    "updated_at": "2026-10-22T10:36:32.036Z"
+  }
+},
+{
+  "model": "services.category",
+  "pk": 5,
+  "fields": {
+    "name": "Cleaning Services",
+    "slug": "cleaning-services",
+    "description": "",
+    "is_active": true,
+    "display_order": 0,
+    "created_at": "2026-10-22T10:36:32.045Z",
+    "updated_at": "2026-10-22T10:36:32.045Z"
+  }
+},
+{
+  "model": "services.category",
+  "pk": 6,
+  "fields": {
+    "name": "vanta serviuce",
+    "slug": "vanta-serviuce",
+    "description": "",
+    "is_active": true,
+    "display_order": 0,
+    "created_at": "2026-10-22T12:36:24.845Z",
+    "updated_at": "2026-10-22T12:36:24.845Z"
+  }
+},
+{
+  "model": "services.service",
+  "pk": 1,
+  "fields": {
+    "category": 1,
+    "name": "Foam Washing",
+    "slug": "foam-washing",
+    "short_description": "",
+    "description": "",
+    "price": "449.00",
+    "max_price": null,
+    "duration_minutes": null,
+    "features": [],
+    "addons": [],
+    "is_active": true,
+    "is_top_service": true,
+    "display_order": 1,
+    "created_at": "2026-10-22T10:36:31.954Z",
+    "updated_at": "2026-10-24T08:32:42.819Z"
+  }
+},
+{
+  "model": "services.service",
+  "pk": 2,
+  "fields": {
+    "category": 1,
+    "name": "Interior Deep Cleaning",
+    "slug": "interior-deep-cleaning",
+    "short_description": "",
+    "description": "",
+    "price": "549.00",
+    "max_price": "849.00",
+    "duration_minutes": null,
+    "features": [],
+    "addons": [],
+    "is_active": true,
+    "is_top_service": true,
+    "display_order": 2,
+    "created_at": "2026-10-22T10:36:31.973Z",
+    "updated_at": "2026-10-22T10:36:31.973Z"
+  }
+},
+{
+  "model": "services.service",
+  "pk": 3,
+  "fields": {
+    "category": 1,
+    "name": "Steam Washing",
+    "slug": "steam-washing",
+    "short_description": "",
+    "description": "",
+    "price": "549.00",
+    "max_price": "749.00",
+    "duration_minutes": null,
+    "features": [],
+    "addons": [],
+    "is_active": true,
+    "is_top_service": true,
+    "display_order": 3,
+    "created_at": "2026-10-22T10:36:31.985Z",
+    "updated_at": "2026-10-22T10:36:31.985Z"
+  }
+},
+{
+  "model": "services.service",
+  "pk": 4,
+  "fields": {
+    "category": 1,
+    "name": "Full Car Detailing",
+    "slug": "full-car-detailing",
+    "short_description": "",
+    "description": "",
+    "price": "849.00",
+    "max_price": "1549.00",
+    "duration_minutes": null,
+    "features": [],
+    "addons": [],
+    "is_active": true,
+    "is_top_service": true,
+    "display_order": 4,
+    "created_at": "2026-10-22T10:36:32.001Z",
+    "updated_at": "2026-10-22T10:36:32.001Z"
+  }
+},
+{
+  "model": "services.service",
+  "pk": 5,
+  "fields": {
+    "category": 1,
+    "name": "Exterior Deep Cleaning",
+    "slug": "exterior-deep-cleaning",
+    "short_description": "",
+    "description": "",
+    "price": "549.00",
+    "max_price": "849.00",
+    "duration_minutes": null,
+    "features": [],
+    "addons": [],
+    "is_active": true,
+    "is_top_service": true,
+    "display_order": 5,
+    "created_at": "2026-10-22T10:36:32.007Z",
+    "updated_at": "2026-10-22T10:36:32.007Z"
+  }
+},
+{
+  "model": "services.service",
+  "pk": 6,
+  "fields": {
+    "category": 2,
+    "name": "Furniture Cleaning",
+    "slug": "furniture-cleaning",
+    "short_description": "",
+    "description": "",
+    "price": "449.00",
+    "max_price": "1449.00",
+    "duration_minutes": null,
+    "features": [],
+    "addons": [],
+    "is_active": true,
+    "is_top_service": false,
+    "display_order": 6,
+    "created_at": "2026-10-22T10:36:32.016Z",
+    "updated_at": "2026-10-22T10:36:32.018Z"
+  }
+},
+{
+  "model": "services.service",
+  "pk": 7,
+  "fields": {
+    "category": 3,
+    "name": "Office Cleaning",
+    "slug": "office-cleaning",
+    "short_description": "",
+    "description": "",
+    "price": "449.00",
+    "max_price": "1849.00",
+    "duration_minutes": null,
+    "features": [],
+    "addons": [],
+    "is_active": true,
+    "is_top_service": false,
+    "display_order": 7,
+    "created_at": "2026-10-22T10:36:32.026Z",
+    "updated_at": "2026-10-22T10:36:32.026Z"
+  }
+},
+{
+  "model": "services.service",
+  "pk": 8,
+  "fields": {
+    "category": 2,
+    "name": "House Cleaning",
+    "slug": "house-cleaning",
+    "short_description": "",
+    "description": "",
+    "price": "549.00",
+    "max_price": null,
+    "duration_minutes": null,
+    "features": [],
+    "addons": [],
+    "is_active": true,
+    "is_top_service": false,
+    "display_order": 8,
+    "created_at": "2026-10-22T10:36:32.034Z",
+    "updated_at": "2026-10-22T10:36:32.034Z"
+  }
+},
+{
+  "model": "services.service",
+  "pk": 9,
+  "fields": {
+    "category": 4,
+    "name": "AC Services",
+    "slug": "ac-services",
+    "short_description": "",
+    "description": "",
+    "price": "449.00",
+    "max_price": "1449.00",
+    "duration_minutes": null,
+    "features": [],
+    "addons": [],
+    "is_active": true,
+    "is_top_service": false,
+    "display_order": 9,
+    "created_at": "2026-10-22T10:36:32.039Z",
+    "updated_at": "2026-10-22T10:36:32.039Z"
+  }
+},
+{
+  "model": "services.service",
+  "pk": 10,
+  "fields": {
+    "category": 5,
+    "name": "Water Tank Cleaning",
+    "slug": "water-tank-cleaning",
+    "short_description": "",
+    "description": "",
+    "price": "449.00",
+    "max_price": "1449.00",
+    "duration_minutes": null,
+    "features": [],
+    "addons": [],
+    "is_active": true,
+    "is_top_service": false,
+    "display_order": 10,
+    "created_at": "2026-10-22T10:36:32.049Z",
+    "updated_at": "2026-10-22T10:36:32.049Z"
+  }
+},
+{
+  "model": "services.service",
+  "pk": 11,
+  "fields": {
+    "category": 2,
+    "name": "Kitchen Cleaning",
+    "slug": "kitchen-cleaning",
+    "short_description": "",
+    "description": "",
+    "price": "549.00",
+    "max_price": null,
+    "duration_minutes": null,
+    "features": [],
+    "addons": [],
+    "is_active": true,
+    "is_top_service": false,
+    "display_order": 11,
+    "created_at": "2026-10-22T10:36:32.056Z",
+    "updated_at": "2026-10-22T10:36:32.056Z"
+  }
+},
+{
+  "model": "services.service",
+  "pk": 12,
+  "fields": {
+    "category": 2,
+    "name": "Carpet Cleaning",
+    "slug": "carpet-cleaning",
+    "short_description": "",
+    "description": "",
+    "price": "449.00",
+    "max_price": "1849.00",
+    "duration_minutes": null,
+    "features": [],
+    "addons": [],
+    "is_active": true,
+    "is_top_service": false,
+    "display_order": 12,
+    "created_at": "2026-10-22T10:36:32.064Z",
+    "updated_at": "2026-10-22T10:36:32.064Z"
+  }
+},
+{
+  "model": "services.service",
+  "pk": 13,
+  "fields": {
+    "category": 2,
+    "name": "Sofa-Dry Cleaning",
+    "slug": "sofa-dry-cleaning",
+    "short_description": "",
+    "description": "",
+    "price": "199.00",
+    "max_price": "1949.00",
+    "duration_minutes": null,
+    "features": [],
+    "addons": [],
+    "is_active": true,
+    "is_top_service": false,
+    "display_order": 13,
+    "created_at": "2026-10-22T10:36:32.069Z",
+    "updated_at": "2026-10-22T10:36:32.069Z"
+  }
+}
+]
