@@ -13,7 +13,7 @@ export default function CleanKartPromise() {
   return (
     <section className="bg-white px-4 py-7 sm:px-6 lg:px-8">
       <div
-        className="relative mx-auto grid max-w-[1380px] items-center gap-5 overflow-hidden rounded-[24px] border border-blue-950/20 bg-[#092454] p-6 text-white shadow-[0_18px_50px_rgba(10,35,80,0.2)] sm:grid-cols-[minmax(0,1fr)_190px] sm:p-8 lg:grid-cols-[220px_1px_minmax(0,1fr)_auto_230px] lg:gap-7 lg:px-10 lg:py-7"
+        className="relative mx-auto grid w-full items-center gap-5 overflow-hidden rounded-[24px] border border-blue-950/20 bg-[#092454] p-6 text-white shadow-[0_18px_50px_rgba(10,35,80,0.2)] sm:grid-cols-[minmax(0,1fr)_190px] sm:p-8 lg:grid-cols-[220px_1px_minmax(0,1fr)_auto_230px] lg:gap-7 lg:px-10 lg:py-7"
         style={{
           backgroundImage:
             "radial-gradient(ellipse at 78% 10%, rgba(35,174,255,.3), transparent 42%), radial-gradient(circle at 12% 18%, rgba(94,207,255,.18) 0 1px, transparent 1.5px), linear-gradient(118deg, #082252, #0d3d83 58%, #061a42)",
@@ -21,11 +21,11 @@ export default function CleanKartPromise() {
         }}
       >
         <div className="flex items-center gap-4 sm:col-span-full lg:col-span-1 lg:flex-col lg:items-start lg:gap-3">
-          <span className="flex h-[68px] w-[68px] shrink-0 items-center justify-center rounded-2xl border border-white/70 bg-white p-1 shadow-lg">
-            <Image src="/images/logo/cleankart-logo.png" alt="CleanKart logo" width={60} height={60} className="h-full w-full object-contain" />
+          <span className="flex h-[68px] w-[68px] shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-black shadow-lg">
+            <Image src="/images/logo/zaapino-logo-transparent.png" alt="Zaapino logo" width={68} height={68} className="h-full w-full object-cover" />
           </span>
           <div>
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-cyan-200">The CleanKart promise</p>
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-cyan-200">The Zaapino promise</p>
             <h2 className="mt-1 text-[24px] font-black leading-tight sm:text-[28px]">Care that comes to you</h2>
           </div>
         </div>
@@ -52,8 +52,8 @@ export default function CleanKartPromise() {
 
         <div className="relative flex h-[180px] items-end justify-center self-end sm:h-[245px] sm:row-span-2 sm:col-start-2 sm:row-start-2 lg:col-start-auto lg:row-span-1 lg:row-start-auto">
           <Image
-            src="/images/generated/promo-worker-branded.webp"
-            alt="CleanKart team member in a navy uniform with the CleanKart logo"
+            src="/images/team/zaapino-kitchen-cleaning.png"
+            alt="Zaapino professional cleaning a kitchen in a branded uniform"
             fill
             sizes="(max-width: 1024px) 190px, 230px"
             className="object-contain object-bottom"

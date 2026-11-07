@@ -5,17 +5,17 @@ import BrandedPhoto from "@/components/ui/BrandedPhoto";
 export default function GreatChoice() {
   return (
     <section className="bg-white px-4 py-16 sm:px-6 lg:px-8">
-      <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
+      <div className="mx-auto grid w-full gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.16em] text-blue-700">
-            CleanKart care
+            Zaapino care
           </p>
           <h2 className="mt-3 max-w-2xl text-3xl font-bold leading-tight text-blue-950 sm:text-4xl">
             Thoughtful cleaning for the places you use every day.
           </h2>
           <p className="mt-5 max-w-2xl leading-7 text-slate-600">
             From a freshly washed car to a comfortable home, choose the service
-            you need and let a CleanKart professional take care of the details.
+            you need and let a Zaapino professional take care of the details.
           </p>
 
           <div className="mt-7 grid gap-4 sm:grid-cols-2">
@@ -54,8 +54,8 @@ export default function GreatChoice() {
 
         <div className="relative min-h-[300px] overflow-hidden rounded-3xl bg-blue-950 sm:min-h-[390px]">
           <BrandedPhoto
-            src="/images/services/solar-panel-cleaning.jpeg"
-            alt="CleanKart professional cleaning solar panels"
+            src="/images/team/zaapino-solar-panel-cleaning.png"
+            alt="Zaapino professional in a black uniform cleaning solar panels"
             sizes="(max-width: 1024px) 100vw, 40vw"
             className="object-cover"
           />

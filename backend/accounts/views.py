@@ -1,6 +1,10 @@
+import logging
+import smtplib
+from datetime import timedelta
 from typing import Any, cast
 
 from django.db import transaction
+from django.utils import timezone
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.request import Request
@@ -8,13 +12,20 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .models import Address, User
+from partners.models import record_partner_login
+
+from .email_verification import send_email_verification, verify_email_token
+from .models import Address, EmailVerificationToken, User
 from .serializers import (
     AddressSerializer,
+    EmailAddressSerializer,
+    EmailVerificationSerializer,
     LoginSerializer,
     RegisterSerializer,
     UserProfileSerializer,
 )
+
+logger = logging.getLogger(__name__)
 
 
 class RegisterView(APIView):
@@ -38,17 +49,88 @@ class RegisterView(APIView):
             serializer.save(),
         )
 
-        refresh = RefreshToken.for_user(user)
+        try:
+            send_email_verification(user)
+        except (OSError, smtplib.SMTPException, RuntimeError, ValueError):
+            logger.exception(
+                "Could not send verification email for customer user %s.",
+                user.pk,
+            )
+            return Response(
+                {
+                    "detail": (
+                        "Your account was created, but the verification email "
+                        "could not be sent. Please request a new verification email."
+                    )
+                },
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
+            )
 
         return Response(
             {
-                "message": "Account created successfully.",
-                "user": UserProfileSerializer(user).data,
-                "access": str(refresh.access_token),
-                "refresh": str(refresh),
+                "message": "Account created. Check your email to verify your account.",
+                "email": user.email,
             },
             status=status.HTTP_201_CREATED,
         )
+
+
+class VerifyEmailView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request: Request) -> Response:
+        serializer = EmailVerificationSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        if not verify_email_token(serializer.validated_data["token"]):
+            return Response(
+                {"detail": "This verification link is invalid or has expired."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        return Response(
+            {"message": "Email verified. You can now sign in."},
+            status=status.HTTP_200_OK,
+        )
+
+
+class ResendEmailVerificationView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request: Request) -> Response:
+        serializer = EmailAddressSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = User.objects.filter(
+            email__iexact=serializer.validated_data["email"],
+            role=User.Role.CUSTOMER,
+            is_email_verified=False,
+        ).first()
+        generic_response = {
+            "message": (
+                "If an unverified customer account exists for that email, "
+                "a verification link will be sent."
+            )
+        }
+        if user is None:
+            return Response(generic_response, status=status.HTTP_200_OK)
+
+        recent_token = EmailVerificationToken.objects.filter(
+            user=user,
+            created_at__gte=timezone.now() - timedelta(minutes=1),
+        ).exists()
+        if recent_token:
+            return Response(generic_response, status=status.HTTP_200_OK)
+
+        try:
+            send_email_verification(user)
+        except (OSError, smtplib.SMTPException, RuntimeError, ValueError):
+            logger.exception(
+                "Could not resend verification email for customer user %s.",
+                user.pk,
+            )
+            return Response(
+                {"detail": "The verification email could not be sent. Please try again later."},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
+            )
+        return Response(generic_response, status=status.HTTP_200_OK)
 
 
 class LoginView(APIView):
@@ -78,6 +160,8 @@ class LoginView(APIView):
         )
 
         refresh = RefreshToken.for_user(user)
+        if user.role == User.Role.PARTNER:
+            record_partner_login(user)
 
         return Response(
             {

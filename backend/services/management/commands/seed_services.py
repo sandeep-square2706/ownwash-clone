@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from services.models import Category, Service
+from services.models import Category, Service, ServiceVariant
 
 
 SERVICES = [
@@ -11,13 +11,35 @@ SERVICES = [
 
     ("Home Cleaning", "Furniture Cleaning", 449, 1449),
     ("Commercial Cleaning", "Office Cleaning", 449, 1849),
-    ("Home Cleaning", "House Cleaning", 549, None),
+    ("Home Cleaning", "Floor Cleaning", 399, 899),
+    ("Home Cleaning", "Dishwashing & Utensils Cleaning", 99, 299),
+    ("Home Services", "Doorstep Garbage Collection", 49, 399),
     ("Appliance Services", "AC Services", 449, 1449),
     ("Cleaning Services", "Water Tank Cleaning", 449, 1449),
     ("Home Cleaning", "Kitchen Cleaning", 549, None),
     ("Home Cleaning", "Carpet Cleaning", 449, 1849),
     ("Home Cleaning", "Sofa-Dry Cleaning", 199, 1949),
 ]
+
+VARIANTS = {
+    "Floor Cleaning": [
+        ("1 BHK · up to 600 sq. ft.", 399),
+        ("2 BHK · up to 1,000 sq. ft.", 549),
+        ("3 BHK · up to 1,500 sq. ft.", 699),
+        ("4 BHK · up to 2,000 sq. ft.", 899),
+    ],
+    "Dishwashing & Utensils Cleaning": [
+        ("Small · up to 10 utensils", 99),
+        ("Medium · up to 20 utensils", 199),
+        ("Large · up to 30 utensils", 299),
+    ],
+    "Doorstep Garbage Collection": [
+        ("One-time pickup", 49),
+        ("Weekly collection · per month", 149),
+        ("Alternate-day collection · per month", 249),
+        ("Daily collection · per month", 399),
+    ],
+}
 
 
 class Command(BaseCommand):
@@ -46,6 +68,18 @@ class Command(BaseCommand):
                     "display_order": index,
                 },
             )
+            for variant_order, (variant_name, variant_price) in enumerate(
+                VARIANTS.get(service_name, []),
+            ):
+                ServiceVariant.objects.update_or_create(
+                    service=service,
+                    name=variant_name,
+                    defaults={
+                        "price": variant_price,
+                        "is_active": True,
+                        "display_order": variant_order,
+                    },
+                )
 
             action = "Created" if created else "Updated"
 
@@ -54,6 +88,8 @@ class Command(BaseCommand):
                     f"{action}: {service_name}"
                 )
             )
+
+        Service.objects.filter(slug="house-cleaning").update(is_active=False)
 
         self.stdout.write(
             self.style.SUCCESS(

@@ -1,6 +1,88 @@
 "use client";
+
 import Link from "next/link";
-import {useEffect,useState} from "react";
-import {usePathname,useRouter} from "next/navigation";
-const links=[["/partner/dashboard","Dashboard"],["/partner/bookings","Bookings"],["/partner/availability","Availability"],["/partner/services","Services & Areas"],["/partner/documents","Documents"],["/partner/earnings","Earnings"],["/partner/payouts","Payouts"],["/partner/reviews","Reviews"],["/partner/support","Support"],["/partner/notifications","Notifications"],["/partner/profile","Profile"]];
-export default function DashboardShell({children}:{children:React.ReactNode}){const router=useRouter();const path=usePathname();const [checked,setChecked]=useState(false);useEffect(()=>{if(!localStorage.getItem("cleankart_access_token")){router.replace("/partner/login")}else setChecked(true)},[router]);if(!checked)return <div className="ckp-main"><p className="ckp-muted">Checking partner session…</p></div>;return <div className="ckp-shell"><header className="ckp-header"><Link href="/partner" className="ckp-logo">Clean<span>Kart</span></Link><button className="ckp-btn ckp-btn-secondary" onClick={()=>{localStorage.removeItem("cleankart_access_token");localStorage.removeItem("cleankart_refresh_token");router.replace("/partner/login")}}>Log out</button></header><main className="ckp-main"><nav className="ckp-menu" aria-label="Partner navigation">{links.map(([href,label])=><Link key={href} href={href} style={{borderColor:path===href?"#1766de":undefined,background:path===href?"#eef5ff":undefined}}>{label}</Link>)}</nav>{children}</main></div>}
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { clearPartnerSession, partnerApi } from "../../lib/partner/api";
+import { PartnerLogo, StatusPill } from "./PartnerUI";
+
+type PartnerProfile = { display_name?: string; legal_name?: string; status?: string; billing_blocked?: boolean };
+
+const links = [
+  ["/partner/dashboard", "Overview", "⌂"],
+  ["/partner/bookings", "My bookings", "▣"],
+  ["/partner/availability", "Availability", "◷"],
+  ["/partner/services", "Services & areas", "✦"],
+  ["/partner/documents", "Documents", "▤"],
+  ["/partner/earnings", "Earnings", "₹"],
+  ["/partner/billing", "Billing & invoices", "▤"],
+  ["/partner/payouts", "Payouts", "⇧"],
+  ["/partner/reviews", "Ratings & reviews", "★"],
+  ["/partner/support", "Help & support", "?"],
+  ["/partner/notifications", "Notifications", "♢"],
+  ["/partner/profile", "My profile", "◉"],
+];
+
+export default function DashboardShell({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const [ready, setReady] = useState(false);
+  const [profile, setProfile] = useState<PartnerProfile | null>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  useEffect(() => {
+    let mounted = true;
+    if (typeof window === "undefined") return;
+    if (!localStorage.getItem("cleankart_partner_access_token")) {
+      router.replace("/partner/login");
+      return;
+    }
+    partnerApi<PartnerProfile>("/partners/me/")
+      .then((data) => { if (mounted) setProfile(data); })
+      .catch(() => {
+        clearPartnerSession();
+        router.replace("/partner/login");
+      })
+      .finally(() => { if (mounted) setReady(true); });
+    return () => { mounted = false; };
+  }, [router]);
+
+  function logout() {
+    clearPartnerSession();
+    router.replace("/partner/login");
+  }
+
+  if (!ready) return <div className="cp-loading"><span className="cp-spinner" />Checking partner account…</div>;
+
+  return (
+    <div className="cp-app-shell">
+      <aside className="cp-sidebar">
+        <PartnerLogo />
+        <div className="cp-sidebar-caption">WORKSPACE</div>
+        <nav className="cp-side-nav" aria-label="Partner portal navigation">
+          {links.map(([href, label, icon]) => (
+            <Link key={href} href={href} className={pathname === href || (href !== "/partner/dashboard" && pathname.startsWith(`${href}/`)) ? "active" : ""}>
+              <span className="cp-nav-icon">{icon}</span>{label}
+            </Link>
+          ))}
+        </nav>
+        <div className="cp-sidebar-bottom"><Link href="/">← Back to customer website</Link></div>
+      </aside>
+      <div className="cp-workspace">
+        <header className="cp-topbar">
+          <button className="cp-mobile-menu" onClick={() => setMenuOpen((open) => !open)} aria-label="Toggle navigation">☰</button>
+          <div><strong>Partner workspace</strong><span>Manage your Zaapino work</span></div>
+          <div className="cp-topbar-right">
+            {profile?.status ? <StatusPill value={profile.status} /> : null}
+            <div className="cp-avatar">{(profile?.display_name || profile?.legal_name || "P").slice(0, 1).toUpperCase()}</div>
+            <span className="cp-user-name">{profile?.display_name || profile?.legal_name || "Cleaning Partner"}</span>
+            <button className="cp-logout" onClick={logout}>Log out</button>
+          </div>
+        </header>
+        {menuOpen ? <nav className="cp-mobile-nav">{links.map(([href,label])=><Link key={href} href={href} onClick={()=>setMenuOpen(false)}>{label}</Link>)}<Link href="/">Customer website</Link></nav> : null}
+        {profile?.billing_blocked ? <div className="cp-billing-warning" role="alert">Your partner access is blocked because an invoice is overdue. <Link href="/partner/billing">View and resolve billing →</Link></div> : null}
+        <main className="cp-content">{children}</main>
+      </div>
+    </div>
+  );
+}

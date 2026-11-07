@@ -4,13 +4,13 @@ import { ArrowRight, BadgeInfo } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Terms of use",
-  description: "Terms for using the CleanKart service catalogue and booking preview.",
+  description: "Terms for using the Zaapino service catalogue and booking preview.",
 };
 
 const terms = [
   {
     title: "Preview use",
-    text: "This website demonstrates the CleanKart service catalogue and booking flow. It does not confirm a real cleaning appointment or provide a live service contract.",
+    text: "This website demonstrates the Zaapino service catalogue and booking flow. It does not confirm a real cleaning appointment or provide a live service contract.",
   },
   {
     title: "Displayed prices and availability",
@@ -29,7 +29,7 @@ export default function TermsPage() {
         <div className="rounded-3xl bg-blue-950 px-6 py-10 text-white sm:px-10 sm:py-12">
           <div className="flex items-center gap-3 text-blue-200">
             <BadgeInfo className="h-6 w-6" />
-            <p className="text-sm font-semibold uppercase tracking-[0.16em]">CleanKart preview</p>
+            <p className="text-sm font-semibold uppercase tracking-[0.16em]">Zaapino preview</p>
           </div>
           <h1 className="mt-4 text-3xl font-bold sm:text-4xl">Terms of use</h1>
           <p className="mt-3 max-w-2xl leading-7 text-blue-100">

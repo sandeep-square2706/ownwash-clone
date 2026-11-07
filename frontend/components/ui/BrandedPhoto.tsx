@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { replaceStaffPhoto } from "@/lib/zaapino-team-images";
 
 type BrandedPhotoProps = {
   src: string;
@@ -11,15 +12,15 @@ type BrandedPhotoProps = {
 export function CleanKartImageStamp({ className = "" }: { className?: string }) {
   return (
     <span
-      aria-label="CleanKart"
-      className={`pointer-events-none absolute z-20 flex h-8 w-8 items-center justify-center rounded-lg border border-white/80 bg-white/95 p-0.5 shadow-md ${className}`}
+      aria-label="Zaapino"
+      className={`pointer-events-none absolute z-20 flex h-8 w-8 items-center justify-center overflow-hidden rounded-lg bg-black shadow-md ${className}`}
     >
       <Image
-        src="/images/logo/cleankart-logo.png"
-        alt="CleanKart logo"
+        src="/images/logo/zaapino-logo-transparent.png"
+        alt="Zaapino logo"
         width={28}
         height={28}
-        className="h-full w-full object-contain"
+        className="h-full w-full object-cover"
       />
     </span>
   );
@@ -32,10 +33,11 @@ export default function BrandedPhoto({
   className = "object-cover",
   priority = false,
 }: BrandedPhotoProps) {
+  const imageSource = replaceStaffPhoto(src);
   return (
     <>
-      <Image src={src} alt={alt} fill priority={priority} sizes={sizes} className={className} />
-      <CleanKartImageStamp className="bottom-2 right-2" />
+      <Image src={imageSource} alt={alt} fill priority={priority} sizes={sizes} className={className} />
+      {imageSource === src ? <CleanKartImageStamp className="bottom-2 right-2" /> : null}
     </>
   );
 }

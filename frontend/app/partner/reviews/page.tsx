@@ -1,3 +1,3 @@
 import DashboardShell from "../../../components/partner/DashboardShell";
-import PartnerSection from "../../../components/partner/PartnerSection";
-export default function Page(){return <DashboardShell><PartnerSection title={'Ratings & Reviews'} description={'View reviews linked to your completed bookings.'}><p className="ckp-muted">No review data is displayed until the partner reviews API is connected.</p></PartnerSection></DashboardShell>}
+import { Panel } from "../../../components/partner/PartnerUI";
+export default function ReviewsPage(){return <DashboardShell><div className="cp-page-heading"><div><h1>Ratings & reviews</h1><p>Customer feedback for services completed through Zaapino.</p></div></div><Panel title="Reviews are not connected yet"><div className="cp-review-note">The current repository does not expose a partner-scoped reviews endpoint. This page intentionally does not show sample ratings or customer comments. A reviews API must be added and must filter every review by the authenticated partner's completed booking assignments before live data can appear.</div></Panel></DashboardShell>}

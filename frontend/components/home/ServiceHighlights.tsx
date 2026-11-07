@@ -27,7 +27,7 @@ const comparisons = [
 export default function ServiceHighlights() {
   return (
     <section aria-label="Illustrative cleaning comparisons" className="bg-white px-4 py-8 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-[1380px]">
+      <div className="mx-auto w-full">
         <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
           <HomeSectionHeading eyebrow="A closer look" title="Before and after" accent="examples" />
           <p className="max-w-md text-xs leading-5 text-slate-500">

@@ -6,7 +6,9 @@ from .views import (
     LoginView,
     ProfileView,
     RegisterView,
+    ResendEmailVerificationView,
     SetDefaultAddressView,
+    VerifyEmailView,
 )
 
 
@@ -21,6 +23,18 @@ urlpatterns = [
         "login/",
         LoginView.as_view(),
         name="login",
+    ),
+
+    path(
+        "verify-email/",
+        VerifyEmailView.as_view(),
+        name="verify-email",
+    ),
+
+    path(
+        "resend-verification/",
+        ResendEmailVerificationView.as_view(),
+        name="resend-verification",
     ),
 
     path(

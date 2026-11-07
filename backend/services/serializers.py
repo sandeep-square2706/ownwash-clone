@@ -85,6 +85,10 @@ class ServiceSerializer(serializers.ModelSerializer):
         source="is_active",
         read_only=True,
     )
+    isTopService = serializers.BooleanField(
+        source="is_top_service",
+        read_only=True,
+    )
 
     class Meta:
         model = Service
@@ -103,6 +107,7 @@ class ServiceSerializer(serializers.ModelSerializer):
             "addons",
             "variants",
             "isActive",
+            "isTopService",
         ]
 
     def get_images(self, obj):

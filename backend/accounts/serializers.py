@@ -2,6 +2,7 @@ from django.contrib.auth import authenticate
 from rest_framework import serializers
 
 from .models import Address, User
+from partners.models import PartnerProfile
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -49,34 +50,84 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 
 class LoginSerializer(serializers.Serializer):
-    email = serializers.EmailField()
+    email = serializers.EmailField(
+        required=False,
+    )
+    reference_id = serializers.CharField(
+        required=False,
+        allow_blank=False,
+        trim_whitespace=True,
+    )
 
     password = serializers.CharField(
         write_only=True,
     )
 
     def validate(self, attrs):
-        email = attrs["email"].lower().strip()
-        password = attrs["password"]
+        email = attrs.get("email")
+        reference_id = attrs.get("reference_id")
+        if bool(email) == bool(reference_id):
+            raise serializers.ValidationError(
+                "Provide either an email address or a partner reference ID."
+            )
 
-        user = authenticate(
-            username=email,
-            password=password,
+        password = attrs["password"]
+        if reference_id:
+            partner = PartnerProfile.objects.select_related("user").filter(
+                application_reference__iexact=reference_id,
+            ).first()
+            user = partner.user if partner is not None else None
+        else:
+            user = User.objects.filter(email__iexact=email.strip()).first()
+
+        authenticated_user = (
+            authenticate(username=user.email, password=password)
+            if user is not None
+            else None
         )
 
-        if user is None:
+        if authenticated_user is None:
             raise serializers.ValidationError(
                 "Invalid email or password."
             )
 
-        if not user.is_active:
+        if not authenticated_user.is_active:
             raise serializers.ValidationError(
                 "This account is inactive."
             )
 
-        attrs["user"] = user
+        if (
+            authenticated_user.role == User.Role.PARTNER
+            and hasattr(authenticated_user, "partner_profile")
+            and authenticated_user.partner_profile.status
+            == PartnerProfile.Status.SUSPENDED
+        ):
+            raise serializers.ValidationError(
+                "This partner account is blocked. Contact Zaapino support."
+            )
+
+        if (
+            authenticated_user.role == User.Role.CUSTOMER
+            and not authenticated_user.is_email_verified
+        ):
+            raise serializers.ValidationError(
+                "Please verify your email address before signing in."
+            )
+
+        attrs["user"] = authenticated_user
 
         return attrs
+
+
+class EmailAddressSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+
+    def validate_email(self, value):
+        return value.strip().lower()
+
+
+class EmailVerificationSerializer(serializers.Serializer):
+    token = serializers.CharField(trim_whitespace=True)
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
@@ -90,6 +141,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
             "phone",
             "role",
             "is_phone_verified",
+            "is_email_verified",
             "created_at",
             "updated_at",
         ]
@@ -99,6 +151,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
             "email",
             "role",
             "is_phone_verified",
+            "is_email_verified",
             "created_at",
             "updated_at",
         ]

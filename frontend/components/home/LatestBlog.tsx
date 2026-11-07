@@ -31,7 +31,7 @@ const articles = [
 export default function LatestBlog() {
   return (
     <section className="bg-white px-4 py-12 sm:px-6 sm:py-14 lg:px-8">
-      <div className="mx-auto max-w-[1380px]">
+      <div className="mx-auto w-full">
         <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <HomeSectionHeading eyebrow="Latest updates" title="Our latest" accent="news & blog" />
           <Link

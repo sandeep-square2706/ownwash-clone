@@ -4,7 +4,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, Images } from "lucide-react";
 import { useRef, useState } from "react";
-import { CleanKartImageStamp } from "@/components/ui/BrandedPhoto";
+import {
+  getZaapinoTeamImage,
+  replaceStaffPhoto,
+} from "@/lib/zaapino-team-images";
 
 type ServiceImageCarouselProps = {
   images: string[];
@@ -27,11 +30,17 @@ export default function ServiceImageCarousel({
 }: ServiceImageCarouselProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const touchStartX = useRef<number | null>(null);
-  const image = images[activeIndex];
-  const hasMultipleImages = images.length > 1;
+  const serviceImage = getZaapinoTeamImage(title);
+  const isServiceSpecificImage = serviceImage.startsWith("/images/services/");
+  const displayImages = Array.from(new Set(images.map(replaceStaffPhoto)));
+  const imageList = isServiceSpecificImage
+    ? [serviceImage]
+    : displayImages.length > 0 ? displayImages : [serviceImage];
+  const image = imageList[activeIndex];
+  const hasMultipleImages = imageList.length > 1;
 
   function moveImage(direction: -1 | 1) {
-    setActiveIndex((current) => (current + direction + images.length) % images.length);
+    setActiveIndex((current) => (current + direction + imageList.length) % imageList.length);
   }
 
   function handlePointerMove(event: React.PointerEvent<HTMLDivElement>) {
@@ -46,7 +55,7 @@ export default function ServiceImageCarousel({
     const bounds = event.currentTarget.getBoundingClientRect();
     if (bounds.width <= 0) return;
     const position = Math.min(0.999, Math.max(0, (event.clientX - bounds.left) / bounds.width));
-    const nextIndex = Math.floor(position * images.length);
+    const nextIndex = Math.floor(position * displayImages.length);
     setActiveIndex((current) => (current === nextIndex ? current : nextIndex));
   }
 
@@ -62,10 +71,11 @@ export default function ServiceImageCarousel({
   const photo = image ? (
     <Image
       src={image}
-      alt={`${title}, photo ${activeIndex + 1} of ${images.length}`}
+      alt={`${title}, photo ${activeIndex + 1} of ${imageList.length}`}
       fill
       priority={priority}
       sizes={sizes}
+      unoptimized={image.startsWith("http")}
       className="object-cover transition duration-300"
     />
   ) : (
@@ -104,8 +114,6 @@ export default function ServiceImageCarousel({
         photo
       )}
 
-      {image && <CleanKartImageStamp className="left-3 top-3 h-7 w-7 rounded-md" />}
-
       {hasMultipleImages && (
         <>
           <button
@@ -127,7 +135,7 @@ export default function ServiceImageCarousel({
             <ChevronRight className="h-5 w-5" aria-hidden="true" />
           </button>
           <div className="absolute bottom-3 right-3 z-10 flex items-center gap-1 rounded-full bg-blue-950/75 px-2.5 py-1.5">
-            {images.map((_, index) => (
+            {imageList.map((_, index) => (
               <button
                 key={`${title}-photo-${index}`}
                 type="button"
@@ -148,7 +156,7 @@ export default function ServiceImageCarousel({
             ))}
           </div>
           <span className="sr-only" aria-live="polite">
-            Photo {activeIndex + 1} of {images.length}
+            Photo {activeIndex + 1} of {imageList.length}
           </span>
         </>
       )}
@@ -165,7 +173,7 @@ export default function ServiceImageCarousel({
         role="group"
         aria-label={`${title} photo thumbnails`}
       >
-        {images.map((thumbnail, index) => (
+        {imageList.map((thumbnail, index) => (
           <button
             key={`${title}-thumbnail-${index}`}
             type="button"

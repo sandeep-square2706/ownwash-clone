@@ -147,7 +147,7 @@ function ReviewStats() {
         </h3>
 
         <p className="mx-auto mt-2 max-w-[250px] text-sm leading-6 text-slate-600">
-          Real feedback from satisfied CleanKart users
+          Real feedback from satisfied Zaapino users
         </p>
       </div>
 
@@ -287,7 +287,7 @@ export default function ContactPage() {
 
         <div
           ref={hero.ref}
-          className="relative mx-auto flex min-h-[250px] max-w-[1380px] items-center px-5 py-16 sm:px-8 lg:min-h-[300px] lg:px-10"
+          className="relative mx-auto flex min-h-[250px] w-full items-center px-5 py-16 sm:px-8 lg:min-h-[300px] lg:px-10"
         >
           <div
             className={[
@@ -298,7 +298,7 @@ export default function ContactPage() {
             ].join(" ")}
           >
             <div className="mb-4 flex items-center gap-3 text-sm font-medium text-blue-100">
-              <span>CleanKart Support</span>
+              <span>Zaapino Support</span>
               <span
                 className="h-px w-24"
                 style={{ backgroundColor: COLORS.yellow }}
@@ -308,7 +308,7 @@ export default function ContactPage() {
             <h1 className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl">
               Contact{" "}
               <span style={{ color: COLORS.yellow }}>
-                CleanKart
+                Zaapino
               </span>
             </h1>
 
@@ -327,7 +327,7 @@ export default function ContactPage() {
       <section className="px-5 py-14 sm:px-8 sm:py-20 lg:px-10">
         <div
           ref={formSection.ref}
-          className="mx-auto max-w-[1380px]"
+          className="mx-auto w-full"
         >
           <div className="mb-10 border-t border-slate-200 pt-10">
             <div className="grid gap-12 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
@@ -360,7 +360,7 @@ export default function ContactPage() {
                   We are here to assist you with your cleaning
                   needs — right at your doorstep. Whether you
                   have a quick question, need help choosing a
-                  service, or want to know more about CleanKart,
+                  service, or want to know more about Zaapino,
                   our team is ready to help.
                 </p>
 
@@ -559,7 +559,7 @@ export default function ContactPage() {
       <section className="border-t border-slate-100 bg-[#F8FAFD] px-5 py-14 sm:px-8 sm:py-20 lg:px-10">
         <div
           ref={officeSection.ref}
-          className="mx-auto max-w-[1380px]"
+          className="mx-auto w-full"
         >
           <div
             className={[
@@ -618,7 +618,7 @@ export default function ContactPage() {
                       className="mt-1 text-xl font-bold"
                       style={{ color: COLORS.navy }}
                     >
-                      CleanKart Service Centre
+                      Zaapino Service Centre
                     </h3>
 
                     <p className="mt-2 text-sm leading-6 text-slate-600">
@@ -763,12 +763,12 @@ export default function ContactPage() {
                       className="absolute left-1/2 top-[70px] -translate-x-1/2 whitespace-nowrap rounded-full px-4 py-2 text-xs font-bold text-white shadow-lg"
                       style={{ backgroundColor: COLORS.navy }}
                     >
-                      CleanKart
+                      Zaapino
                     </div>
                   </div>
 
                   <div className="absolute left-5 top-5 rounded-xl bg-white px-4 py-3 text-sm font-bold text-[#1769E8] shadow-md">
-                    CleanKart Service Centre
+                    Zaapino Service Centre
                   </div>
                 </div>
               </div>
@@ -782,7 +782,7 @@ export default function ContactPage() {
       ========================================================== */}
       <section className="px-5 py-14 sm:px-8 sm:py-20 lg:px-10">
         <div
-          className="mx-auto max-w-[1380px] overflow-hidden rounded-[28px] px-6 py-12 text-center sm:px-10 sm:py-16"
+          className="mx-auto w-full overflow-hidden rounded-[28px] px-6 py-12 text-center sm:px-10 sm:py-16"
           style={{ backgroundColor: COLORS.navy }}
         >
           <p
@@ -793,7 +793,7 @@ export default function ContactPage() {
           </p>
 
           <h2 className="mx-auto mt-3 max-w-3xl text-3xl font-extrabold leading-tight text-white sm:text-4xl lg:text-5xl">
-            Let CleanKart take care of the cleaning.
+            Let Zaapino take care of the cleaning.
           </h2>
 
           <p className="mx-auto mt-5 max-w-2xl text-sm leading-6 text-blue-100 sm:text-base">
@@ -827,7 +827,7 @@ export default function ContactPage() {
         href="https://wa.me/919999999999"
         target="_blank"
         rel="noreferrer"
-        aria-label="Chat with CleanKart on WhatsApp"
+        aria-label="Chat with Zaapino on WhatsApp"
         className="fixed bottom-5 right-5 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-[0_8px_30px_rgba(37,211,102,0.35)] transition hover:scale-110 sm:bottom-7 sm:right-7"
       >
         <svg

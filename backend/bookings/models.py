@@ -5,6 +5,7 @@ from django.conf import settings
 from django.db import models
 
 from accounts.models import Address
+from admin_api.models import Offer
 from services.models import Service, ServiceVariant
 
 
@@ -45,10 +46,18 @@ class Booking(models.Model):
 )
 
     discount = models.DecimalField(
-    max_digits=10,
-    decimal_places=2,
-    default=Decimal("0.00"),
-)
+        max_digits=10,
+        decimal_places=2,
+        default=Decimal("0.00"),
+    )
+    offer = models.ForeignKey(
+        Offer,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="bookings",
+    )
+    coupon_code = models.CharField(max_length=40, blank=True)
 
     tax = models.DecimalField(
     max_digits=10,

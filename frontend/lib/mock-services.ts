@@ -2,7 +2,7 @@ export type ServiceVariant = {
   id: string;
   name: string;
   price: number;
-  originalPrice?: number;
+  originalPrice?: number | null;
 };
 
 export type ServiceAddon = {
@@ -37,6 +37,7 @@ export type Service = {
   reviewCount?: number;
   variants?: ServiceVariant[];
   isActive: boolean;
+  isTopService?: boolean;
 };
 
 const localImage = (name: string) => "/images/services/" + name;
@@ -52,7 +53,7 @@ export const mockServices: Service[] = [
     description:
       "A rich, paint-safe foam wash that lifts everyday dirt and leaves your vehicle fresh and glossy.",
     duration: "45–60 min",
-    images: [localImage("foam-washing.jpeg")],
+    images: [localImage("foam-washing.webp")],
     features: ["Foam pre-wash", "Wheel and tyre cleaning", "Hand wash and dry"],
     addons: [
       { id: "spray-wax", name: "Spray wax finish", price: 199 },
@@ -70,7 +71,7 @@ export const mockServices: Service[] = [
     description:
       "A detailed interior refresh for seats, carpets, dashboard, doors and hard-to-reach areas.",
     duration: "2–3 hrs",
-    images: [localImage("interior-deep-cleaning.jpeg")],
+    images: [localImage("interior-deep-cleaning.webp")],
     features: ["Seat and carpet cleaning", "Dashboard and console care", "Interior vacuuming"],
     addons: [{ id: "odor-treatment", name: "Odour treatment", price: 149 }],
     variants: [
@@ -90,7 +91,7 @@ export const mockServices: Service[] = [
     description:
       "A careful steam clean that refreshes your vehicle interior and helps lift stubborn grime.",
     duration: "60–90 min",
-    images: [localImage("steam-washing.jpeg")],
+    images: [localImage("steam-washing.webp")],
     features: ["Steam cleaning", "Interior refresh", "Odour-reducing treatment"],
     variants: [
       { id: "hatchback", name: "Hatchback", price: 549, originalPrice: 599 },
@@ -109,7 +110,7 @@ export const mockServices: Service[] = [
     description:
       "A complete inside-and-out detail for a polished finish and a cabin that feels refreshed.",
     duration: "3–5 hrs",
-    images: [localImage("full-car-detailing.jpeg")],
+    images: [localImage("full-car-detailing.webp")],
     features: ["Interior detailing", "Exterior hand wash", "Finishing and protection"],
     variants: [
       { id: "hatchback", name: "Hatchback", price: 849, originalPrice: 899 },
@@ -128,7 +129,7 @@ export const mockServices: Service[] = [
     description:
       "A deeper exterior clean for paintwork, wheels and trim, finished with a careful hand dry.",
     duration: "60–90 min",
-    images: [localImage("exterior-deep-cleaning.jpeg")],
+    images: [localImage("exterior-deep-cleaning.webp")],
     features: ["Paint-safe deep wash", "Wheel and tyre detailing", "Hand dry and finish"],
     variants: [
       { id: "hatchback", name: "Hatchback", price: 549, originalPrice: 599 },
@@ -147,7 +148,7 @@ export const mockServices: Service[] = [
     description:
       "Freshen up fabric furniture with professional vacuuming, stain care and upholstery cleaning.",
     duration: "1–2 hrs",
-    images: [localImage("furniture-cleaning.jpeg")],
+    images: [localImage("furniture-cleaning.webp")],
     features: ["Upholstery vacuuming", "Spot and stain treatment", "Fabric-safe cleaning"],
     addons: [{ id: "fabric-protection", name: "Fabric protection", price: 199 }],
     variants: [
@@ -167,7 +168,7 @@ export const mockServices: Service[] = [
     description:
       "Reliable cleaning for workspaces, shared areas and office floors, scheduled around your day.",
     duration: "1–4 hrs",
-    images: [localImage("office-cleaning.jpeg")],
+    images: [localImage("office-cleaning.webp")],
     features: ["Workspace and surface cleaning", "Floor care", "Waste and touchpoint refresh"],
     variants: [
       { id: "small", name: "Small office", price: 449, originalPrice: 499 },
@@ -177,17 +178,73 @@ export const mockServices: Service[] = [
     isActive: true,
   },
   {
-    id: 8,
-    name: "House Cleaning",
-    slug: "house-cleaning",
+    id: 15,
+    name: "Floor Cleaning",
+    slug: "floor-cleaning",
     category: "Home Cleaning",
-    basePrice: 549,
-    originalPrice: 599,
+    minPrice: 399,
+    maxPrice: 899,
     description:
-      "A practical home clean for floors, surfaces and everyday spaces, delivered at your doorstep.",
-    duration: "2–4 hrs",
-    images: [localImage("house-cleaning.jpeg"), localImage("bathroom-cleaning.jpeg")],
-    features: ["Surface dusting", "Floor cleaning", "Kitchen and bathroom refresh"],
+      "Professional floor cleaning for apartments and homes, with a plan matched to your floor area.",
+    duration: "45–60 min",
+    images: [localImage("floor-cleaning-zaapino.webp")],
+    features: ["Dust and dirt removal", "Mopping with professional cleaner", "Safe care for common floor types"],
+    variants: [
+      { id: "1-bhk", name: "1 BHK · up to 600 sq. ft.", price: 399 },
+      { id: "2-bhk", name: "2 BHK · up to 1,000 sq. ft.", price: 549 },
+      { id: "3-bhk", name: "3 BHK · up to 1,500 sq. ft.", price: 699 },
+      { id: "4-bhk", name: "4 BHK · up to 2,000 sq. ft.", price: 899 },
+    ],
+    isActive: true,
+  },
+  {
+    id: 16,
+    name: "Dishwashing & Utensils Cleaning",
+    slug: "dishwashing-utensils-cleaning",
+    category: "Home Cleaning",
+    minPrice: 99,
+    maxPrice: 299,
+    description:
+      "Convenient cleaning for used dishes, cookware and kitchen utensils, with hygienic rinsing and neat arrangement.",
+    duration: "30–60 min",
+    images: [localImage("utensils-cleaning.webp")],
+    features: [
+      "Washing plates, bowls, glasses and cookware",
+      "Removal of grease and food residue",
+      "Rinsing and arranging utensils neatly",
+      "Safe, food-grade cleaning products",
+      "Extra utensils above 30: ₹10 each",
+    ],
+    variants: [
+      { id: "small", name: "Small · up to 10 utensils", price: 99 },
+      { id: "medium", name: "Medium · up to 20 utensils", price: 199 },
+      { id: "large", name: "Large · up to 30 utensils", price: 299 },
+    ],
+    isActive: true,
+  },
+  {
+    id: 17,
+    name: "Doorstep Garbage Collection",
+    slug: "doorstep-garbage-collection",
+    category: "Home Services",
+    minPrice: 49,
+    maxPrice: 399,
+    description:
+      "Scheduled doorstep pickup for household waste, with flexible one-time and recurring collection plans.",
+    duration: "Scheduled pickup",
+    images: [localImage("garbage-collection-zaapino.webp")],
+    features: [
+      "Convenient doorstep pickup",
+      "Separate wet and dry waste",
+      "Responsible waste collection",
+      "Choose one-time or recurring collection",
+    ],
+    variants: [
+      { id: "one-time", name: "One-time pickup", price: 49 },
+      { id: "weekly", name: "Weekly collection · per month", price: 149 },
+      { id: "alternate-day", name: "Alternate-day collection · per month", price: 249 },
+      { id: "daily", name: "Daily collection · per month", price: 399 },
+    ],
     isActive: true,
   },
   {
@@ -200,7 +257,7 @@ export const mockServices: Service[] = [
     description:
       "A technician visit for AC cleaning and service, with options for routine care or a deeper clean.",
     duration: "60–90 min",
-    images: [localImage("ac-services.jpeg")],
+    images: [localImage("ac-services.webp")],
     features: ["Filter cleaning", "Indoor unit care", "Service check"],
     variants: [
       { id: "routine", name: "Routine service", price: 449, originalPrice: 499 },
@@ -219,7 +276,7 @@ export const mockServices: Service[] = [
     description:
       "A thorough tank clean with scrubbing, residue removal and a final hygiene-focused rinse.",
     duration: "1–2 hrs",
-    images: [localImage("water-tank-cleaning.jpeg")],
+    images: [localImage("water-tank-cleaning.webp")],
     features: ["Tank scrubbing", "Residue removal", "Rinse and sanitisation"],
     variants: [
       { id: "small", name: "Small tank", price: 449, originalPrice: 499 },
@@ -238,7 +295,7 @@ export const mockServices: Service[] = [
     description:
       "Give your kitchen a detailed clean, including worktops, surfaces and grease-prone areas.",
     duration: "1–2 hrs",
-    images: [localImage("kitchen-cleaning.jpeg")],
+    images: [localImage("kitchen-cleaning.webp")],
     features: ["Counter and surface cleaning", "Degreasing", "Sink and backsplash refresh"],
     addons: [{ id: "appliance-exterior", name: "Appliance exterior clean", price: 149 }],
     isActive: true,
@@ -253,7 +310,7 @@ export const mockServices: Service[] = [
     description:
       "Deep carpet care that targets dust and everyday marks to leave your room feeling fresh.",
     duration: "1–3 hrs",
-    images: [localImage("carpet-cleaning.jpeg")],
+    images: [localImage("carpet-cleaning.webp")],
     features: ["Deep vacuuming", "Spot treatment", "Carpet refresh"],
     variants: [
       { id: "small", name: "Small carpet", price: 449, originalPrice: 499 },
@@ -272,13 +329,26 @@ export const mockServices: Service[] = [
     description:
       "Refresh sofa fabric with careful dust removal and spot care, suited to your seating size.",
     duration: "1–3 hrs",
-    images: [localImage("sofa-cleaning.jpeg")],
+    images: [localImage("sofa-dry-cleaning.webp")],
     features: ["Dry vacuuming", "Spot treatment", "Fabric-safe finish"],
     variants: [
       { id: "single", name: "Single seat", price: 199, originalPrice: 249 },
       { id: "three", name: "3 seater", price: 899, originalPrice: 949 },
       { id: "full", name: "Full set", price: 1949, originalPrice: 1999 },
     ],
+    isActive: true,
+  },
+  {
+    id: 14,
+    name: "Cobweb Cleaning",
+    slug: "cobweb-cleaning",
+    category: "Home Cleaning",
+    basePrice: 299,
+    description:
+      "Careful high-reach dusting to remove cobwebs from ceilings, corners and other hard-to-reach areas.",
+    duration: "45–60 min",
+    images: [localImage("cobweb-cleaning.webp")],
+    features: ["Ceiling and corner cobweb removal", "High-reach dusting", "Tidy clean-up after service"],
     isActive: true,
   },
 ];

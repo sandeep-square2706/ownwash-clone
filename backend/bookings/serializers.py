@@ -7,23 +7,16 @@ class BookingItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = BookingItem
         fields = [
-    "id",
-   
-    "status",
-    "address",
-    "address_details",
-    "scheduled_date",
-    "scheduled_time",
-    "subtotal",
-    "discount",
-    "tax",
-    "convenience_fee",
-    "total_amount",
-    "notes",
-    "items",
-    "created_at",
-    "updated_at",
-]
+            "id",
+            "service",
+            "variant",
+            "service_name",
+            "variant_name",
+            "quantity",
+            "selected_addons",
+            "unit_price",
+            "total_price",
+        ]
 
 
 class BookingSerializer(serializers.ModelSerializer):
@@ -37,7 +30,7 @@ class BookingSerializer(serializers.ModelSerializer):
         model = Booking
         fields = [
             "id",
-            
+            "booking_reference",
             "status",
             "address",
             "address_details",
@@ -45,7 +38,9 @@ class BookingSerializer(serializers.ModelSerializer):
             "scheduled_time",
             "subtotal",
             "discount",
+            "coupon_code",
             "tax",
+            "convenience_fee",
             "total_amount",
             "notes",
             "items",
@@ -58,6 +53,7 @@ class BookingSerializer(serializers.ModelSerializer):
     "status",
     "subtotal",
     "discount",
+    "coupon_code",
     "tax",
     "convenience_fee",
     "total_amount",

@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 
 from bookings.models import Booking
 
@@ -10,6 +11,12 @@ class Payment(models.Model):
         CAPTURED = "CAPTURED", "Captured"
         FAILED = "FAILED", "Failed"
         REFUNDED = "REFUNDED", "Refunded"
+        PENDING_REVIEW = "PENDING_REVIEW", "Pending UPI Review"
+        REJECTED = "REJECTED", "UPI Payment Rejected"
+
+    class Method(models.TextChoices):
+        RAZORPAY = "RAZORPAY", "Razorpay"
+        DIRECT_UPI = "DIRECT_UPI", "Direct UPI"
 
     booking = models.ForeignKey(
         Booking,
@@ -17,9 +24,17 @@ class Payment(models.Model):
         related_name="payments",
     )
 
+    method = models.CharField(
+        max_length=20,
+        choices=Method.choices,
+        default=Method.RAZORPAY,
+    )
+
     razorpay_order_id = models.CharField(
         max_length=100,
         unique=True,
+        null=True,
+        blank=True,
     )
 
     razorpay_payment_id = models.CharField(
@@ -50,7 +65,27 @@ class Payment(models.Model):
         blank=True,
     )
 
+    upi_transaction_reference = models.CharField(
+        max_length=32,
+        unique=True,
+        null=True,
+        blank=True,
+    )
+
     failure_reason = models.TextField(blank=True)
+
+    reviewed_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        related_name="reviewed_payment_records",
+        null=True,
+        blank=True,
+    )
+
+    reviewed_at = models.DateTimeField(
+        null=True,
+        blank=True,
+    )
 
     verified_at = models.DateTimeField(
         null=True,

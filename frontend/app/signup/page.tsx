@@ -1,20 +1,19 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
-import { submitAuth } from "@/lib/auth";
+import { resendEmailVerification, submitAuth } from "@/lib/auth";
 
 export default function SignupPage() {
-  const router = useRouter();
-
   const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] =
     useState(false);
 
   const [showPassword, setShowPassword] =
     useState(false);
+  const [registeredEmail, setRegisteredEmail] = useState("");
+  const [resendMessage, setResendMessage] = useState("");
 
   async function handleSubmit(
     event: React.FormEvent<HTMLFormElement>,
@@ -71,20 +70,37 @@ export default function SignupPage() {
     }
 
     try {
-      await submitAuth("register", {
+      const registration = await submitAuth("register", {
         full_name,
         email,
         phone,
         password,
       });
 
-      router.push("/account");
-      router.refresh();
+      setRegisteredEmail(registration.email);
     } catch (error) {
-      setMessage(
-        error instanceof Error
-          ? error.message
-          : "Could not create your account. Please try again.",
+      const errorMessage = error instanceof Error
+        ? error.message
+        : "Could not create your account. Please try again.";
+      if (errorMessage.toLowerCase().includes("account was created")) {
+        setRegisteredEmail(email);
+        setResendMessage(errorMessage);
+      } else {
+        setMessage(errorMessage);
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  async function resendVerification() {
+    setIsSubmitting(true);
+    setResendMessage("");
+    try {
+      setResendMessage(await resendEmailVerification(registeredEmail));
+    } catch (error) {
+      setResendMessage(
+        error instanceof Error ? error.message : "Could not resend the verification email.",
       );
     } finally {
       setIsSubmitting(false);
@@ -109,12 +125,32 @@ export default function SignupPage() {
           </span>
         </div>
 
+        {registeredEmail ? (
+          <div className="mt-10 rounded-xl border border-blue-200 bg-blue-50 p-5 text-center">
+            <h1 className="text-xl font-bold text-[var(--brand-navy)]">Verify your email</h1>
+            <p className="mt-3 text-sm leading-6 text-slate-700">
+              {resendMessage.toLowerCase().includes("could not be sent")
+                ? "We could not send the verification link to"
+                : "We sent a verification link to"}{" "}
+              <strong>{registeredEmail}</strong>. Verify your email before signing in.
+            </p>
+            {resendMessage ? <p role="status" className="mt-3 text-sm text-slate-700">{resendMessage}</p> : null}
+            <button
+              type="button"
+              onClick={resendVerification}
+              disabled={isSubmitting}
+              className="mt-5 h-11 rounded-lg bg-[var(--brand-blue)] px-5 text-sm font-bold text-white disabled:opacity-60"
+            >
+              {isSubmitting ? "Sending..." : "Resend verification email"}
+            </button>
+            <p className="mt-4 text-sm">
+              <Link href="/login" className="font-semibold text-[var(--brand-blue)] hover:underline">Go to login</Link>
+            </p>
+          </div>
+        ) : <>
         {/* Description */}
         <p className="mx-auto mt-10 max-w-[500px] text-center text-sm leading-6 text-slate-700">
-          There are many advantages to creating
-          an account: the payment process is
-          faster, shipment tracking is possible
-          and much more.
+          Create an account and verify your email address to access your Zaapino customer account.
         </p>
 
         {/* Form */}
@@ -287,10 +323,11 @@ export default function SignupPage() {
 
         {/* Bottom note */}
         <p className="mt-6 text-center text-xs text-slate-400">
-          Create your CleanKart account and
+          Create your Zaapino account and
           manage your cleaning services in one
           place.
         </p>
+        </>}
       </div>
     </main>
   );

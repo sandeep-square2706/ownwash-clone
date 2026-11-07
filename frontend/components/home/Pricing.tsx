@@ -1,24 +1,9 @@
 import Link from "next/link";
 import { ArrowRight, Check } from "lucide-react";
 
-import { getServicePrice, type Service } from "@/lib/services";
+import { getFeaturedServices, getServicePrice, type Service } from "@/lib/services";
 import { loadServerServices } from "@/lib/server-services";
 import HomeSectionHeading from "@/components/home/HomeSectionHeading";
-
-const featuredPlans = [
-  {
-    slug: "foam-washing",
-    subtitle: "A quick refresh for your vehicle",
-  },
-  {
-    slug: "interior-deep-cleaning",
-    subtitle: "A detailed cabin clean",
-  },
-  {
-    slug: "sofa-dry-cleaning",
-    subtitle: "Fabric care for your living space",
-  },
-];
 
 export default async function Pricing() {
   let services: Service[] = [];
@@ -27,10 +12,11 @@ export default async function Pricing() {
   } catch {
     // The catalog section below explains the empty state if the API is down.
   }
+  const featuredServices = getFeaturedServices(services).slice(0, 3);
 
   return (
     <section className="bg-[#f6f9fe] px-4 py-12 sm:px-6 sm:py-14 lg:px-8">
-      <div className="mx-auto max-w-[1200px]">
+      <div className="mx-auto w-full">
         <div className="mb-9">
           <HomeSectionHeading eyebrow="Pricing table" title="Our" accent="pricing model" />
           <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-slate-600">
@@ -40,9 +26,7 @@ export default async function Pricing() {
 
         {services.length ? (
           <div className="grid gap-5 lg:grid-cols-3">
-            {featuredPlans.map((plan) => {
-              const service = services.find((item) => item.slug === plan.slug);
-              if (!service) return null;
+            {featuredServices.map((service) => {
               return (
               <article
                 key={service.id}
@@ -52,7 +36,7 @@ export default async function Pricing() {
                 <h3 className="mt-3 text-2xl font-bold text-[var(--brand-navy)]">
                   {service.name}
                 </h3>
-                <p className="mt-2 text-sm text-slate-600">{plan.subtitle}</p>
+                <p className="mt-2 text-sm text-slate-600">{service.description}</p>
                 <p className="mt-6 text-3xl font-black text-[var(--brand-blue)]">
                   {getServicePrice(service)}
                 </p>

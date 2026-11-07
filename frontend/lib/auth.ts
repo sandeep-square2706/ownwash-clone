@@ -10,6 +10,7 @@ export type AuthUser = {
   phone: string;
   role: string;
   is_phone_verified: boolean;
+  is_email_verified: boolean;
   created_at: string;
   updated_at: string;
 };
@@ -19,6 +20,11 @@ type AuthResponse = {
   user: AuthUser;
   access: string;
   refresh: string;
+};
+
+type RegistrationResponse = {
+  message: string;
+  email: string;
 };
 
 const ACCESS_TOKEN_KEY = "cleankart_access_token";
@@ -185,6 +191,57 @@ export function getAccessToken() {
   return getStoredAccessToken();
 }
 
+let refreshRequest: Promise<string | null> | null = null;
+
+export function refreshAccessToken(): Promise<string | null> {
+  if (typeof window === "undefined") {
+    return Promise.resolve(null);
+  }
+
+  if (refreshRequest) {
+    return refreshRequest;
+  }
+
+  const refresh = getStoredRefreshToken();
+  if (!refresh) {
+    clearAuth();
+    return Promise.resolve(null);
+  }
+
+  refreshRequest = fetch(`${API_URL}/auth/token/refresh/`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ refresh }),
+    cache: "no-store",
+  })
+    .then(async (response) => {
+      if (!response.ok) {
+        clearAuth();
+        return null;
+      }
+
+      const payload: unknown = await response.json();
+      if (
+        !payload ||
+        typeof payload !== "object" ||
+        typeof (payload as { access?: unknown }).access !== "string"
+      ) {
+        throw new Error("The authentication server returned an invalid token refresh response.");
+      }
+
+      const access = (payload as { access: string }).access;
+      window.localStorage.setItem(ACCESS_TOKEN_KEY, access);
+      return access;
+    })
+    .finally(() => {
+      refreshRequest = null;
+    });
+
+  return refreshRequest;
+}
+
 export function getCurrentUserData() {
   return getStoredUser();
 }
@@ -211,7 +268,7 @@ export function clearAuth() {
 
 async function readResponse(
   response: Response,
-) {
+): Promise<Record<string, unknown>> {
   const result = await response
     .json()
     .catch(() => ({}));
@@ -237,13 +294,31 @@ async function readResponse(
     );
   }
 
-  return result as AuthResponse;
+  return result as Record<string, unknown>;
 }
 
 /* -------------------------------------------------------
    LOGIN / REGISTER
 ------------------------------------------------------- */
 
+export async function submitAuth(
+  mode: "register",
+  data: {
+    full_name?: string;
+    email: string;
+    phone?: string;
+    password: string;
+  },
+): Promise<RegistrationResponse>;
+export async function submitAuth(
+  mode: "login",
+  data: {
+    full_name?: string;
+    email: string;
+    phone?: string;
+    password: string;
+  },
+): Promise<AuthResponse>;
 export async function submitAuth(
   mode: "login" | "register",
   data: {
@@ -286,21 +361,62 @@ export async function submitAuth(
 
   const result = await readResponse(response);
 
-  saveAuth(
-    result.access,
-    result.refresh,
-    result.user,
-  );
+  if (mode === "register") {
+    if (typeof result.message !== "string" || typeof result.email !== "string") {
+      throw new Error("The authentication server returned an invalid registration response.");
+    }
 
-  if (
-    mode === "register" &&
-    data.full_name?.trim()
-  ) {
-    saveCustomerName(
-      email,
-      data.full_name.trim(),
-    );
+    if (data.full_name?.trim()) {
+      saveCustomerName(email, data.full_name.trim());
+    }
+
+    return result as RegistrationResponse;
   }
 
-  return result;
+  if (
+    typeof result.access !== "string" ||
+    typeof result.refresh !== "string" ||
+    !result.user ||
+    typeof result.user !== "object"
+  ) {
+    throw new Error("The authentication server returned an invalid login response.");
+  }
+
+  const authResult = result as unknown as AuthResponse;
+
+  saveAuth(
+    authResult.access,
+    authResult.refresh,
+    authResult.user,
+  );
+
+  return authResult;
+}
+
+export async function resendEmailVerification(email: string): Promise<string> {
+  const response = await fetch(`${API_URL}/auth/resend-verification/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email: email.trim().toLowerCase() }),
+    cache: "no-store",
+  });
+  const result = await readResponse(response);
+  if (typeof result.message !== "string") {
+    throw new Error("The authentication server returned an invalid response.");
+  }
+  return result.message;
+}
+
+export async function verifyEmail(token: string): Promise<string> {
+  const response = await fetch(`${API_URL}/auth/verify-email/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ token }),
+    cache: "no-store",
+  });
+  const result = await readResponse(response);
+  if (typeof result.message !== "string") {
+    throw new Error("The authentication server returned an invalid response.");
+  }
+  return result.message;
 }

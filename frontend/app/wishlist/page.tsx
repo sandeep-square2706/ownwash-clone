@@ -29,7 +29,7 @@ export default function WishlistPage() {
 
   return (
     <main className="min-h-[70vh] bg-slate-50 px-4 py-10 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-7xl">
+      <div className="mx-auto w-full">
         <p className="text-sm font-semibold uppercase tracking-[0.16em] text-blue-700">
           Saved for later
         </p>

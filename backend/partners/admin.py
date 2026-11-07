@@ -42,3 +42,10 @@ class PartnerPayoutAdmin(admin.ModelAdmin):
 class PartnerSupportTicketAdmin(admin.ModelAdmin):
     list_display=("id","partner","category","status","created_at")
     list_filter=("status","category")
+
+@admin.register(PartnerInvoice)
+class PartnerInvoiceAdmin(admin.ModelAdmin):
+    list_display=("reference","partner","amount","due_date","status","paid_at")
+    list_filter=("status","due_date")
+    search_fields=("reference","partner__legal_name","partner__application_reference")
+    readonly_fields=("reference","created_by","created_at","updated_at")

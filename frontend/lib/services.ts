@@ -48,19 +48,22 @@ function isServiceList(value: unknown): value is Service[] {
 }
 
 const LOCAL_SERVICE_IMAGES: Record<string, string> = {
-  "foam-washing": "/images/services/foam-washing.jpeg",
-  "interior-deep-cleaning": "/images/services/interior-deep-cleaning.jpeg",
-  "steam-washing": "/images/services/steam-washing.jpeg",
-  "full-car-detailing": "/images/services/full-car-detailing.jpeg",
-  "exterior-deep-cleaning": "/images/services/exterior-deep-cleaning.jpeg",
-  "furniture-cleaning": "/images/services/furniture-cleaning.jpeg",
-  "office-cleaning": "/images/services/office-cleaning.jpeg",
-  "house-cleaning": "/images/services/house-cleaning.jpeg",
-  "ac-services": "/images/services/ac-services.jpeg",
-  "water-tank-cleaning": "/images/services/water-tank-cleaning.jpeg",
-  "kitchen-cleaning": "/images/services/kitchen-cleaning.jpeg",
-  "carpet-cleaning": "/images/services/carpet-cleaning.jpeg",
-  "sofa-dry-cleaning": "/images/services/sofa-dry-cleaning.jpeg",
+  "foam-washing": "/images/services/foam-washing.webp",
+  "interior-deep-cleaning": "/images/services/interior-deep-cleaning.webp",
+  "steam-washing": "/images/services/steam-washing.webp",
+  "full-car-detailing": "/images/services/full-car-detailing.webp",
+  "exterior-deep-cleaning": "/images/services/exterior-deep-cleaning.webp",
+  "furniture-cleaning": "/images/services/furniture-cleaning.webp",
+  "office-cleaning": "/images/services/office-cleaning.webp",
+  "floor-cleaning": "/images/services/floor-cleaning-zaapino.webp",
+  "ac-services": "/images/services/ac-services.webp",
+  "water-tank-cleaning": "/images/services/water-tank-cleaning.webp",
+  "kitchen-cleaning": "/images/services/kitchen-cleaning.webp",
+  "carpet-cleaning": "/images/services/carpet-cleaning.webp",
+  "sofa-dry-cleaning": "/images/services/sofa-dry-cleaning.webp",
+  "cobweb-cleaning": "/images/services/cobweb-cleaning.webp",
+  "dishwashing-utensils-cleaning": "/images/services/utensils-cleaning.webp",
+  "doorstep-garbage-collection": "/images/services/garbage-collection-zaapino.webp",
 };
 
 
@@ -69,17 +72,25 @@ function attachLocalImages(serviceList: Service[]): Service[] {
     const localService = mockServices.find(
       (item) => item.slug === service.slug,
     );
+    const localImages = localService?.images.length
+      ? localService.images
+      : LOCAL_SERVICE_IMAGES[service.slug]
+        ? [LOCAL_SERVICE_IMAGES[service.slug]]
+        : [];
 
     return {
       ...service,
+      description:
+        service.description?.trim()
+          ? service.description
+          : localService?.description ?? "",
       images:
         service.images?.length
           ? service.images
-          : localService?.images ?? [],
+          : localImages,
     };
   });
 }
-
 export async function loadServices(): Promise<Service[]> {
   const base = getAPIBase();
   if (!base) return mockServices.filter((service) => service.isActive);
@@ -150,6 +161,11 @@ export async function loadServiceBySlug(slug: string): Promise<Service | undefin
 }
 
 export function getFeaturedServices(serviceList: Service[] = mockServices) {
+  const promoted = serviceList.filter(
+    (service) => service.isActive && service.isTopService,
+  );
+  if (promoted.length) return promoted.slice(0, 5);
+
   const bySlug = new Map(serviceList.map((service) => [service.slug, service]));
   return topServiceSlugs
     .map((slug) => bySlug.get(slug))
@@ -175,9 +191,9 @@ export function getServiceOriginalPrice(service: Service) {
     const lowestPricedVariant = service.variants.reduce((lowest, variant) =>
       variant.price < lowest.price ? variant : lowest,
     );
-    return lowestPricedVariant.originalPrice === undefined
-      ? undefined
-      : formatPrice(lowestPricedVariant.originalPrice);
+    return typeof lowestPricedVariant.originalPrice === "number"
+      ? formatPrice(lowestPricedVariant.originalPrice)
+      : undefined;
   }
   if (!service.isActive) return undefined;
 }

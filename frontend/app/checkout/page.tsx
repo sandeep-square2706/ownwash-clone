@@ -5,14 +5,15 @@ import { useEffect, useMemo, useState } from "react";
 import type { FormEvent } from "react";
 import {
   ArrowRight,
-  ChevronDown,
+  CheckCircle2,
   LockKeyhole,
   Percent,
   ShieldCheck,
   Smartphone,
 } from "lucide-react";
+import { QRCodeSVG } from "qrcode.react";
 
-import { getAccessToken } from "@/lib/auth";
+import { getAccessToken, refreshAccessToken } from "@/lib/auth";
 
 import {
   readCart,
@@ -24,9 +25,11 @@ import useServiceCatalog from "@/hooks/useServiceCatalog";
 
 import {
   formatPrice,
+  getServiceById,
   getAddonTotal,
   getPreviewConvenienceFee,
 } from "@/lib/services";
+import { openRazorpayCheckout } from "@/lib/razorpay/checkout";
 
 const indianStates = [
   "Andhra Pradesh",
@@ -95,13 +98,8 @@ type ApiAddress = {
 
 type ApiCartItem = {
   id: number;
-  service?: {
-    id?: number;
-    slug?: string;
-  } | null;
-  variant?: {
-    id?: number;
-  } | null;
+  service?: number | { id?: number; slug?: string } | null;
+  variant?: number | { id?: number } | null;
   quantity?: number;
   selected_addons?: string[];
 };
@@ -117,68 +115,32 @@ type BookingResponse = {
   total_amount: string | number;
 };
 
-type RazorpayOrderResponse = {
-  key_id: string;
-  order_id: string;
-  amount: number;
-  currency: string;
-  booking_id: number;
-  booking_reference: string;
+type FirstOrderOffer = {
+  eligible: boolean;
+  discount_percent: number;
 };
 
-type RazorpayVerifyResponse = {
-  success?: boolean;
-  message?: string;
-  detail?: string;
-  payment_status?: string;
-  booking_id?: number;
-  booking_reference?: string;
-  booking_status?: string;
-};
-
-type RazorpayPaymentResponse = {
-  razorpay_order_id: string;
-  razorpay_payment_id: string;
-  razorpay_signature: string;
-};
-
-type RazorpayOptions = {
-  key: string;
-  amount: number;
-  currency: string;
+type CouponPreview = {
+  code: string;
   name: string;
-  description: string;
-  order_id: string;
-  prefill: {
-    name: string;
-    email: string;
-    contact: string;
-  };
-  notes: {
-    booking_reference: string;
-  };
-  theme: {
-    color: string;
-  };
-  modal?: {
-    ondismiss?: () => void;
-  };
-  handler: (response: RazorpayPaymentResponse) => void;
+  coupon_discount: string | number;
+  first_order_discount: string | number;
+  subtotal: string | number;
 };
 
-type RazorpayInstance = {
-  open: () => void;
+type DirectUpiConfig = {
+  vpa: string;
+  payee_name: string;
 };
 
-type RazorpayConstructor = new (
-  options: RazorpayOptions,
-) => RazorpayInstance;
-
-declare global {
-  interface Window {
-    Razorpay?: RazorpayConstructor;
-  }
-}
+type DirectUpiPayment = {
+  bookingId: number;
+  bookingReference: string;
+  amount: number;
+  vpa: string;
+  payeeName: string;
+  paymentUri: string;
+};
 
 async function checkoutRequest<T>(
   path: string,
@@ -188,91 +150,147 @@ async function checkoutRequest<T>(
   } = {},
 ): Promise<T> {
   const token = getAccessToken();
-
   if (!token) {
-    throw new Error(
-      "Please log in to your CleanKart account before checkout.",
-    );
+    throw new Error("Please log in to your Zaapino account before checkout.");
   }
 
-  const response = await fetch(`${API_URL}${path}`, {
-    method: options.method ?? "GET",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-    ...(options.body === undefined
-      ? {}
-      : {
-          body: JSON.stringify(options.body),
-        }),
-  });
+  const sendRequest = (accessToken: string) => {
+    const headers = new Headers({ Accept: "application/json" });
+    headers.set("Authorization", `Bearer ${accessToken}`);
+    if (options.body !== undefined) {
+      headers.set("Content-Type", "application/json");
+    }
 
-  const payload: unknown = await response.json().catch(() => ({}));
+    return fetch(`${API_URL}${path}`, {
+      method: options.method ?? "GET",
+      headers,
+      ...(options.body === undefined
+        ? {}
+        : { body: JSON.stringify(options.body) }),
+      cache: "no-store",
+    });
+  };
+
+  let response = await sendRequest(token);
+  if (response.status === 401) {
+    const refreshedToken = await refreshAccessToken();
+    if (!refreshedToken) {
+      throw new Error(
+        "Your session has expired. Please sign in again before checkout.",
+      );
+    }
+
+    response = await sendRequest(refreshedToken);
+  }
+
+  const text = await response.text();
+  let payload: unknown;
+  try {
+    payload = text ? JSON.parse(text) : null;
+  } catch {
+    payload = text;
+  }
 
   if (!response.ok) {
     const data =
       payload && typeof payload === "object"
         ? (payload as Record<string, unknown>)
         : {};
-
     const detail = data.detail;
-
-    if (typeof detail === "string") {
-      throw new Error(detail);
-    }
-
-    const message = Object.values(data)
+    const message = data.message;
+    const fieldError = Object.values(data)
       .flatMap((value) => (Array.isArray(value) ? value : [value]))
-      .find((value) => typeof value === "string");
-
+      .find((value): value is string => typeof value === "string");
     throw new Error(
-      typeof message === "string"
-        ? message
-        : `Request failed (${response.status}). Please try again.`,
+      (typeof detail === "string" && detail) ||
+        (typeof message === "string" && message) ||
+        fieldError ||
+        `Request failed (${response.status}). Please try again.`,
     );
   }
 
   return payload as T;
 }
 
-async function loadRazorpayScript(): Promise<boolean> {
-  if (typeof window === "undefined") {
-    return false;
+async function getOrCreateAddress(formData: FormData): Promise<number> {
+  const firstName = String(formData.get("firstName") ?? "").trim();
+  const lastName = String(formData.get("lastName") ?? "").trim();
+
+  const rawPhone = String(formData.get("phone") ?? "").trim();
+  const phoneDigits = rawPhone.replace(/\D/g, "");
+  const phone =
+    phoneDigits.length === 12 && phoneDigits.startsWith("91")
+      ? phoneDigits.slice(2)
+      : phoneDigits;
+
+  if (!/^\d{10}$/.test(phone)) {
+    throw new Error("Please enter a valid 10-digit mobile number.");
   }
 
-  if (window.Razorpay) {
-    return true;
+  const houseNumber = String(formData.get("houseNumber") ?? "").trim();
+  const streetAddress = String(formData.get("streetAddress") ?? "").trim();
+  const addressLine2 = String(formData.get("addressLine2") ?? "").trim();
+  const area = String(formData.get("area") ?? "").trim();
+  const landmark = String(formData.get("landmark") ?? "").trim();
+  const city = String(formData.get("city") ?? "").trim();
+  const district = String(formData.get("district") ?? "").trim();
+  const state = String(formData.get("state") ?? "").trim();
+  const pincode = String(formData.get("postalCode") ?? "").trim();
+
+  const street = addressLine2
+    ? `${streetAddress}, ${addressLine2}`
+    : streetAddress;
+
+  const existingAddresses =
+    await checkoutRequest<ApiAddress[]>("/auth/addresses/");
+
+  const addressList = Array.isArray(existingAddresses)
+    ? existingAddresses
+    : [];
+
+  const existing = addressList.find(
+    (address) =>
+      address.house_number === houseNumber &&
+      address.street === street &&
+      address.area === area &&
+      address.city === city &&
+      address.district === district &&
+      address.state === state &&
+      address.pincode === pincode &&
+      address.phone === phone,
+  );
+
+  if (existing) {
+    return existing.id;
   }
 
-  return new Promise<boolean>((resolve) => {
-    const existingScript = document.querySelector(
-      'script[src="https://checkout.razorpay.com/v1/checkout.js"]',
-    );
-
-    if (existingScript) {
-      existingScript.addEventListener("load", () => resolve(true));
-      existingScript.addEventListener("error", () => resolve(false));
-
-      if (window.Razorpay) {
-        resolve(true);
-      }
-
-      return;
-    }
-
-    const script = document.createElement("script");
-
-    script.src = "https://checkout.razorpay.com/v1/checkout.js";
-    script.async = true;
-
-    script.onload = () => resolve(true);
-    script.onerror = () => resolve(false);
-
-    document.body.appendChild(script);
+  const response = await checkoutRequest<{
+    message: string;
+    address: ApiAddress;
+  }>("/auth/addresses/", {
+    method: "POST",
+    body: {
+      full_name: `${firstName} ${lastName}`.trim(),
+      phone,
+      house_number: houseNumber,
+      street,
+      area,
+      landmark,
+      city,
+      district,
+      state,
+      pincode,
+      address_type: "HOME",
+      is_default: addressList.length === 0,
+    },
   });
-}
 
+  if (!response.address?.id) {
+    throw new Error("Address was saved, but its ID was not returned.");
+  }
+
+  return response.address.id;
+}
 export default function CheckoutPage() {
   const {
     services: catalog,
@@ -283,18 +301,28 @@ export default function CheckoutPage() {
 
   const [items, setItems] = useState<CartItem[]>([]);
 
-  const [promoCode, setPromoCode] = useState("");
-  const [promoMessage, setPromoMessage] = useState("");
-  const [promoOpen, setPromoOpen] = useState(false);
+  const [firstOrderOffer, setFirstOrderOffer] =
+    useState<FirstOrderOffer | null>(null);
+  const [offerError, setOfferError] = useState("");
+  const [couponCode, setCouponCode] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState<CouponPreview | null>(null);
+  const [couponError, setCouponError] = useState("");
+  const [applyingCoupon, setApplyingCoupon] = useState(false);
 
   const [createAccount, setCreateAccount] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<"razorpay" | "direct_upi">("razorpay");
 
   const [minBookingDate, setMinBookingDate] = useState("");
 
   const [processing, setProcessing] = useState(false);
   const [checkoutError, setCheckoutError] = useState("");
   const [bookingReference, setBookingReference] = useState("");
+  const [directUpiPayment, setDirectUpiPayment] =
+    useState<DirectUpiPayment | null>(null);
+  const [upiReference, setUpiReference] = useState("");
+  const [upiSubmitted, setUpiSubmitted] = useState(false);
+  const [submittingUpiReference, setSubmittingUpiReference] = useState(false);
 
   const convenienceFee = getPreviewConvenienceFee();
 
@@ -318,6 +346,29 @@ export default function CheckoutPage() {
     ].join("-");
 
     setMinBookingDate(localDate);
+  }, []);
+
+  useEffect(() => {
+    if (!getAccessToken()) return;
+
+    let active = true;
+    checkoutRequest<FirstOrderOffer>("/bookings/first-order-offer/")
+      .then((offer) => {
+        if (active) setFirstOrderOffer(offer);
+      })
+      .catch((error: unknown) => {
+        if (active) {
+          setOfferError(
+            error instanceof Error
+              ? error.message
+              : "Could not check first-booking offer eligibility.",
+          );
+        }
+      });
+
+    return () => {
+      active = false;
+    };
   }, []);
 
   const rows = useMemo(
@@ -369,18 +420,19 @@ export default function CheckoutPage() {
     0,
   );
 
-  const total = subtotal + convenienceFee;
-
-  function applyPromo() {
-    const code = promoCode.trim();
-
-    if (!code) {
-      setPromoMessage("Enter a promo code to continue.");
-      return;
-    }
-
-    setPromoMessage("Promo code validation will be available soon.");
-  }
+  const couponQuoteMatches =
+    appliedCoupon !== null && Number(appliedCoupon.subtotal) === subtotal;
+  const firstOrderDiscount = couponQuoteMatches && appliedCoupon
+    ? Number(appliedCoupon.first_order_discount)
+    : firstOrderOffer?.eligible
+      ? Number(((subtotal * firstOrderOffer.discount_percent) / 100).toFixed(2))
+      : 0;
+  const couponDiscount =
+    couponQuoteMatches && appliedCoupon
+      ? Number(appliedCoupon.coupon_discount)
+      : 0;
+  const discount = Math.min(subtotal, firstOrderDiscount + couponDiscount);
+  const total = subtotal - discount + convenienceFee;
 
   async function syncBrowserCartToBackend() {
     if (rows.length === 0) {
@@ -391,18 +443,62 @@ export default function CheckoutPage() {
 
     const backendCart = await checkoutRequest<ApiCart>("/cart/");
 
-    const backendItems = backendCart.items ?? [];
+    const backendItems: ApiCartItem[] = backendCart.items ?? [];
+    const synchronizedItemIds = new Set<number>();
 
     for (const row of rows) {
       const addonIds = row.item.addonIds ?? [];
+      const requestedVariantId = row.item.variantId;
+      const currentVariant = requestedVariantId
+        ? row.service.variants?.find(
+            (variant) => variant.id === requestedVariantId,
+          )
+        : undefined;
+      const savedMockVariant = requestedVariantId
+        ? getServiceById(row.item.serviceId)?.variants?.find(
+            (variant) => variant.id === requestedVariantId,
+          )
+        : undefined;
+      const backendVariant =
+        currentVariant ??
+        (savedMockVariant
+          ? row.service.variants?.find(
+              (variant) => variant.name === savedMockVariant.name,
+            )
+          : undefined);
+
+      if (requestedVariantId && !backendVariant) {
+        throw new Error(
+          `${row.service.name} has an outdated cart option. Remove it from your cart and add it again before checkout.`,
+        );
+      }
+
+      const backendVariantId = backendVariant
+        ? Number(backendVariant.id)
+        : null;
+
+      if (
+        backendVariantId !== null &&
+        !Number.isSafeInteger(backendVariantId)
+      ) {
+        throw new Error(
+          `Could not match the selected ${row.service.name} option. Please remove it from your cart and add it again.`,
+        );
+      }
 
       const matchingBackendItem = backendItems.find((backendItem) => {
-        const serviceId = backendItem.service?.id;
-        const variantId = backendItem.variant?.id ?? null;
+        const serviceId =
+          typeof backendItem.service === "number"
+            ? backendItem.service
+            : backendItem.service?.id;
+        const variantId =
+          typeof backendItem.variant === "number"
+            ? backendItem.variant
+            : backendItem.variant?.id ?? null;
 
         return (
           serviceId === row.item.serviceId &&
-          variantId === (row.item.variantId ?? null)
+          (variantId === null ? null : Number(variantId)) === backendVariantId
         );
       });
 
@@ -411,7 +507,7 @@ export default function CheckoutPage() {
           method: "POST",
           body: {
             service: row.item.serviceId,
-            variant: row.item.variantId ?? null,
+            variant: backendVariantId,
             quantity: row.item.quantity,
             selected_addons: addonIds,
           },
@@ -420,6 +516,7 @@ export default function CheckoutPage() {
         continue;
       }
 
+      synchronizedItemIds.add(matchingBackendItem.id);
       await checkoutRequest(`/cart/items/${matchingBackendItem.id}/`, {
         method: "PATCH",
         body: {
@@ -428,81 +525,41 @@ export default function CheckoutPage() {
         },
       });
     }
+
+    for (const backendItem of backendItems) {
+      if (!synchronizedItemIds.has(backendItem.id)) {
+        await checkoutRequest(`/cart/items/${backendItem.id}/`, {
+          method: "DELETE",
+        });
+      }
+    }
   }
 
-  async function getOrCreateAddress(formData: FormData): Promise<number> {
-    const firstName = String(formData.get("firstName") ?? "").trim();
-    const lastName = String(formData.get("lastName") ?? "").trim();
-    const phone = String(formData.get("phone") ?? "").trim();
-
-    const houseNumber = String(
-      formData.get("houseNumber") ?? "",
-    ).trim();
-
-    const streetAddress = String(
-      formData.get("streetAddress") ?? "",
-    ).trim();
-
-    const addressLine2 = String(
-      formData.get("addressLine2") ?? "",
-    ).trim();
-
-    const area = String(formData.get("area") ?? "").trim();
-    const landmark = String(formData.get("landmark") ?? "").trim();
-    const city = String(formData.get("city") ?? "").trim();
-    const district = String(formData.get("district") ?? "").trim();
-    const state = String(formData.get("state") ?? "").trim();
-    const pincode = String(formData.get("postalCode") ?? "").trim();
-
-    const street = addressLine2
-      ? `${streetAddress}, ${addressLine2}`
-      : streetAddress;
-
-    const existingAddresses =
-      await checkoutRequest<ApiAddress[]>("/auth/addresses/");
-
-    const addressList = Array.isArray(existingAddresses)
-      ? existingAddresses
-      : [];
-
-    const existing = addressList.find(
-      (address) =>
-        address.house_number === houseNumber &&
-        address.street === street &&
-        address.area === area &&
-        address.city === city &&
-        address.district === district &&
-        address.state === state &&
-        address.pincode === pincode &&
-        address.phone === phone,
-    );
-
-    if (existing) {
-      return existing.id;
+  async function applyCoupon() {
+    const code = couponCode.trim().toUpperCase();
+    if (!code) {
+      setCouponError("Enter a coupon code.");
+      return;
     }
 
-    const address = await checkoutRequest<ApiAddress>(
-      "/auth/addresses/",
-      {
-        method: "POST",
-        body: {
-          full_name: `${firstName} ${lastName}`.trim(),
-          phone,
-          house_number: houseNumber,
-          street,
-          area,
-          landmark,
-          city,
-          district,
-          state,
-          pincode,
-          address_type: "HOME",
-          is_default: addressList.length === 0,
-        },
-      },
-    );
-
-    return address.id;
+    setApplyingCoupon(true);
+    setCouponError("");
+    setAppliedCoupon(null);
+    try {
+      await syncBrowserCartToBackend();
+      const quote = await checkoutRequest<CouponPreview>(
+        "/bookings/validate-coupon/",
+        { method: "POST", body: { coupon_code: code } },
+      );
+      setAppliedCoupon(quote);
+      setCouponCode(quote.code);
+    } catch (cause) {
+      setCouponError(
+        cause instanceof Error ? cause.message : "Could not apply this coupon.",
+      );
+    } finally {
+      setApplyingCoupon(false);
+    }
   }
 
   async function createBooking(
@@ -528,6 +585,10 @@ export default function CheckoutPage() {
         scheduled_date: scheduledDate,
         scheduled_time: scheduledTime,
         notes: orderNotes,
+        coupon_code:
+          appliedCoupon && Number(appliedCoupon.subtotal) === subtotal
+            ? appliedCoupon.code
+            : "",
       },
     });
   }
@@ -536,142 +597,84 @@ export default function CheckoutPage() {
     booking: BookingResponse,
     formData: FormData,
   ): Promise<void> {
-    const razorpayLoaded = await loadRazorpayScript();
-
-    if (!razorpayLoaded) {
-      throw new Error(
-        "Unable to load Razorpay Checkout. Please check your internet connection and try again.",
-      );
-    }
-
-    /*
-     * Keep the constructor in a local constant.
-     * This safely narrows window.Razorpay from
-     * RazorpayConstructor | undefined to RazorpayConstructor.
-     */
-    const RazorpayConstructor = window.Razorpay;
-
-    if (!RazorpayConstructor) {
-      throw new Error(
-        "Razorpay Checkout is unavailable. Please refresh the page and try again.",
-      );
-    }
-
-    const order = await checkoutRequest<RazorpayOrderResponse>(
-      "/payments/create-order/",
-      {
-        method: "POST",
-        body: {
-          booking_id: booking.id,
-        },
-      },
-    );
-
     const firstName = String(formData.get("firstName") ?? "").trim();
     const lastName = String(formData.get("lastName") ?? "").trim();
     const email = String(formData.get("email") ?? "").trim();
     const phone = String(formData.get("phone") ?? "").trim();
+    const verification = await openRazorpayCheckout({
+      bookingId: booking.id,
+      customer: {
+        name: `${firstName} ${lastName}`.trim(),
+        email,
+        contact: phone,
+      },
+      request: checkoutRequest,
+    });
 
-    return new Promise<void>((resolve, reject) => {
-      let settled = false;
+    setBookingReference(
+      verification.booking_reference ?? booking.booking_reference,
+    );
+  }
 
-      const finishResolve = () => {
-        if (settled) {
-          return;
-        }
+  async function getDirectUpiConfig(): Promise<DirectUpiConfig> {
+    const config = await checkoutRequest<DirectUpiConfig>("/payments/upi/config/");
+    if (!config.vpa || !config.payee_name) {
+      throw new Error("Direct UPI payment details are not configured.");
+    }
+    return config;
+  }
 
-        settled = true;
-        resolve();
-      };
+  function startDirectUpiPayment(
+    booking: BookingResponse,
+    config: DirectUpiConfig,
+  ) {
+    const amount = Number(booking.total_amount);
+    if (!Number.isFinite(amount) || amount <= 0) {
+      throw new Error("The booking amount returned by the server is invalid.");
+    }
 
-      const finishReject = (error: Error) => {
-        if (settled) {
-          return;
-        }
+    const params = new URLSearchParams({
+      pa: config.vpa,
+      pn: config.payee_name,
+      am: amount.toFixed(2),
+      cu: "INR",
+      tn: `Zaapino booking ${booking.booking_reference}`,
+    });
 
-        settled = true;
-        reject(error);
-      };
+    setDirectUpiPayment({
+      bookingId: booking.id,
+      bookingReference: booking.booking_reference,
+      amount,
+      vpa: config.vpa,
+      payeeName: config.payee_name,
+      paymentUri: `upi://pay?${params.toString()}`,
+    });
+  }
 
-      const razorpay = new RazorpayConstructor({
-        key: order.key_id,
-        amount: order.amount,
-        currency: order.currency,
-        name: "CleanKart",
-        description: `Cleaning service booking ${order.booking_reference}`,
-        order_id: order.order_id,
+  async function submitDirectUpiReference(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!directUpiPayment || submittingUpiReference) return;
 
-        prefill: {
-          name: `${firstName} ${lastName}`.trim(),
-          email,
-          contact: phone,
-        },
-
-        notes: {
-          booking_reference: order.booking_reference,
-        },
-
-        theme: {
-          color: "#1769e8",
-        },
-
-        modal: {
-          ondismiss: () => {
-            finishReject(
-              new Error(
-                "Payment was cancelled. Your booking is still awaiting payment.",
-              ),
-            );
-          },
-        },
-
-        handler: async (response) => {
-          try {
-            const verification =
-              await checkoutRequest<RazorpayVerifyResponse>(
-                "/payments/verify/",
-                {
-                  method: "POST",
-                  body: {
-                    razorpay_order_id:
-                      response.razorpay_order_id,
-                    razorpay_payment_id:
-                      response.razorpay_payment_id,
-                    razorpay_signature:
-                      response.razorpay_signature,
-                  },
-                },
-              );
-
-            if (
-              verification.payment_status !== "CAPTURED" ||
-              verification.success !== true
-            ) {
-              throw new Error(
-                verification.detail ??
-                  verification.message ??
-                  "Payment could not be confirmed.",
-              );
-            }
-
-            setBookingReference(
-              verification.booking_reference ??
-                booking.booking_reference,
-            );
-
-            finishResolve();
-          } catch (error) {
-            finishReject(
-              error instanceof Error
-                ? error
-                : new Error("Payment verification failed."),
-            );
-          }
+    setCheckoutError("");
+    setSubmittingUpiReference(true);
+    try {
+      await checkoutRequest("/payments/upi/submit/", {
+        method: "POST",
+        body: {
+          booking_id: directUpiPayment.bookingId,
+          transaction_reference: upiReference,
         },
       });
-
-      razorpay.open();
-    });
+      setUpiSubmitted(true);
+    } catch (error) {
+      setCheckoutError(
+        error instanceof Error
+          ? error.message
+          : "Could not submit the UPI transaction reference.",
+      );
+    } finally {
+      setSubmittingUpiReference(false);
+    }
   }
 
   async function handleSubmit(
@@ -690,7 +693,7 @@ export default function CheckoutPage() {
 
     if (!token) {
       setCheckoutError(
-        "Please log in to your CleanKart account before placing your booking.",
+        "Please log in to your Zaapino account before placing your booking.",
       );
       return;
     }
@@ -706,6 +709,16 @@ export default function CheckoutPage() {
       setCheckoutError(
         "Please accept the terms and conditions before continuing.",
       );
+      return;
+    }
+
+    if (
+      couponCode.trim() &&
+      (!appliedCoupon ||
+        appliedCoupon.code !== couponCode.trim().toUpperCase() ||
+        Number(appliedCoupon.subtotal) !== subtotal)
+    ) {
+      setCheckoutError("Apply the coupon code again or clear it before continuing.");
       return;
     }
 
@@ -739,6 +752,10 @@ export default function CheckoutPage() {
     setProcessing(true);
 
     try {
+      const upiConfig =
+        paymentMethod === "direct_upi"
+          ? await getDirectUpiConfig()
+          : null;
       await syncBrowserCartToBackend();
 
       const addressId = await getOrCreateAddress(formData);
@@ -748,7 +765,11 @@ export default function CheckoutPage() {
         formData,
       );
 
-      await startRazorpayPayment(booking, formData);
+      if (upiConfig) {
+        startDirectUpiPayment(booking, upiConfig);
+      } else {
+        await startRazorpayPayment(booking, formData);
+      }
     } catch (error) {
       setCheckoutError(
         error instanceof Error
@@ -758,6 +779,123 @@ export default function CheckoutPage() {
     } finally {
       setProcessing(false);
     }
+  }
+
+  if (directUpiPayment) {
+    return (
+      <main className="min-h-[70vh] bg-slate-50 px-4 py-12 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-2xl rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-10">
+          <div className="text-center">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-blue-50">
+              {upiSubmitted ? (
+                <CheckCircle2 className="h-7 w-7 text-emerald-600" />
+              ) : (
+                <Smartphone className="h-7 w-7 text-[var(--brand-blue)]" />
+              )}
+            </div>
+            <p className="mt-5 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--brand-blue)]">
+              {upiSubmitted ? "Payment submitted" : "Pay directly by UPI"}
+            </p>
+            <h1 className="mt-2 text-3xl font-bold text-slate-950">
+              {upiSubmitted
+                ? "Waiting for payment verification"
+                : "Scan to pay for your booking"}
+            </h1>
+            <p className="mx-auto mt-3 max-w-lg text-sm leading-6 text-slate-600">
+              {upiSubmitted
+                ? "Your booking will remain pending until an administrator verifies the transaction. We will confirm it after review."
+                : "Pay the exact amount below in your UPI app, then enter the UTR or transaction reference shown by your bank."}
+            </p>
+          </div>
+
+          <div className="mt-7 grid gap-6 rounded-2xl bg-slate-50 p-5 sm:grid-cols-[1fr_auto] sm:items-center">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+                Amount to pay
+              </p>
+              <p className="mt-1 text-3xl font-bold text-slate-950">
+                {formatPrice(directUpiPayment.amount)}
+              </p>
+              <p className="mt-4 text-xs font-semibold uppercase tracking-wider text-slate-500">
+                UPI ID
+              </p>
+              <p className="mt-1 break-all font-semibold text-slate-900">
+                {directUpiPayment.vpa}
+              </p>
+              <p className="mt-1 text-sm text-slate-600">
+                Payee: {directUpiPayment.payeeName}
+              </p>
+              <p className="mt-4 text-xs font-semibold uppercase tracking-wider text-slate-500">
+                Booking reference
+              </p>
+              <p className="mt-1 font-semibold text-slate-900">
+                {directUpiPayment.bookingReference}
+              </p>
+              {!upiSubmitted ? (
+                <a
+                  href={directUpiPayment.paymentUri}
+                  className="mt-5 inline-flex min-h-11 items-center justify-center rounded-xl bg-[var(--brand-blue)] px-5 text-sm font-semibold text-white"
+                >
+                  Open UPI app
+                </a>
+              ) : null}
+            </div>
+            {!upiSubmitted ? (
+              <div className="mx-auto rounded-xl border border-slate-200 bg-white p-3">
+                <QRCodeSVG value={directUpiPayment.paymentUri} size={180} />
+              </div>
+            ) : null}
+          </div>
+
+          {checkoutError ? (
+            <div className="mt-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+              {checkoutError}
+            </div>
+          ) : null}
+
+          {!upiSubmitted ? (
+            <form onSubmit={submitDirectUpiReference} className="mt-6">
+              <label className={labelClassName}>
+                UTR / UPI transaction reference
+                <input
+                  value={upiReference}
+                  onChange={(event) => setUpiReference(event.target.value)}
+                  minLength={8}
+                  maxLength={32}
+                  required
+                  autoComplete="off"
+                  className={inputClassName}
+                  placeholder="Enter the reference from your UPI app"
+                />
+              </label>
+              <button
+                type="submit"
+                disabled={submittingUpiReference}
+                className="mt-4 min-h-12 w-full rounded-xl bg-[var(--brand-blue)] px-5 text-sm font-bold text-white disabled:opacity-60"
+              >
+                {submittingUpiReference
+                  ? "Submitting..."
+                  : "I have paid - submit for verification"}
+              </button>
+              <p className="mt-3 text-center text-xs leading-5 text-slate-500">
+                Do not submit a reference until your UPI app confirms the transfer.
+                Never share your UPI PIN or OTP.
+              </p>
+            </form>
+          ) : (
+            <div className="mt-6 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-900">
+              Submitted reference: <strong>{upiReference.trim()}</strong>. Your booking is not confirmed yet.
+            </div>
+          )}
+
+          <div className="mt-6 text-center">
+            <Link href="/account" className="text-sm font-semibold text-[var(--brand-blue)] underline">
+              View your account
+            </Link>
+          </div>
+        </div>
+      </main>
+    );
   }
 
   if (bookingReference) {
@@ -778,7 +916,7 @@ export default function CheckoutPage() {
             </h1>
 
             <p className="mx-auto mt-4 max-w-xl text-sm leading-7 text-slate-600 sm:text-base">
-              Thank you for booking with CleanKart. Your payment
+              Thank you for booking with Zaapino. Your payment
               has been verified successfully.
             </p>
 
@@ -817,7 +955,7 @@ export default function CheckoutPage() {
   return (
     <main className="bg-[#f6f9fe]">
       <section className="border-b border-slate-200 bg-white">
-        <div className="mx-auto max-w-[1380px] px-4 py-10 sm:px-6 lg:px-8">
+        <div className="mx-auto w-full px-4 py-10 sm:px-6 lg:px-8">
           <p className="text-sm font-medium text-slate-600">
             Home / Checkout
           </p>
@@ -828,13 +966,13 @@ export default function CheckoutPage() {
 
           <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
             Enter your details, choose a convenient service time,
-            and securely complete your CleanKart booking.
+            and securely complete your Zaapino booking.
           </p>
         </div>
       </section>
 
       {catalogStatus === "error" ? (
-        <section className="mx-auto max-w-[1380px] px-4 pt-6 sm:px-6 lg:px-8">
+        <section className="mx-auto w-full px-4 pt-6 sm:px-6 lg:px-8">
           <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <span>
@@ -855,7 +993,7 @@ export default function CheckoutPage() {
       ) : null}
 
       {checkoutError ? (
-        <section className="mx-auto max-w-[1380px] px-4 pt-6 sm:px-6 lg:px-8">
+        <section className="mx-auto w-full px-4 pt-6 sm:px-6 lg:px-8">
           <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
             {checkoutError}
           </div>
@@ -864,7 +1002,7 @@ export default function CheckoutPage() {
 
       <form
         onSubmit={handleSubmit}
-        className="mx-auto max-w-[1380px] px-4 py-8 sm:px-6 sm:py-10 lg:px-8"
+        className="mx-auto w-full px-4 py-8 sm:px-6 sm:py-10 lg:px-8"
       >
         <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_420px]">
           <div className="space-y-6">
@@ -1073,7 +1211,7 @@ export default function CheckoutPage() {
                   Create an account using these details
                   <span className="mt-1 block text-xs text-slate-500">
                     You can manage bookings and addresses from
-                    your CleanKart account.
+                    your Zaapino account.
                   </span>
                 </span>
               </label>
@@ -1139,19 +1277,52 @@ export default function CheckoutPage() {
                 </div>
               </div>
 
-              <div className="mt-6 rounded-2xl border border-blue-100 bg-blue-50 p-5">
+              <div className="mt-6 grid gap-3 sm:grid-cols-2">
+                <label className={`cursor-pointer rounded-2xl border p-4 ${paymentMethod === "razorpay" ? "border-blue-300 bg-blue-50" : "border-slate-200 bg-white"}`}>
+                  <input
+                    type="radio"
+                    name="paymentMethod"
+                    value="razorpay"
+                    checked={paymentMethod === "razorpay"}
+                    onChange={() => setPaymentMethod("razorpay")}
+                    className="mr-2 accent-[var(--brand-blue)]"
+                  />
+                  <span className="font-semibold text-slate-900">Razorpay</span>
+                  <p className="ml-6 mt-1 text-sm text-slate-600">
+                    UPI, cards, wallets and net banking
+                  </p>
+                </label>
+                <label className={`cursor-pointer rounded-2xl border p-4 ${paymentMethod === "direct_upi" ? "border-blue-300 bg-blue-50" : "border-slate-200 bg-white"}`}>
+                  <input
+                    type="radio"
+                    name="paymentMethod"
+                    value="direct_upi"
+                    checked={paymentMethod === "direct_upi"}
+                    onChange={() => setPaymentMethod("direct_upi")}
+                    className="mr-2 accent-[var(--brand-blue)]"
+                  />
+                  <span className="font-semibold text-slate-900">Direct UPI</span>
+                  <p className="ml-6 mt-1 text-sm text-slate-600">
+                    Pay to Zaapino by UPI QR or app
+                  </p>
+                </label>
+              </div>
+
+              <div className="mt-4 rounded-2xl border border-blue-100 bg-blue-50 p-5">
                 <div className="flex items-start gap-3">
                   <LockKeyhole className="mt-0.5 h-5 w-5 shrink-0 text-[var(--brand-blue)]" />
 
                   <div>
                     <p className="font-semibold text-slate-900">
-                      Pay securely with Razorpay
+                      {paymentMethod === "razorpay"
+                        ? "Secure payment with Razorpay"
+                        : "Direct UPI with manual verification"}
                     </p>
 
                     <p className="mt-1 text-sm leading-6 text-slate-600">
-                      You’ll be redirected to Razorpay Checkout
-                      after your booking is created. Your payment
-                      is verified securely by CleanKart.
+                      {paymentMethod === "razorpay"
+                        ? "Choose UPI, cards, wallets or net banking in Razorpay Checkout. Your booking is confirmed after Razorpay verifies the payment."
+                        : "A QR code and UPI app link will show the exact booking amount. Enter the UTR after paying; your booking stays pending until an administrator verifies it."}
                     </p>
                   </div>
                 </div>
@@ -1168,9 +1339,10 @@ export default function CheckoutPage() {
                 />
 
                 <span>
-                  I agree to the CleanKart terms and conditions and
-                  understand that my booking will be confirmed after
-                  successful payment.
+                  I agree to the Zaapino terms and conditions and
+                  understand that {paymentMethod === "direct_upi"
+                    ? "my booking remains pending until my UPI payment is manually verified."
+                    : "my booking will be confirmed after successful payment."}
                 </span>
               </label>
             </section>
@@ -1269,50 +1441,66 @@ export default function CheckoutPage() {
               )}
 
               <div className="mt-6 border-t border-slate-200 pt-5">
-                <button
-                  type="button"
-                  onClick={() => setPromoOpen((value) => !value)}
-                  className="flex w-full items-center justify-between text-sm font-semibold text-slate-800"
-                >
-                  <span className="flex items-center gap-2">
-                    <Percent className="h-4 w-4 text-[var(--brand-blue)]" />
-                    Have a coupon?
-                  </span>
-
-                  <ChevronDown
-                    className={`h-4 w-4 transition-transform ${
-                      promoOpen ? "rotate-180" : ""
-                    }`}
-                  />
-                </button>
-
-                {promoOpen ? (
-                  <div className="mt-4">
-                    <div className="flex gap-2">
-                      <input
-                        value={promoCode}
-                        onChange={(event) =>
-                          setPromoCode(event.target.value)
-                        }
-                        placeholder="Enter coupon code"
-                        className="min-h-11 min-w-0 flex-1 rounded-lg border border-slate-300 px-3 text-sm outline-none focus:border-[var(--brand-blue)] focus:ring-4 focus:ring-blue-100"
-                      />
-
-                      <button
-                        type="button"
-                        onClick={applyPromo}
-                        className="rounded-lg bg-slate-900 px-4 text-sm font-semibold text-white"
-                      >
-                        Apply
-                      </button>
-                    </div>
-
-                    {promoMessage ? (
-                      <p className="mt-2 text-xs text-slate-500">
-                        {promoMessage}
-                      </p>
-                    ) : null}
+                <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4">
+                  <div className="flex items-center gap-2 text-sm font-bold text-emerald-900">
+                    <Percent className="h-4 w-4" aria-hidden="true" />
+                    50% off your first booking
                   </div>
+                  <p className="mt-1 text-xs leading-5 text-emerald-800">
+                    {firstOrderOffer?.eligible
+                      ? "Your offer is automatically applied to the service subtotal."
+                      : firstOrderOffer?.eligible === false
+                        ? "This offer is for your first booking only."
+                        : getAccessToken()
+                          ? "Checking your offer eligibility…"
+                          : "Sign in to check and apply your first-booking offer."}
+                  </p>
+                  {offerError ? (
+                    <p className="mt-2 text-xs text-amber-800" role="status">
+                      {offerError} The final discount will be confirmed by the server.
+                    </p>
+                  ) : null}
+                </div>
+              </div>
+
+              <div className="mt-4 rounded-xl border border-slate-200 p-4">
+                <label className="block text-sm font-semibold text-slate-800" htmlFor="coupon-code">
+                  Have a coupon code?
+                </label>
+                <div className="mt-2 flex flex-col gap-2 sm:flex-row">
+                  <input
+                    id="coupon-code"
+                    value={couponCode}
+                    onChange={(event) => {
+                      setCouponCode(event.target.value.toUpperCase());
+                      setAppliedCoupon(null);
+                      setCouponError("");
+                    }}
+                    autoComplete="off"
+                    placeholder="Enter coupon code"
+                    className={`${inputClassName} mt-0 min-w-0 flex-1`}
+                  />
+                  <button
+                    type="button"
+                    onClick={applyCoupon}
+                    disabled={applyingCoupon || !couponCode.trim()}
+                    className="min-h-12 rounded-lg bg-slate-900 px-5 text-sm font-bold text-white disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    {applyingCoupon ? "Checking…" : appliedCoupon ? "Apply again" : "Apply"}
+                  </button>
+                </div>
+                {appliedCoupon && Number(appliedCoupon.subtotal) === subtotal ? (
+                  <p className="mt-2 text-sm font-medium text-emerald-700" role="status">
+                    {appliedCoupon.code} applied: −{formatPrice(couponDiscount)}. This stacks with the first-booking offer.
+                  </p>
+                ) : null}
+                {appliedCoupon && Number(appliedCoupon.subtotal) !== subtotal ? (
+                  <p className="mt-2 text-sm text-amber-800" role="status">
+                    Your cart changed. Apply the coupon again to refresh the discount.
+                  </p>
+                ) : null}
+                {couponError ? (
+                  <p className="mt-2 text-sm text-red-700" role="alert">{couponError}</p>
                 ) : null}
               </div>
 
@@ -1321,6 +1509,20 @@ export default function CheckoutPage() {
                   <span>Subtotal</span>
                   <span>{formatPrice(subtotal)}</span>
                 </div>
+
+                {firstOrderDiscount > 0 ? (
+                  <div className="flex items-center justify-between font-semibold text-emerald-700">
+                    <span>First booking discount (50%)</span>
+                    <span>−{formatPrice(firstOrderDiscount)}</span>
+                  </div>
+                ) : null}
+
+                {couponDiscount > 0 ? (
+                  <div className="flex items-center justify-between font-semibold text-emerald-700">
+                    <span>Coupon discount ({appliedCoupon?.code})</span>
+                    <span>−{formatPrice(couponDiscount)}</span>
+                  </div>
+                ) : null}
 
                 <div className="flex items-center justify-between text-slate-600">
                   <span>Convenience fee</span>
@@ -1359,9 +1561,7 @@ export default function CheckoutPage() {
                 <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-emerald-600" />
 
                 <p className="text-xs leading-5 text-slate-500">
-                  Your payment is processed securely through
-                  Razorpay. CleanKart never stores your card or UPI
-                  credentials.
+                  Your booking is confirmed after Razorpay verifies your payment.
                 </p>
               </div>
             </div>

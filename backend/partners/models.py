@@ -3,6 +3,8 @@ from decimal import Decimal
 from django.conf import settings
 from django.core.validators import MinValueValidator
 from django.db import models
+from django.db.models import F
+from django.utils import timezone
 from .private_storage import private_storage
 
 class PartnerProfile(models.Model):
@@ -11,11 +13,15 @@ class PartnerProfile(models.Model):
         MORE_INFO="MORE_INFO","More Information Required"; APPROVED="APPROVED","Approved"; REJECTED="REJECTED","Rejected"; SUSPENDED="SUSPENDED","Suspended"
     class PartnerType(models.TextChoices):
         INDIVIDUAL="INDIVIDUAL","Individual"; SOLE_PROPRIETOR="SOLE_PROPRIETOR","Sole Proprietor"; PARTNERSHIP="PARTNERSHIP","Partnership"; COMPANY="COMPANY","Company"
+    class Gender(models.TextChoices):
+        MALE="MALE","Male"; FEMALE="FEMALE","Female"; OTHER="OTHER","Other"
     user=models.OneToOneField(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,related_name="partner_profile")
     partner_type=models.CharField(max_length=30,choices=PartnerType.choices,default=PartnerType.INDIVIDUAL)
     legal_name=models.CharField(max_length=160); display_name=models.CharField(max_length=160,blank=True)
     business_name=models.CharField(max_length=160,blank=True)
     phone=models.CharField(max_length=20); email=models.EmailField(blank=True)
+    date_of_birth=models.DateField(null=True,blank=True)
+    gender=models.CharField(max_length=20,choices=Gender.choices,blank=True)
     profile_photo=models.ImageField(upload_to="partners/profile/",null=True,blank=True)
     address=models.TextField(blank=True); city=models.CharField(max_length=80,blank=True); district=models.CharField(max_length=80,blank=True)
     state=models.CharField(max_length=80,blank=True); pincode=models.CharField(max_length=10,blank=True)
@@ -30,8 +36,24 @@ class PartnerProfile(models.Model):
     agreement_version=models.CharField(max_length=40,blank=True); agreement_accepted_at=models.DateTimeField(null=True,blank=True)
     status=models.CharField(max_length=30,choices=Status.choices,default=Status.DRAFT)
     application_reference=models.CharField(max_length=30,unique=True,null=True,blank=True)
+    login_count=models.PositiveBigIntegerField(default=0)
     review_reason=models.TextField(blank=True); created_at=models.DateTimeField(auto_now_add=True); updated_at=models.DateTimeField(auto_now=True)
+    @property
+    def billing_blocked(self):
+        return self.invoices.filter(
+            status="UNPAID",
+            due_date__lt=timezone.localdate(),
+        ).exists()
+
     def __str__(self): return f"{self.display_name or self.legal_name} ({self.status})"
+
+def record_partner_login(user):
+    partner = getattr(user, "partner_profile", None)
+    if partner is not None:
+        PartnerProfile.objects.filter(pk=partner.pk).update(
+            login_count=F("login_count") + 1,
+        )
+
 
 class PartnerService(models.Model):
     partner=models.ForeignKey(PartnerProfile,on_delete=models.CASCADE,related_name="partner_services")
@@ -90,3 +112,26 @@ class PartnerSupportTicket(models.Model):
     partner=models.ForeignKey(PartnerProfile,on_delete=models.CASCADE,related_name="support_tickets")
     category=models.CharField(max_length=80); description=models.TextField(); booking_reference=models.CharField(max_length=40,blank=True)
     status=models.CharField(max_length=30,default="OPEN"); created_at=models.DateTimeField(auto_now_add=True); updated_at=models.DateTimeField(auto_now=True)
+
+class PartnerInvoice(models.Model):
+    class Status(models.TextChoices):
+        UNPAID="UNPAID","Unpaid"
+        PAID="PAID","Paid"
+        VOID="VOID","Void"
+
+    partner=models.ForeignKey(PartnerProfile,on_delete=models.PROTECT,related_name="invoices")
+    reference=models.CharField(max_length=40,unique=True)
+    description=models.CharField(max_length=200)
+    amount=models.DecimalField(max_digits=10,decimal_places=2,validators=[MinValueValidator(Decimal("0.01"))])
+    due_date=models.DateField()
+    status=models.CharField(max_length=10,choices=Status.choices,default=Status.UNPAID)
+    payment_reference=models.CharField(max_length=120,blank=True)
+    paid_at=models.DateTimeField(null=True,blank=True)
+    created_by=models.ForeignKey(settings.AUTH_USER_MODEL,null=True,blank=True,on_delete=models.SET_NULL,related_name="created_partner_invoices")
+    created_at=models.DateTimeField(auto_now_add=True)
+    updated_at=models.DateTimeField(auto_now=True)
+
+    @property
+    def is_overdue(self):
+        from django.utils import timezone
+        return self.status == self.Status.UNPAID and self.due_date < timezone.localdate()

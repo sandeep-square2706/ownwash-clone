@@ -42,7 +42,7 @@ export async function generateMetadata({ params }: ServiceDetailsProps): Promise
   const { slug } = await params;
   try {
     const service = await loadServerServiceBySlug(slug);
-    if (!service) return { title: "Service not found | CleanKart" };
+    if (!service) return { title: "Service not found | Zaapino" };
     return {
       title: service.name,
       description: service.description,
@@ -53,7 +53,7 @@ export async function generateMetadata({ params }: ServiceDetailsProps): Promise
       },
     };
   } catch {
-    return { title: "Services", description: "Explore CleanKart doorstep cleaning services." };
+    return { title: "Services", description: "Explore Zaapino doorstep cleaning services." };
   }
 }
 
@@ -78,7 +78,7 @@ async function ServiceDetailsContent({ params }: ServiceDetailsProps) {
   return (
     <main className="min-h-screen bg-slate-50">
       <div className="border-b border-slate-200 bg-white px-4 py-4 sm:px-6 lg:px-8">
-        <nav aria-label="Breadcrumb" className="mx-auto max-w-7xl text-sm text-slate-500">
+        <nav aria-label="Breadcrumb" className="mx-auto w-full text-sm text-slate-500">
           <Link href="/" className="transition hover:text-blue-900">Home</Link>
           <span className="mx-2" aria-hidden="true">/</span>
           <Link href="/services" className="transition hover:text-blue-900">Services</Link>
@@ -88,7 +88,7 @@ async function ServiceDetailsContent({ params }: ServiceDetailsProps) {
       </div>
 
       <section className="px-4 py-7 sm:px-6 sm:py-10 lg:px-8">
-        <div className="mx-auto grid max-w-7xl items-start gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:gap-12">
+        <div className="mx-auto grid w-full items-start gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:gap-12">
           <div>
             <ServiceImageCarousel
               images={service.images}
@@ -164,7 +164,7 @@ async function ServiceDetailsContent({ params }: ServiceDetailsProps) {
       </section>
 
       <section className="px-4 pb-10 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl">
+        <div className="mx-auto w-full">
           <ServiceInformationTabs service={service} />
         </div>
       </section>
@@ -176,7 +176,7 @@ async function ServiceDetailsContent({ params }: ServiceDetailsProps) {
       </section>
 
       <section className="px-4 pb-14 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-8">
+        <div className="mx-auto w-full rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-8">
           <div className="flex items-center gap-3">
             <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-blue-700">
               <CircleHelp className="h-5 w-5" aria-hidden="true" />
@@ -200,7 +200,7 @@ async function ServiceDetailsContent({ params }: ServiceDetailsProps) {
 function ServiceDetailsLoading() {
   return (
     <main className="min-h-screen bg-slate-50 px-4 py-10 sm:px-6 lg:px-8">
-      <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-2">
+      <div className="mx-auto grid w-full gap-8 lg:grid-cols-2">
         <div className="aspect-[4/3] animate-pulse rounded-3xl bg-slate-200" />
         <div className="space-y-4">
           <div className="h-5 w-40 animate-pulse rounded bg-slate-200" />
@@ -218,7 +218,7 @@ async function RelatedServicesSection({ service }: { service: Service }) {
   const relatedServices = getRelatedServices(service, catalog);
 
   return (
-    <div className="mx-auto max-w-7xl">
+    <div className="mx-auto w-full">
       <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.16em] text-blue-700">Keep exploring</p>
@@ -245,7 +245,7 @@ async function RelatedServicesSection({ service }: { service: Service }) {
 
 function RelatedServicesLoading() {
   return (
-    <div className="mx-auto max-w-7xl" aria-label="Loading related services">
+    <div className="mx-auto w-full" aria-label="Loading related services">
       <div className="mb-5 h-9 w-56 animate-pulse rounded bg-slate-200" />
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
         {Array.from({ length: 6 }, (_, index) => (

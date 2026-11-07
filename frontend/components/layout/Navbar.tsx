@@ -22,13 +22,15 @@ import { addToCart, readCart, readWishlist, subscribeToStore, toggleWishlist } f
 import { getFeaturedServices, getServicePrice } from "@/lib/services";
 import type { Service } from "@/lib/services";
 import { CleanKartImageStamp } from "@/components/ui/BrandedPhoto";
+import { getZaapinoTeamImage } from "@/lib/zaapino-team-images";
+import { partnerPortalHref } from "@/lib/partner-portal-url";
 
 const topServicePhotos: Record<string, string> = {
-  "foam-washing": "/images/generated/menu-foam-wash.webp",
-  "interior-deep-cleaning": "/images/generated/blog-car-care.webp",
-  "steam-washing": "/images/generated/menu-steam-wash.webp",
-  "full-car-detailing": "/images/generated/menu-full-detail.webp",
-  "exterior-deep-cleaning": "/images/generated/menu-exterior-deep.webp",
+  "foam-washing": "/images/team/zaapino-car-wash.png",
+  "interior-deep-cleaning": "/images/team/zaapino-car-wash.png",
+  "steam-washing": "/images/team/zaapino-car-wash.png",
+  "full-car-detailing": "/images/team/zaapino-car-wash.png",
+  "exterior-deep-cleaning": "/images/team/zaapino-car-wash.png",
 };
 
 const navItems = [
@@ -37,6 +39,7 @@ const navItems = [
   ["About Us", "/about"],
   ["Contact", "/contact"],
   ["Reviews", "/reviews"],
+  ["Partner", partnerPortalHref],
 ];
 
 export default function Navbar() {
@@ -66,7 +69,7 @@ export default function Navbar() {
   return (
     <header className="sticky top-0 z-50 bg-white shadow-sm">
       <div className="hidden border-b border-slate-200 bg-slate-50 text-[11px] text-slate-600 sm:block">
-        <div className="mx-auto flex h-7 max-w-[1380px] items-center justify-between px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto flex h-7 w-full items-center justify-between px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-5">
             <Link href="/account" className="transition hover:text-[var(--brand-blue)]">My account</Link>
             <Link href="/wishlist" className="transition hover:text-[var(--brand-blue)]">Wishlist</Link>
@@ -74,30 +77,30 @@ export default function Navbar() {
           <div className="flex items-center gap-4 font-medium">
             <span>English</span>
             <span className="text-slate-300" aria-hidden="true">|</span>
-            <span>₹ INR</span>
+            <span>â‚¹ INR</span>
           </div>
         </div>
       </div>
 
       <div className="bg-[var(--brand-navy)] text-white">
-        <div className="mx-auto flex min-h-[78px] max-w-[1380px] items-center gap-4 px-4 sm:px-6 lg:gap-6 lg:px-8">
-          <Link href="/" className="flex shrink-0 items-center gap-2.5" aria-label="CleanKart home">
-            <span className="flex h-12 w-12 items-center justify-center rounded-xl border border-white/75 bg-white p-0.5 shadow-sm sm:h-14 sm:w-14">
+        <div className="mx-auto flex min-h-[78px] w-full items-center gap-4 px-4 sm:px-6 lg:gap-6 lg:px-8">
+          <Link href="/" className="flex shrink-0 items-center gap-3" aria-label="Zaapino home">
+            <span className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-black shadow-sm sm:h-16 sm:w-16">
               <Image
-                src="/images/logo/cleankart-logo.png"
-                alt=""
-                width={56}
-                height={56}
+                src="/images/logo/zaapino-logo-transparent.png"
+                alt="Zaapino"
+                width={64}
+                height={64}
                 priority
-                className="h-full w-full object-contain"
+                className="h-full w-full object-cover"
               />
             </span>
             <span className="leading-none">
               <span className="block text-[22px] font-black tracking-tight sm:text-[25px]">
-                Clean<span className="text-[var(--brand-gold)]">Kart</span>
+                Zaap<span className="text-[var(--brand-gold)]">ino</span>
               </span>
               <span className="mt-1.5 hidden text-[10px] tracking-[0.025em] text-blue-100 sm:block">
-                Home · Car · Office Cleaning Services
+                Home Â· Car Â· Office Cleaning Services
               </span>
             </span>
           </Link>
@@ -169,7 +172,7 @@ export default function Navbar() {
       </div>
 
       <nav aria-label="Main navigation" className="hidden h-12 border-b border-slate-200 bg-white lg:block">
-        <div className="mx-auto flex h-full max-w-[1380px] items-center justify-between px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto flex h-full w-full items-center justify-between px-4 sm:px-6 lg:px-8">
           <div className="flex h-full items-center gap-7">
             {navItems.map(([name, href]) => (
               <NavLink
@@ -187,7 +190,7 @@ export default function Navbar() {
               type="button"
               onClick={() => setTopServicesOpen((open) => !open)}
               aria-expanded={topServicesOpen}
-              className="flex items-center gap-2 text-sm font-semibold text-slate-900 transition hover:text-[var(--brand-blue)]"
+              className="flex items-center gap-2 text-[17px] font-medium tracking-tight text-slate-900 transition hover:text-[#20a7a3]"
             >
               Top Services
               <ChevronDown className="h-4 w-4" />
@@ -346,7 +349,7 @@ const unitPrice =
                   <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-slate-100">
                     {service.images?.[0] ? (
                       <Image
-                        src={service.images[0]}
+                        src={getZaapinoTeamImage(`${service.name} ${service.category}`)}
                         alt={service.name}
                         fill
                         sizes="64px"
@@ -372,7 +375,7 @@ const unitPrice =
                   </div>
 
                   <div className="shrink-0 text-sm font-bold text-[var(--brand-blue)]">
-                    ₹{(unitPrice * item.quantity).toFixed(2)}
+                    â‚¹{(unitPrice * item.quantity).toFixed(2)}
                   </div>
                 </div>
               );
@@ -390,7 +393,7 @@ const unitPrice =
             </span>
 
             <span className="text-lg font-extrabold text-slate-900">
-              ₹
+              â‚¹
               {cartItems
                 .reduce((total, item) => {
                   const service = catalog.find(
@@ -449,7 +452,9 @@ function FeaturedServiceCard({
 }) {
   const [saved, setSaved] = useState(false);
   const [added, setAdded] = useState(false);
-  const image = topServicePhotos[service.slug] ?? service.images[0];
+  const image =
+    topServicePhotos[service.slug] ??
+    getZaapinoTeamImage(`${service.name} ${service.category}`);
 
   useEffect(() => {
     const syncSaved = () => setSaved(readWishlist().includes(service.id));
@@ -540,12 +545,12 @@ function NavLink({
       href={href}
       aria-current={active ? "page" : undefined}
       className={
-        "relative flex h-full items-center text-sm font-semibold transition " +
-        (active ? "text-[var(--brand-blue)]" : "text-slate-700 hover:text-[var(--brand-blue)]")
+        "relative flex h-full items-center text-[17px] font-bold tracking-tight transition " +
+        (active ? "text-[#20a7a3]" : "text-slate-900 hover:text-[#20a7a3]")
       }
     >
       {children}
-      {active && <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[var(--brand-gold)]" />}
+      {active && <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#20a7a3]" />}
     </Link>
   );
 }

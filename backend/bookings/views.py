@@ -2,14 +2,109 @@ from decimal import Decimal
 from typing import Any, cast
 
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.db import transaction
 from django.db.models import QuerySet
 
 from rest_framework import generics, permissions, status
+from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 
+from admin_api.models import Offer
 from .models import Booking, BookingItem
 from .serializers import BookingSerializer
+
+
+FIRST_ORDER_DISCOUNT_PERCENT = 50
+User = get_user_model()
+
+
+def calculate_offer_discount(offer, subtotal):
+    if offer.type == Offer.DiscountType.PERCENTAGE:
+        amount = subtotal * offer.value / Decimal("100")
+    else:
+        amount = offer.value
+    return min(amount.quantize(Decimal("0.01")), subtotal)
+
+
+def calculate_first_order_discount(subtotal):
+    return (
+        subtotal * Decimal(FIRST_ORDER_DISCOUNT_PERCENT) / Decimal("100")
+    ).quantize(Decimal("0.01"))
+
+
+def has_first_order_offer(user):
+    return not Booking.objects.filter(user=user).exclude(
+        status=Booking.Status.CANCELLED,
+    ).exists()
+
+
+class FirstOrderOfferView(generics.GenericAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        eligible = has_first_order_offer(request.user)
+        return Response({
+            "eligible": eligible,
+            "discount_percent": FIRST_ORDER_DISCOUNT_PERCENT if eligible else 0,
+        })
+
+
+class CouponValidationView(generics.GenericAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        code = str(request.data.get("coupon_code", "")).strip().upper()
+        if not code:
+            raise ValidationError({"coupon_code": "Enter a coupon code."})
+
+        cart = getattr(request.user, "cart", None)
+        cart_items = (
+            list(cart.items.all())
+            if cart is not None
+            else []
+        )
+        if not cart_items:
+            raise ValidationError({"detail": "Your cart is empty."})
+
+        subtotal = sum(
+            (item.price_snapshot * item.quantity for item in cart_items),
+            Decimal("0.00"),
+        )
+        offer = Offer.objects.filter(code=code).first()
+        if offer is None or not offer.is_current():
+            raise ValidationError({
+                "coupon_code": "This coupon code is invalid or expired."
+            })
+        if subtotal < offer.minimum_order:
+            raise ValidationError({
+                "coupon_code": (
+                    f"This coupon requires a minimum order of "
+                    f"₹{offer.minimum_order:.2f}."
+                )
+            })
+
+        first_order_eligible = has_first_order_offer(request.user)
+        first_order_discount = (
+            calculate_first_order_discount(subtotal)
+            if first_order_eligible
+            else Decimal("0.00")
+        )
+        coupon_discount = min(
+            calculate_offer_discount(offer, subtotal),
+            subtotal - first_order_discount,
+        )
+
+        return Response({
+            "code": offer.code,
+            "name": offer.name,
+            "type": offer.type,
+            "value": offer.value,
+            "subtotal": subtotal,
+            "first_order_discount": first_order_discount,
+            "coupon_discount": coupon_discount,
+            "total_discount": first_order_discount + coupon_discount,
+        })
 
 
 class BookingListCreateView(generics.ListCreateAPIView):
@@ -56,6 +151,9 @@ class BookingListCreateView(generics.ListCreateAPIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
+        locked_user = User.objects.select_for_update().get(pk=request.user.pk)
+        first_order_eligible = has_first_order_offer(locked_user)
+
         # Calculate the subtotal from server-side cart prices.
         subtotal = Decimal("0.00")
 
@@ -65,7 +163,38 @@ class BookingListCreateView(generics.ListCreateAPIView):
                 * cart_item.quantity
             )
 
-        discount = Decimal("0.00")
+        coupon_code = str(
+            request.data.get("coupon_code", "")
+        ).strip().upper()
+        offer = None
+        coupon_discount = Decimal("0.00")
+        if coupon_code:
+            offer = Offer.objects.select_for_update().filter(
+                code=coupon_code,
+            ).first()
+            if offer is None or not offer.is_current():
+                raise ValidationError({
+                    "coupon_code": "This coupon code is invalid or expired."
+                })
+            if subtotal < offer.minimum_order:
+                raise ValidationError({
+                    "coupon_code": (
+                        f"This coupon requires a minimum order of "
+                        f"₹{offer.minimum_order:.2f}."
+                    )
+                })
+            coupon_discount = calculate_offer_discount(offer, subtotal)
+
+        first_order_discount = (
+            calculate_first_order_discount(subtotal)
+            if first_order_eligible
+            else Decimal("0.00")
+        )
+        coupon_discount = min(
+            coupon_discount,
+            subtotal - first_order_discount,
+        )
+        discount = first_order_discount + coupon_discount
         tax = Decimal("0.00")
 
         # Read the configured convenience fee.
@@ -98,6 +227,8 @@ class BookingListCreateView(generics.ListCreateAPIView):
             ],
             subtotal=subtotal,
             discount=discount,
+            offer=offer,
+            coupon_code=offer.code if offer else "",
             tax=tax,
             convenience_fee=convenience_fee,
             total_amount=total_amount,

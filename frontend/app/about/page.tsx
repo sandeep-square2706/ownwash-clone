@@ -131,7 +131,7 @@ export default function AboutPage() {
             <div>
               <div className="ck-eyebrow">
                 <span />
-                <span>About CleanKart</span>
+                <span>About Zaapino</span>
               </div>
 
               <h1>
@@ -141,7 +141,7 @@ export default function AboutPage() {
               </h1>
 
               <p>
-                CleanKart makes it easier to keep your home and vehicle
+                Zaapino makes it easier to keep your home and vehicle
                 clean, fresh and well cared for. We bring convenient
                 professional cleaning services right to your doorstep.
               </p>
@@ -162,8 +162,8 @@ export default function AboutPage() {
           <Reveal direction="right" delay={180}>
             <div className="ck-hero-image-wrap">
               <Image
-                src="/images/services/sofa-steam-cleaning.jpeg"
-                alt="CleanKart professional cleaning"
+                src="/images/team/zaapino-kitchen-cleaning.png"
+                alt="Zaapino professional cleaning"
                 fill
                 priority
                 className="ck-cover-image"
@@ -173,7 +173,7 @@ export default function AboutPage() {
               <div className="ck-hero-overlay" />
 
               <div className="ck-hero-label">
-                <small>THE CLEANKART PROMISE</small>
+                <small>THE ZAAPINO PROMISE</small>
                 <strong>Good care, right at your doorstep.</strong>
               </div>
             </div>
@@ -208,7 +208,7 @@ export default function AboutPage() {
               <p>
                 We deliver top-notch cleaning and detailing services at
                 prices you can trust. From doorstep car washing to home
-                care, CleanKart ensures quality without compromise.
+                care, Zaapino ensures quality without compromise.
               </p>
 
               <div className="ck-review-grid">
@@ -235,7 +235,7 @@ export default function AboutPage() {
                     </div>
 
                     <p>
-                      Real feedback from satisfied CleanKart users
+                      Real feedback from satisfied Zaapino users
                     </p>
 
                   </div>
@@ -286,20 +286,11 @@ export default function AboutPage() {
                 <span>Top Company</span>
               </div>
 
-              {/*
-                IMPORTANT:
-                Put your CleanKart transparent person PNG here:
-
-                frontend/public/images/about/cleankart-person.png
-
-                If your PNG has a different filename, change the src below.
-              */}
-
               <div className="ck-person">
 
                 <Image
-  src="/images/about/person.png"
-  alt="CleanKart professional"
+  src="/images/team/zaapino-kitchen-dishes.png"
+  alt="Zaapino professional"
 
                   fill
                   className="ck-person-image"
@@ -327,8 +318,8 @@ export default function AboutPage() {
             <div className="ck-large-image">
 
               <Image
-                src="/images/services/sofa-steam-cleaning.jpeg"
-                alt="Professional CleanKart service"
+                src="/images/team/zaapino-kitchen-cleaning.png"
+                alt="Professional Zaapino service"
                 fill
                 className="ck-cover-image ck-zoom-image"
                 sizes="100vw"
@@ -422,8 +413,8 @@ export default function AboutPage() {
       <section className="ck-team-banner">
 
         <Image
-          src="/images/services/sofa-steam-cleaning.jpeg"
-          alt="CleanKart team"
+          src="/images/team/zaapino-kitchen-cleaning.png"
+          alt="Zaapino team"
           fill
           className="ck-cover-image"
           sizes="100vw"
@@ -526,8 +517,8 @@ export default function AboutPage() {
               <div className="ck-small-image">
 
                 <Image
-                  src="/images/services/kitchen-cleaning.jpeg"
-                  alt="CleanKart service"
+                  src="/images/team/zaapino-kitchen-cleaning.png"
+                  alt="Zaapino service"
                   fill
                   className="ck-cover-image"
                 />
@@ -582,8 +573,8 @@ export default function AboutPage() {
               <div className="ck-promise-image">
 
                 <Image
-                  src="/images/services/sofa-steam-cleaning.jpeg"
-                  alt="CleanKart professionals"
+                  src="/images/team/zaapino-kitchen-cleaning.png"
+                  alt="Zaapino professionals"
                   fill
                   className="ck-cover-image"
                 />
@@ -640,7 +631,7 @@ export default function AboutPage() {
               </h2>
 
               <p>
-                At CleanKart, we believe professional cleaning
+                At Zaapino, we believe professional cleaning
                 should be accessible to everyone — without
                 compromising on quality. That's why we offer
                 affordable pricing on all our services, from
@@ -700,7 +691,7 @@ export default function AboutPage() {
               </h2>
 
               <p>
-                From homes to vehicles, CleanKart offers practical
+                From homes to vehicles, Zaapino offers practical
                 cleaning services designed to make your space look
                 and feel its best.
               </p>
@@ -761,7 +752,7 @@ export default function AboutPage() {
               <small>READY FOR A CLEANER SPACE?</small>
 
               <h2>
-                Let CleanKart take care
+                Let Zaapino take care
                 <br />
                 of the cleaning.
               </h2>
@@ -793,7 +784,7 @@ export default function AboutPage() {
         target="_blank"
         rel="noopener noreferrer"
         className="ck-whatsapp"
-        aria-label="Contact CleanKart on WhatsApp"
+        aria-label="Contact Zaapino on WhatsApp"
       >
         <span>◔</span>
       </a>

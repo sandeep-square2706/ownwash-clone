@@ -37,9 +37,9 @@ const benefits = [
 export default function WhyChooseUs() {
   return (
     <section className="bg-white px-4 py-12 sm:px-6 sm:py-14 lg:px-8">
-      <div className="mx-auto max-w-[1380px]">
+      <div className="mx-auto w-full">
         <div className="mb-9">
-          <HomeSectionHeading eyebrow="Why choose us?" title="Why choose" accent="CleanKart?" />
+          <HomeSectionHeading eyebrow="Why choose us?" title="Why choose" accent="Zaapino?" />
         </div>
 
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">

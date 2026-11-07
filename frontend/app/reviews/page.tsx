@@ -14,21 +14,21 @@ const customerReviews: Review[] = [
   {
     name: "Sakthikant Das",
     service: "Car Washing",
-    text: "CleanKart's doorstep car washing service is super convenient. The team arrived on time, used quality products, and cleaned my car perfectly without any mess. Very professional service.",
+    text: "Zaapino's doorstep car washing service is super convenient. The team arrived on time, used quality products, and cleaned my car perfectly without any mess. Very professional service.",
     rating: 5,
     avatar: "👨🏻‍💼",
   },
   {
     name: "Anjali",
     service: "Sofa Dry Cleaning",
-    text: "I booked CleanKart for sofa dry cleaning and was really impressed. The stains were removed properly and the sofa looked fresh again. Great service and very convenient.",
+    text: "I booked Zaapino for sofa dry cleaning and was really impressed. The stains were removed properly and the sofa looked fresh again. Great service and very convenient.",
     rating: 5,
     avatar: "👩🏻",
   },
   {
     name: "Sameer",
     service: "Water Tank Cleaning",
-    text: "The CleanKart team did a thorough job cleaning our water tank. Everything was handled professionally and there was no mess left behind. Highly recommended.",
+    text: "The Zaapino team did a thorough job cleaning our water tank. Everything was handled professionally and there was no mess left behind. Highly recommended.",
     rating: 5,
     avatar: "👨🏻‍💼",
   },
@@ -42,7 +42,7 @@ const customerReviews: Review[] = [
   {
     name: "Deepak",
     service: "Car Detailing",
-    text: "I opted for full car detailing from CleanKart. They cleaned the interiors, polished the body and made my car look fresh again. Worth every rupee for the quality.",
+    text: "I opted for full car detailing from Zaapino. They cleaned the interiors, polished the body and made my car look fresh again. Worth every rupee for the quality.",
     rating: 5,
     avatar: "👨🏻‍💼",
   },
@@ -57,39 +57,39 @@ const customerReviews: Review[] = [
 
 const featuredStories = [
   {
-    title: "Why Customers Choose CleanKart for Doorstep Cleaning",
+    title: "Why Customers Choose Zaapino for Doorstep Cleaning",
     text: "Professional cleaning at your doorstep saves time and makes regular home and vehicle maintenance much easier.",
-    name: "CleanKart Customer",
+    name: "Zaapino Customer",
     rating: 5,
   },
   {
-    title: "CleanKart Car Detailing Service Exceeded Expectations",
+    title: "Zaapino Car Detailing Service Exceeded Expectations",
     text: "From interior cleaning to exterior detailing, our customers appreciate having professional vehicle care without visiting a workshop.",
-    name: "CleanKart Customer",
+    name: "Zaapino Customer",
     rating: 5,
   },
   {
     title: "A Better Way to Keep Your Home Clean",
-    text: "With multiple cleaning services available in one place, CleanKart makes it easier to take care of your home whenever you need it.",
-    name: "CleanKart Customer",
+    text: "With multiple cleaning services available in one place, Zaapino makes it easier to take care of your home whenever you need it.",
+    name: "Zaapino Customer",
     rating: 5,
   },
   {
     title: "Professional Service Right at Your Doorstep",
-    text: "Convenience, quality and clear service options are at the heart of the CleanKart experience.",
-    name: "CleanKart Customer",
+    text: "Convenience, quality and clear service options are at the heart of the Zaapino experience.",
+    name: "Zaapino Customer",
     rating: 5,
   },
   {
     title: "Making Everyday Cleaning Easier",
-    text: "CleanKart brings practical cleaning solutions together so customers can spend less time arranging cleaning and more time enjoying their space.",
-    name: "CleanKart Customer",
+    text: "Zaapino brings practical cleaning solutions together so customers can spend less time arranging cleaning and more time enjoying their space.",
+    name: "Zaapino Customer",
     rating: 5,
   },
   {
     title: "Quality Cleaning You Can Count On",
     text: "Our goal is simple: provide dependable cleaning services with professional care and a smooth customer experience.",
-    name: "CleanKart Customer",
+    name: "Zaapino Customer",
     rating: 5,
   },
 ];
@@ -186,7 +186,7 @@ export default function ReviewsPage() {
             avatar?: string;
           }) => ({
             name: review.name,
-            service: review.service || "CleanKart Service",
+            service: review.service || "Zaapino Service",
             text: review.text,
             rating: review.rating,
             avatar: review.avatar || "👤",
@@ -280,10 +280,10 @@ export default function ReviewsPage() {
       ========================================================= */}
 
       <section className="relative overflow-hidden bg-[#17366d]">
-        <div className="mx-auto max-w-[1380px] px-5 py-16 sm:px-8 sm:py-20 lg:px-10 lg:py-24">
+        <div className="mx-auto w-full px-5 py-16 sm:px-8 sm:py-20 lg:px-10 lg:py-24">
           <div className="max-w-3xl">
             <div className="mb-5 flex items-center gap-3 text-sm font-semibold text-blue-100">
-              <span>CleanKart Reviews</span>
+              <span>Zaapino Reviews</span>
 
               <span
                 className="h-px w-24 bg-[#f4c542]"
@@ -299,7 +299,7 @@ export default function ReviewsPage() {
             </h1>
 
             <p className="mt-6 max-w-2xl text-base leading-7 text-blue-100 sm:text-lg">
-              Real experiences from customers who trust CleanKart for
+              Real experiences from customers who trust Zaapino for
               professional home and vehicle cleaning services.
             </p>
           </div>
@@ -313,7 +313,7 @@ export default function ReviewsPage() {
       ========================================================= */}
 
       <section className="px-5 py-14 sm:px-8 sm:py-16 lg:px-10">
-        <div className="mx-auto max-w-[1380px]">
+        <div className="mx-auto w-full">
           <div className="mb-10">
             <div className="mb-3 flex items-center gap-3 text-sm font-semibold text-slate-600">
               <span>Customer feedback</span>
@@ -331,7 +331,7 @@ export default function ReviewsPage() {
 
             <p className="mt-4 max-w-3xl text-base leading-7 text-slate-600">
               Every customer experience helps us improve. Here are some of the
-              experiences our customers have shared about CleanKart services.
+              experiences our customers have shared about Zaapino services.
             </p>
           </div>
 
@@ -352,7 +352,7 @@ export default function ReviewsPage() {
       ========================================================= */}
 
       <section className="bg-[#f5f8fd] px-5 py-14 sm:px-8 sm:py-16 lg:px-10">
-        <div className="mx-auto grid max-w-[1380px] gap-8 lg:grid-cols-[0.95fr_1.05fr]">
+        <div className="mx-auto grid w-full gap-8 lg:grid-cols-[0.95fr_1.05fr]">
           {/* Review form */}
 
           <div className="overflow-hidden rounded-[18px] bg-[#102c5f] p-2 shadow-[0_14px_35px_rgba(16,44,95,0.16)]">
@@ -377,7 +377,7 @@ export default function ReviewsPage() {
                   <p className="mt-2 text-sm leading-6 text-green-700">
                     Your feedback has been received and is waiting for
                     approval. We appreciate you taking the time to share your
-                    CleanKart experience.
+                    Zaapino experience.
                   </p>
 
                   <button
@@ -580,7 +580,7 @@ export default function ReviewsPage() {
             </div>
 
             <h2 className="text-3xl font-extrabold leading-tight text-[#102c5f] sm:text-4xl">
-              CleanKart reviews:
+              Zaapino reviews:
               <span className="block text-[#1769e8]">
                 customers come first.
               </span>
@@ -588,7 +588,7 @@ export default function ReviewsPage() {
 
             <div className="mt-7 space-y-5 text-[15px] leading-7 text-slate-600">
               <p>
-                At CleanKart, customer satisfaction is at the heart of what we
+                At Zaapino, customer satisfaction is at the heart of what we
                 do. We want every service experience to be convenient,
                 professional and worth recommending.
               </p>
@@ -606,7 +606,7 @@ export default function ReviewsPage() {
               </p>
 
               <p>
-                Thank you for choosing CleanKart and taking the time to share
+                Thank you for choosing Zaapino and taking the time to share
                 your experience with us.
               </p>
             </div>
@@ -653,7 +653,7 @@ export default function ReviewsPage() {
       ========================================================= */}
 
       <section className="px-5 py-14 sm:px-8 sm:py-16 lg:px-10">
-        <div className="mx-auto max-w-[1380px]">
+        <div className="mx-auto w-full">
           <div className="mb-10">
             <div className="mb-3 flex items-center gap-3 text-sm font-semibold text-slate-600">
               <span>More customer experiences</span>
@@ -666,7 +666,7 @@ export default function ReviewsPage() {
 
             <h2 className="text-3xl font-extrabold tracking-tight text-[#102c5f] sm:text-4xl">
               More reasons to choose
-              <span className="text-[#1769e8]"> CleanKart.</span>
+              <span className="text-[#1769e8]"> Zaapino.</span>
             </h2>
           </div>
 
@@ -708,7 +708,7 @@ export default function ReviewsPage() {
       ========================================================= */}
 
       <section className="px-5 pb-16 sm:px-8 lg:px-10">
-        <div className="mx-auto flex max-w-[1380px] items-center justify-center gap-2">
+        <div className="mx-auto flex w-full items-center justify-center gap-2">
           <button
             type="button"
             disabled={currentPage === 1}

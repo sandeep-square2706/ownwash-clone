@@ -1,7 +1,7 @@
 
 .container {
   width: 100%;
-  max-width: 1380px;
+  max-width: none;
   margin: 0 auto;
   padding-left: 32px;
   padding-right: 32px;
@@ -1115,7 +1115,7 @@
 
 .finalCta {
   position: relative;
-  max-width: 1380px;
+  max-width: none;
   margin: 0 auto;
   overflow: hidden;
   border-radius: 32px;

@@ -20,6 +20,26 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Load local .env file
 load_dotenv(BASE_DIR / ".env")
 
+EMAIL_BACKEND = os.getenv(
+    "EMAIL_BACKEND",
+    (
+        "django.core.mail.backends.console.EmailBackend"
+        if os.getenv("DEBUG", "True").lower() == "true"
+        else "django.core.mail.backends.smtp.EmailBackend"
+    ),
+)
+EMAIL_HOST = os.getenv("EMAIL_HOST", "")
+EMAIL_PORT = int(os.getenv("EMAIL_PORT", "587"))
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
+EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "true").lower() == "true"
+EMAIL_USE_SSL = os.getenv("EMAIL_USE_SSL", "false").lower() == "true"
+DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "Zaapino <no-reply@zaapino.com>")
+CUSTOMER_FRONTEND_URL = os.getenv(
+    "CUSTOMER_FRONTEND_URL",
+    "http://localhost:3000",
+).rstrip("/")
+
 
 # =========================================================
 # SECURITY
@@ -289,11 +309,25 @@ CORS_ALLOWED_ORIGINS = [
             "http://localhost:3000,"
             "http://127.0.0.1:3000,"
             "http://localhost:3001,"
-            "http://127.0.0.1:3001"
+            "http://127.0.0.1:3001,"
+            "http://localhost:3002,"
+            "http://127.0.0.1:3002,"
+            "http://localhost:3003,"
+            "http://127.0.0.1:3003"
         ),
     ).split(",")
     if origin.strip()
 ]
+
+if DEBUG:
+    for local_partner_origin in (
+        "http://localhost:3002",
+        "http://127.0.0.1:3002",
+        "http://localhost:3003",
+        "http://127.0.0.1:3003",
+    ):
+        if local_partner_origin not in CORS_ALLOWED_ORIGINS:
+            CORS_ALLOWED_ORIGINS.append(local_partner_origin)
 
 CORS_ALLOW_CREDENTIALS = True
 
@@ -344,6 +378,16 @@ RAZORPAY_KEY_SECRET = os.getenv(
     "RAZORPAY_KEY_SECRET",
     "",
 )
+
+# Public payee details for manually verified direct UPI payments.
+DIRECT_UPI_VPA = os.getenv(
+    "DIRECT_UPI_VPA",
+    "8317502133@ybl",
+).strip()
+DIRECT_UPI_PAYEE_NAME = os.getenv(
+    "DIRECT_UPI_PAYEE_NAME",
+    "chandraobulreddy",
+).strip()
 
 BOOKING_CONVENIENCE_FEE = os.getenv(
     "BOOKING_CONVENIENCE_FEE",

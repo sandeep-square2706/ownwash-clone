@@ -4,7 +4,7 @@ import HomeSectionHeading from "@/components/home/HomeSectionHeading";
 import BrandedPhoto from "@/components/ui/BrandedPhoto";
 
 const serviceLinks = [
-  { title: "Bathroom Cleaning", slug: "house-cleaning", image: "bathroom-cleaning.jpeg" },
+  { title: "Cobweb Cleaning", slug: "cobweb-cleaning", image: "cobweb-cleaning.webp" },
   { title: "Kitchen Cleaning", slug: "kitchen-cleaning", image: "kitchen-cleaning.jpeg" },
   { title: "Car Interior Cleaning", slug: "interior-deep-cleaning", image: "car-interior-cleaning.jpeg" },
   { title: "Carpet Cleaning", slug: "carpet-cleaning", image: "carpet-cleaning.jpeg" },
@@ -15,7 +15,7 @@ const serviceLinks = [
 export default function AddOns() {
   return (
     <section className="bg-[#f6f9fe] px-4 py-12 sm:px-6 sm:py-14 lg:px-8">
-      <div className="mx-auto max-w-[1380px]">
+      <div className="mx-auto w-full">
         <div className="mb-8">
           <HomeSectionHeading eyebrow="Our top services" title="Add-ons to elevate your" accent="clean" />
         </div>

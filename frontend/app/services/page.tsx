@@ -14,7 +14,6 @@ import {
 } from "lucide-react";
 
 import ServiceCard from "@/components/services/ServiceCard";
-import { CleanKartImageStamp } from "@/components/ui/BrandedPhoto";
 import useServiceCatalog from "@/hooks/useServiceCatalog";
 import type { Service } from "@/lib/services";
 
@@ -37,7 +36,7 @@ function ServicesContent() {
   const { services: catalog, status: catalogStatus, error: loadError, retry } = useServiceCatalog();
   const [page, setPage] = useState(1);
   const [sort, setSort] = useState<SortOption>("featured");
-  const [itemsPerPage, setItemsPerPage] = useState(12);
+  const [itemsPerPage, setItemsPerPage] = useState(24);
   const [view, setView] = useState<"grid" | "list">("grid");
   const [search, setSearch] = useState(searchParams.get("q") ?? "");
   const [category, setCategory] = useState("all");
@@ -98,7 +97,7 @@ function ServicesContent() {
   return (
     <main className="min-h-screen bg-slate-50">
       <div className="border-b border-slate-200 bg-white">
-        <div className="mx-auto max-w-[1360px] px-4 py-4 text-sm text-slate-500 sm:px-6 lg:px-8">
+        <div className="mx-auto w-full px-4 py-4 text-sm text-slate-500 sm:px-6 lg:px-8">
           <Link href="/" className="transition hover:text-blue-900">
             Home
           </Link>
@@ -108,25 +107,25 @@ function ServicesContent() {
       </div>
 
       <section className="px-4 pt-5 sm:px-6 lg:px-8">
-        <div className="relative mx-auto min-h-[250px] max-w-[1360px] overflow-hidden rounded-3xl bg-blue-950">
+        <div className="relative mx-auto min-h-[250px] w-full overflow-hidden rounded-3xl bg-blue-950">
           <Image
-            src="/images/services/car-exterior-wash.jpeg"
-            alt="CleanKart professional washing a car"
+            src="/images/team/zaapino-car-wash.png"
+            alt="Zaapino professional washing a car"
             fill
             priority
+            loading="eager"
             sizes="100vw"
             className="object-cover object-center"
           />
-          <CleanKartImageStamp className="bottom-4 right-4 h-10 w-10 rounded-xl" />
           <div className="absolute inset-0 bg-gradient-to-r from-blue-950/95 via-blue-950/75 to-blue-950/15" />
-          <div className="relative z-10 flex min-h-[250px] max-w-2xl flex-col justify-center px-7 py-8 text-white sm:px-10 lg:px-14">
+          <div className="relative z-10 flex min-h-[250px] max-w-[540px] flex-col justify-center px-7 py-8 text-white sm:px-10 lg:px-14">
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-blue-100">
-              CleanKart services
+              Zaapino services
             </p>
             <h1 className="mt-3 text-3xl font-bold leading-tight sm:text-4xl">
               A cleaner home. A happier drive.
             </h1>
-            <p className="mt-3 max-w-xl text-sm leading-6 text-white/85 sm:text-base">
+            <p className="mt-3 max-w-[480px] text-sm leading-6 text-white/85 sm:text-base">
               Choose trusted doorstep care for your car, home and everyday spaces.
             </p>
             <Link
@@ -141,7 +140,7 @@ function ServicesContent() {
       </section>
 
       <section className="px-4 pt-8 sm:px-6 lg:px-8" id="service-list">
-        <div className="mx-auto max-w-[1360px]">
+        <div className="mx-auto w-full">
           <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p className="text-sm font-semibold uppercase tracking-[0.16em] text-blue-700">
@@ -251,22 +250,24 @@ function ServicesContent() {
             {" "}of {filteredServices.length} results
           </p>
 
+          {catalogStatus === "error" && (
+            <div className="mb-5 rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4" role="alert">
+              <h3 className="font-semibold text-blue-950">Showing available services</h3>
+              <p className="mt-1 text-sm text-slate-600">{loadError}</p>
+              <button
+                type="button"
+                onClick={retry}
+                className="mt-3 rounded-full bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
+              >
+                Retry service catalogue
+              </button>
+            </div>
+          )}
+
           {catalogStatus === "loading" ? (
             <div className="rounded-2xl border border-slate-200 bg-white px-5 py-16 text-center" role="status">
               <p className="text-lg font-semibold text-blue-950">Loading services…</p>
               <p className="mt-2 text-sm text-slate-600">Just a moment while we get the catalogue.</p>
-            </div>
-          ) : catalogStatus === "error" ? (
-            <div className="rounded-2xl border border-rose-200 bg-white px-5 py-16 text-center" role="alert">
-              <h3 className="text-xl font-semibold text-blue-950">Services are temporarily unavailable</h3>
-              <p className="mt-2 text-sm text-slate-600">{loadError}</p>
-              <button
-                type="button"
-                onClick={retry}
-                className="mt-5 rounded-full bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-700"
-              >
-                Try again
-              </button>
             </div>
           ) : visibleServices.length > 0 ? (
             <div

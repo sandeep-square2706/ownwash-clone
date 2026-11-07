@@ -1,3 +1,3 @@
 import DashboardShell from "../../../components/partner/DashboardShell";
-import PartnerSection from "../../../components/partner/PartnerSection";
-export default function Page(){return <DashboardShell><PartnerSection title={'Notifications'} description={'Application, booking, document, payout and support updates.'}><p className="ckp-muted">Notifications will appear after the notification API/provider is connected.</p></PartnerSection></DashboardShell>}
+import { Panel } from "../../../components/partner/PartnerUI";
+export default function NotificationsPage(){return <DashboardShell><div className="cp-page-heading"><div><h1>Notifications</h1><p>Application, booking, document and payout updates.</p></div></div><Panel title="Notifications"><div className="cp-review-note">The current backend does not include a partner notification model or notification endpoint. This page is ready as a portal destination, but it will remain empty until the notification API and delivery rules are implemented.</div></Panel></DashboardShell>}

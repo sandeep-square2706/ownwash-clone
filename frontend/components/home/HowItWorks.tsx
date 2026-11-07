@@ -41,7 +41,7 @@ const steps = [
 export default function HowItWorks() {
   return (
     <section className="bg-white px-4 py-12 sm:px-6 sm:py-14 lg:px-8">
-      <div className="mx-auto max-w-[1380px]">
+      <div className="mx-auto w-full">
         <div className="mb-8">
           <HomeSectionHeading eyebrow="Our process" title="Here’s how it" accent="works" />
         </div>

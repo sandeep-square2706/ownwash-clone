@@ -5,10 +5,10 @@ export default function BookAffordable() {
   return (
     <section className="bg-white px-0 py-2 sm:py-3">
       <div className="bg-[var(--brand-navy)] px-4 py-4 text-white sm:px-6 lg:px-8">
-        <div className="mx-auto flex max-w-[1380px] flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mx-auto flex w-full flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <p className="border-l-[3px] border-[var(--brand-gold)] pl-3 text-lg font-bold leading-tight sm:text-[22px]">
             <span className="text-[var(--brand-gold)]">Book affordable services:</span>
-            <span className="ml-2 text-white">Save time and money with CleanKart.</span>
+            <span className="ml-2 text-white">Save time and money with Zaapino.</span>
           </p>
           <Link
             href="/services"

@@ -1,4 +1,5 @@
-import secrets
+﻿import secrets
+from datetime import date
 from django.contrib.auth import get_user_model
 from django.db import transaction
 from django.http import FileResponse, Http404
@@ -28,8 +29,17 @@ class PartnerRegisterView(APIView):
         data=request.data
         email=(data.get("email") or "").strip().lower()
         phone=(data.get("phone") or "").strip()
+        date_of_birth=data.get("date_of_birth") or None
+        gender=(data.get("gender") or "").strip().upper()
         if not phone: return Response({"detail":"Phone number is required."},status=400)
         if not email: email=f"{phone}@partner.cleankart.local"
+        if date_of_birth:
+            try:
+                date_of_birth=date.fromisoformat(date_of_birth)
+            except (TypeError, ValueError):
+                return Response({"detail":"Enter a valid date of birth."},status=400)
+        if gender and gender not in PartnerProfile.Gender.values:
+            return Response({"detail":"Select a valid gender option."},status=400)
         user=User.objects.filter(email=email).first()
         if user:
             if hasattr(user,"partner_profile"):
@@ -44,10 +54,13 @@ class PartnerRegisterView(APIView):
                 "INDIVIDUAL":"INDIVIDUAL","SOLE_PROPRIETOR":"SOLE_PROPRIETOR","PARTNERSHIP":"PARTNERSHIP","COMPANY":"COMPANY"
             }.get(data.get("type"),"INDIVIDUAL"),
             legal_name=data.get("name") or data.get("legal_name") or "",display_name=data.get("display_name") or data.get("name") or data.get("legal_name") or "",phone=phone,email=email,
+            date_of_birth=date_of_birth,gender=gender,
             address=" ".join([str(data.get("house", data.get("address", ""))),str(data.get("area",""))]).strip(),city=data.get("city",""),
             district=data.get("district",""),state=data.get("state",""),pincode=data.get("pincode", data.get("postal_code", "")),
             experience=data.get("experience",""),team_size=data.get("team_size") or 1,max_travel_km=data.get("distance", data.get("maximum_travel_distance_km")) or 10,
             working_days=data.get("days", data.get("working_days")) or [],start_time=data.get("start", data.get("start_time")) or None,end_time=data.get("end", data.get("end_time")) or None,
+            languages=data.get("languages") or [], emergency_contact=data.get("emergency_contact", ""),
+            service_areas=data.get("service_areas") or [], equipment=data.get("equipment") or {},
             application_reference=ref(),status=PartnerProfile.Status.SUBMITTED,agreement_version="cleankart-partner-v1" if data.get("agreement") else "",agreement_accepted_at=timezone.now() if data.get("agreement") else None
         )
         for service in data.get("services") or []:
@@ -80,7 +93,16 @@ class PartnerOtpVerifyView(APIView):
             return Response({"detail":"Invalid or expired OTP."},status=400)
         user=User.objects.filter(phone=phone,role=User.Role.PARTNER).first()
         if not user:return Response({"detail":"No CleanKart partner account found for this phone."},status=404)
+        if (
+            getattr(user, "partner_profile", None) is not None
+            and user.partner_profile.status == PartnerProfile.Status.SUSPENDED
+        ):
+            return Response(
+                {"detail": "This partner account is blocked. Contact Zaapino support."},
+                status=403,
+            )
         refresh=RefreshToken.for_user(user)
+        record_partner_login(user)
         return Response({"access":str(refresh.access_token),"refresh":str(refresh),"message":"Login successful."})
 
 class PartnerMeView(APIView):
@@ -168,6 +190,12 @@ class PartnerEarningsView(APIView):
 class PartnerPayoutsView(APIView):
     permission_classes=[IsPartner]
     def get(self,request): return Response(PartnerPayoutSerializer(partner_for(request).payouts.order_by("-created_at"),many=True).data)
+
+class PartnerBillingView(APIView):
+    permission_classes=[IsPartner]
+    def get(self,request):
+        invoices=partner_for(request).invoices.order_by("-created_at")
+        return Response(PartnerInvoiceSerializer(invoices,many=True).data)
 
 class PartnerSupportView(APIView):
     permission_classes=[IsPartner]

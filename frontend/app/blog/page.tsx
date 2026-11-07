@@ -5,7 +5,7 @@ import BrandedPhoto from "@/components/ui/BrandedPhoto";
 
 export const metadata: Metadata = {
   title: "Cleaning tips",
-  description: "Practical CleanKart guides for vehicle care, furniture cleaning and a fresher home.",
+  description: "Practical Zaapino guides for vehicle care, furniture cleaning and a fresher home.",
 };
 
 const articles = [
@@ -38,10 +38,10 @@ const articles = [
 export default function BlogPage() {
   return (
     <main className="min-h-screen bg-slate-50 px-4 py-12 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-6xl">
+      <div className="mx-auto w-full">
         <div className="max-w-2xl">
           <p className="text-sm font-semibold uppercase tracking-[0.16em] text-blue-700">
-            The CleanKart journal
+            The Zaapino journal
           </p>
           <h1 className="mt-2 text-4xl font-bold text-blue-950">Simple care, made easier.</h1>
           <p className="mt-4 leading-7 text-slate-600">

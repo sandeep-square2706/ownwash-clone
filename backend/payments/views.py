@@ -1,10 +1,13 @@
 import logging
+import re
 from decimal import Decimal, ROUND_HALF_UP
 from typing import Any
 
 import razorpay
 
 from django.conf import settings
+from django.db import IntegrityError
+from django.db.models import Count, Q, Sum
 from django.db import transaction
 from django.utils import timezone
 
@@ -13,11 +16,42 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from bookings.models import Booking
+from admin_api.permissions import IsAdminUser
 
 from .models import Payment
 
 
 logger = logging.getLogger(__name__)
+
+
+def payment_admin_data(payment: Payment) -> dict[str, Any]:
+    data: dict[str, Any] = {
+        "id": payment.pk,
+        "booking_id": payment.booking_id,
+        "booking_reference": payment.booking.booking_reference,
+        "booking_status": payment.booking.status,
+        "amount": str(payment.amount),
+        "currency": payment.currency,
+        "status": payment.status,
+        "method": payment.method,
+        "razorpay_order_id": payment.razorpay_order_id,
+        "razorpay_payment_id": payment.razorpay_payment_id,
+        "upi_transaction_reference": payment.upi_transaction_reference,
+        "failure_reason": payment.failure_reason,
+        "verified_at": (
+            payment.verified_at.isoformat()
+            if payment.verified_at
+            else None
+        ),
+        "created_at": payment.created_at.isoformat(),
+        "updated_at": payment.updated_at.isoformat(),
+        "reviewed_at": (
+            payment.reviewed_at.isoformat()
+            if payment.reviewed_at
+            else None
+        ),
+    }
+    return data
 
 
 def get_razorpay_client() -> tuple[Any | None, str]:
@@ -141,6 +175,17 @@ class CreateRazorpayOrderView(APIView):
                 status=status.HTTP_409_CONFLICT,
             )
 
+        pending_direct_payment = Payment.objects.filter(
+            booking=booking,
+            method=Payment.Method.DIRECT_UPI,
+            status=Payment.Status.PENDING_REVIEW,
+        ).exists()
+        if pending_direct_payment:
+            return Response(
+                {"detail": "A direct UPI payment is awaiting admin review."},
+                status=status.HTTP_409_CONFLICT,
+            )
+
         # Avoid creating another order while an existing
         # payment is authorized but not yet captured.
         authorized_payment = Payment.objects.filter(
@@ -178,6 +223,7 @@ class CreateRazorpayOrderView(APIView):
             Payment.objects
             .filter(
                 booking=booking,
+                method=Payment.Method.RAZORPAY,
                 status=Payment.Status.CREATED,
             )
             .order_by("-created_at")
@@ -315,6 +361,7 @@ class VerifyRazorpayPaymentView(APIView):
             Payment.objects
             .select_related("booking")
             .filter(
+                method=Payment.Method.RAZORPAY,
                 razorpay_order_id=razorpay_order_id,
                 booking__user=request.user,
             )
@@ -613,3 +660,314 @@ class VerifyRazorpayPaymentView(APIView):
             },
             status=status.HTTP_200_OK,
         )
+
+
+class AdminPaymentListView(APIView):
+    permission_classes = [permissions.IsAuthenticated, IsAdminUser]
+
+    def get(self, request):
+        try:
+            page = int(request.query_params.get("page", "1"))
+            page_size = int(request.query_params.get("page_size", "25"))
+        except (TypeError, ValueError):
+            return Response(
+                {"detail": "Page and page_size must be whole numbers."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if page < 1 or not 1 <= page_size <= 100:
+            return Response(
+                {"detail": "Page must be positive and page_size must be 1–100."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        base_queryset = Payment.objects.select_related("booking").order_by(
+            "-created_at",
+            "-pk",
+        )
+        summary = Payment.objects.aggregate(
+            total=Count("pk"),
+            captured=Count(
+                "pk",
+                filter=Q(status=Payment.Status.CAPTURED),
+            ),
+            captured_amount=Sum(
+                "amount",
+                filter=Q(status=Payment.Status.CAPTURED),
+            ),
+            failed=Count(
+                "pk",
+                filter=Q(status=Payment.Status.FAILED),
+            ),
+            pending=Count(
+                "pk",
+                filter=Q(
+                    status__in=[
+                        Payment.Status.CREATED,
+                        Payment.Status.AUTHORIZED,
+                    ]
+                ),
+            ),
+            pending_upi_review=Count(
+                "pk",
+                filter=Q(status=Payment.Status.PENDING_REVIEW),
+            ),
+        )
+
+        requested_status = request.query_params.get("status", "").strip().upper()
+        if requested_status:
+            valid_statuses = {value for value, _label in Payment.Status.choices}
+            if requested_status not in valid_statuses:
+                return Response(
+                    {"detail": "Unknown payment status."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            base_queryset = base_queryset.filter(status=requested_status)
+
+        total = base_queryset.count()
+        start = (page - 1) * page_size
+        payments = base_queryset[start : start + page_size]
+
+        return Response(
+            {
+                "results": [payment_admin_data(payment) for payment in payments],
+                "count": total,
+                "page": page,
+                "page_size": page_size,
+                "summary": {
+                    "total": summary["total"],
+                    "captured": summary["captured"],
+                    "captured_amount": str(summary["captured_amount"] or 0),
+                    "failed": summary["failed"],
+                    "pending": summary["pending"],
+                    "pending_upi_review": summary["pending_upi_review"],
+                },
+            }
+        )
+
+
+class AdminPaymentDetailView(APIView):
+    permission_classes = [permissions.IsAuthenticated, IsAdminUser]
+
+    def get(self, request, pk):
+        payment = (
+            Payment.objects
+            .select_related("booking")
+            .filter(pk=pk)
+            .first()
+        )
+        if payment is None:
+            return Response(
+                {"detail": "Payment record not found."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        return Response(payment_admin_data(payment))
+
+
+class DirectUpiConfigView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request):
+        vpa = (getattr(settings, "DIRECT_UPI_VPA", "") or "").strip()
+        payee_name = (
+            getattr(settings, "DIRECT_UPI_PAYEE_NAME", "") or ""
+        ).strip()
+        if not vpa or not payee_name:
+            return Response(
+                {"detail": "Direct UPI payments are not configured."},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
+            )
+        return Response(
+            {
+                "vpa": vpa,
+                "payee_name": payee_name,
+            }
+        )
+
+
+class SubmitDirectUpiPaymentView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        raw_booking_id = request.data.get("booking_id")
+        try:
+            if isinstance(raw_booking_id, bool):
+                raise ValueError
+            booking_id = int(raw_booking_id)
+        except (TypeError, ValueError):
+            return Response(
+                {"detail": "A valid booking_id is required."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        reference = request.data.get("transaction_reference")
+        if not isinstance(reference, str):
+            return Response(
+                {"detail": "Enter the UPI transaction reference."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        reference = reference.strip().upper()
+        if not re.fullmatch(r"[A-Z0-9]{8,32}", reference):
+            return Response(
+                {
+                    "detail": (
+                        "Enter a valid UTR / UPI transaction reference "
+                        "(8–32 letters or numbers)."
+                    )
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        booking = Booking.objects.filter(
+            pk=booking_id,
+            user=request.user,
+        ).first()
+        if booking is None:
+            return Response(
+                {"detail": "Booking not found."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        if booking.status != Booking.Status.PENDING_PAYMENT:
+            return Response(
+                {"detail": "This booking is not awaiting payment."},
+                status=status.HTTP_409_CONFLICT,
+            )
+        if booking.total_amount <= Decimal("0.00"):
+            return Response(
+                {"detail": "The booking amount must be positive."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        if Payment.objects.filter(
+            booking=booking,
+            status__in=[
+                Payment.Status.CAPTURED,
+                Payment.Status.PENDING_REVIEW,
+            ],
+        ).exists():
+            return Response(
+                {"detail": "A payment for this booking is already submitted or confirmed."},
+                status=status.HTTP_409_CONFLICT,
+            )
+        if Payment.objects.filter(
+            booking=booking,
+            method=Payment.Method.RAZORPAY,
+            status__in=[
+                Payment.Status.CREATED,
+                Payment.Status.AUTHORIZED,
+            ],
+        ).exists():
+            return Response(
+                {"detail": "A Razorpay order already exists for this booking. Complete or retry that payment instead."},
+                status=status.HTTP_409_CONFLICT,
+            )
+
+        try:
+            with transaction.atomic():
+                payment = Payment.objects.create(
+                    booking=booking,
+                    method=Payment.Method.DIRECT_UPI,
+                    amount=booking.total_amount,
+                    currency="INR",
+                    status=Payment.Status.PENDING_REVIEW,
+                    upi_transaction_reference=reference,
+                )
+        except IntegrityError:
+            return Response(
+                {"detail": "This UPI transaction reference has already been submitted."},
+                status=status.HTTP_409_CONFLICT,
+            )
+
+        return Response(
+            {
+                "message": "UPI payment submitted for admin verification.",
+                "payment_id": payment.pk,
+                "payment_status": payment.status,
+                "booking_id": booking.pk,
+                "booking_reference": booking.booking_reference,
+            },
+            status=status.HTTP_201_CREATED,
+        )
+
+
+class AdminDirectUpiReviewView(APIView):
+    permission_classes = [permissions.IsAuthenticated, IsAdminUser]
+
+    def post(self, request, pk):
+        decision = request.data.get("decision")
+        note = str(request.data.get("note") or "").strip()
+        if decision not in {"approve", "reject"}:
+            return Response(
+                {"detail": "Decision must be approve or reject."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        if decision == "reject" and not note:
+            return Response(
+                {"detail": "A reason is required when rejecting a UPI payment."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        with transaction.atomic():
+            payment = (
+                Payment.objects
+                .select_for_update()
+                .select_related("booking")
+                .filter(pk=pk)
+                .first()
+            )
+            if payment is None:
+                return Response(
+                    {"detail": "Payment record not found."},
+                    status=status.HTTP_404_NOT_FOUND,
+                )
+            if (
+                payment.method != Payment.Method.DIRECT_UPI
+                or payment.status != Payment.Status.PENDING_REVIEW
+            ):
+                return Response(
+                    {"detail": "Only pending direct UPI payments can be reviewed."},
+                    status=status.HTTP_409_CONFLICT,
+                )
+
+            booking = (
+                Booking.objects
+                .select_for_update()
+                .get(pk=payment.booking_id)
+            )
+            if booking.status != Booking.Status.PENDING_PAYMENT:
+                return Response(
+                    {"detail": "The booking is no longer awaiting payment."},
+                    status=status.HTTP_409_CONFLICT,
+                )
+            if Payment.objects.filter(
+                booking=booking,
+                status=Payment.Status.CAPTURED,
+            ).exclude(pk=payment.pk).exists():
+                return Response(
+                    {"detail": "Another payment has already been confirmed for this booking."},
+                    status=status.HTTP_409_CONFLICT,
+                )
+
+            now = timezone.now()
+            payment.reviewed_by = request.user
+            payment.reviewed_at = now
+            if decision == "approve":
+                payment.status = Payment.Status.CAPTURED
+                payment.failure_reason = ""
+                payment.verified_at = now
+                booking.status = Booking.Status.CONFIRMED
+                booking.save(update_fields=["status", "updated_at"])
+            else:
+                payment.status = Payment.Status.REJECTED
+                payment.failure_reason = note
+            payment.save(
+                update_fields=[
+                    "status",
+                    "failure_reason",
+                    "reviewed_by",
+                    "reviewed_at",
+                    "verified_at",
+                    "updated_at",
+                ]
+            )
+
+        return Response(payment_admin_data(payment))

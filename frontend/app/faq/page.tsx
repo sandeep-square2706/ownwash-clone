@@ -4,7 +4,7 @@ import { ChevronDown } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Frequently asked questions",
-  description: "Answers about CleanKart services, preview pricing, saved services and booking availability.",
+  description: "Answers about Zaapino services, preview pricing, saved services and booking availability.",
 };
 
 const questions = [
@@ -39,7 +39,7 @@ export default function FAQPage() {
   return (
     <main className="min-h-screen bg-slate-50">
       <section className="bg-blue-950 px-4 py-14 text-white sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl">
+        <div className="mx-auto w-full">
           <p className="text-sm font-semibold uppercase tracking-[0.16em] text-blue-100">
             Help centre
           </p>
@@ -53,7 +53,7 @@ export default function FAQPage() {
       </section>
 
       <section className="px-4 py-12 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-3xl space-y-3">
+        <div className="mx-auto w-full space-y-3">
           {questions.map(({ question, answer }) => (
             <details
               key={question}
@@ -71,7 +71,7 @@ export default function FAQPage() {
           <p className="pt-5 text-center text-sm text-slate-600">
             Still need help?{" "}
             <Link href="/contact" className="font-semibold text-blue-900 underline underline-offset-2">
-              Contact CleanKart
+              Contact Zaapino
             </Link>
           </p>
         </div>

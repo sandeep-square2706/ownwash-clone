@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
-import { submitAuth } from "@/lib/auth";
+import { resendEmailVerification, submitAuth } from "@/lib/auth";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -12,6 +12,7 @@ export default function LoginPage() {
   const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [verificationEmail, setVerificationEmail] = useState("");
 
   async function handleSubmit(
     event: React.FormEvent<HTMLFormElement>,
@@ -22,12 +23,12 @@ export default function LoginPage() {
     setIsSubmitting(true);
 
     const form = new FormData(event.currentTarget);
+    const email = String(form.get("email") || "").trim().toLowerCase();
+    setVerificationEmail(email);
 
     try {
       await submitAuth("login", {
-        email: String(form.get("email") || "")
-          .trim()
-          .toLowerCase(),
+        email,
         password: String(form.get("password") || ""),
       });
 
@@ -39,6 +40,17 @@ export default function LoginPage() {
           ? error.message
           : "Could not sign in. Please try again.",
       );
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  async function resendVerification() {
+    setIsSubmitting(true);
+    try {
+      setMessage(await resendEmailVerification(verificationEmail));
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Could not resend verification email.");
     } finally {
       setIsSubmitting(false);
     }
@@ -166,6 +178,16 @@ export default function LoginPage() {
               {message}
             </div>
           )}
+          {message.toLowerCase().includes("verify your email") && verificationEmail ? (
+            <button
+              type="button"
+              onClick={resendVerification}
+              disabled={isSubmitting}
+              className="w-full text-sm font-semibold text-[var(--brand-blue)] hover:underline disabled:opacity-60"
+            >
+              Resend verification email
+            </button>
+          ) : null}
 
           {/* Login */}
           <button
@@ -177,9 +199,9 @@ export default function LoginPage() {
           </button>
         </form>
 
-        {/* Small CleanKart note */}
+        {/* Small Zaapino note */}
         <p className="mt-6 text-center text-xs text-slate-400">
-          Secure sign-in powered by CleanKart.
+          Secure sign-in powered by Zaapino.
         </p>
       </div>
     </main>

@@ -6,11 +6,11 @@ import HomeSectionHeading from "@/components/home/HomeSectionHeading";
 export default function Testimonials() {
   return (
     <section className="bg-white px-4 py-12 sm:px-6 sm:py-14 lg:px-8">
-      <div className="mx-auto max-w-7xl">
+      <div className="mx-auto w-full">
         <div className="mb-8 max-w-2xl">
           <HomeSectionHeading eyebrow="Customer reviews" title="Honest feedback" accent="matters" />
           <p className="mt-3 text-sm leading-6 text-slate-600">
-            Once CleanKart bookings are live, customers will be able to share feedback about the service they received.
+            Once Zaapino bookings are live, customers will be able to share feedback about the service they received.
           </p>
         </div>
 

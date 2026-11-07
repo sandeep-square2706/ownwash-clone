@@ -27,6 +27,9 @@ export default function useServiceCatalog() {
       })
       .catch(() => {
         if (current) {
+          setServices((previous) =>
+            previous.length ? previous : mockServices.filter((service) => service.isActive),
+          );
           setStatus((previous) => (previous === "ready" ? "ready" : "error"));
           setError("We couldn’t load services. Check your connection and try again.");
         }

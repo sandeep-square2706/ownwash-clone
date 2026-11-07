@@ -4,14 +4,14 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
+import { partnerPortalHref } from "@/lib/partner-portal-url";
 
 const exploreLinks = [
   ["Services", "/services"],
-  ["About CleanKart", "/about"],
+  ["About Zaapino", "/about"],
   ["Frequently asked questions", "/faq"],
   ["Customer reviews", "/reviews"],
-  ["Franchise opportunities", "/franchise"],
-  ["Partner with CleanKart", "/partner"],
+  ["Partner with Zaapino", partnerPortalHref],
   ["Privacy overview", "/privacy"],
   ["Terms of use", "/terms"],
 ];
@@ -28,17 +28,17 @@ export default function Footer() {
 
   return (
     <footer className="bg-[var(--brand-navy)] text-white">
-      <div className="mx-auto grid max-w-[1380px] gap-10 px-4 py-14 sm:px-6 md:grid-cols-2 lg:grid-cols-[1.3fr_0.8fr_0.8fr_1fr] lg:px-8">
+      <div className="mx-auto grid w-full gap-10 px-4 py-14 sm:px-6 md:grid-cols-2 lg:grid-cols-[1.3fr_0.8fr_0.8fr_1fr] lg:px-8">
         <div>
-          <Link href="/" className="inline-flex items-center gap-3" aria-label="CleanKart home">
-            <span className="flex h-14 w-14 items-center justify-center rounded-xl border border-white/75 bg-white p-0.5">
-              <Image src="/images/logo/cleankart-logo.png" alt="" width={56} height={56} className="h-full w-full object-contain" />
+          <Link href="/" className="inline-flex items-center gap-3" aria-label="Zaapino home">
+            <span className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-black">
+              <Image src="/images/logo/zaapino-logo-transparent.png" alt="Zaapino" width={56} height={56} className="h-full w-full object-cover" />
             </span>
             <span>
               <span className="block text-[26px] font-black leading-none tracking-tight">
-                Clean<span className="text-[var(--brand-gold)]">Kart</span>
+                Zaap<span className="text-[var(--brand-gold)]">ino</span>
               </span>
-              <span className="mt-1.5 block text-[10px] text-blue-100">Home · Car · Office Cleaning Services</span>
+              <span className="mt-1.5 block text-[10px] text-blue-100">Home Â· Car Â· Office Cleaning Services</span>
             </span>
           </Link>
           <p className="mt-4 max-w-sm text-sm leading-6 text-blue-100">
@@ -48,12 +48,12 @@ export default function Footer() {
         </div>
 
         <FooterLinks title="Explore" links={exploreLinks} />
-        <FooterLinks title="Your CleanKart" links={accountLinks} />
+        <FooterLinks title="Your Zaapino" links={accountLinks} />
 
         <div>
           <h2 className="text-base font-bold">Stay connected</h2>
           <p className="mt-3 text-sm leading-6 text-blue-100">
-            Get occasional cleaning tips and CleanKart service updates.
+            Get occasional cleaning tips and Zaapino service updates.
           </p>
           <form
             className="mt-4 flex gap-2"
@@ -83,13 +83,13 @@ export default function Footer() {
             href="/contact"
             className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-blue-200 transition hover:text-white"
           >
-            Contact CleanKart
+            Contact Zaapino
             <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
       </div>
         <div className="border-t border-white/10 bg-[#0b2450] px-4 py-4 text-center text-xs text-blue-100">
-        © 2026 CleanKart. All rights reserved.
+        Â© 2026 Zaapino. All rights reserved.
       </div>
     </footer>
   );

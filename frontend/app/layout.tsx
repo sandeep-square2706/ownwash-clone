@@ -9,27 +9,27 @@ import WhatsAppButton from "@/components/WhatsAppButton";
 
 const siteUrl = getSiteUrl();
 const logoUrl = siteUrl
-  ? new URL("/images/logo/cleankart-logo.png", siteUrl).toString()
+  ? new URL("/images/logo/zaapino-logo-transparent.png", siteUrl).toString()
   : undefined;
 
 export const metadata: Metadata = {
   metadataBase: siteUrl ? new URL(siteUrl) : undefined,
   title: {
-    default: "CleanKart | Doorstep Cleaning Services",
-    template: "%s | CleanKart",
+    default: "Zaapino | Home, Car & Office Cleaning Services",
+    template: "%s | Zaapino",
   },
   description:
     "Book trusted doorstep cleaning for your car, home and everyday spaces.",
-  applicationName: "CleanKart",
+  applicationName: "Zaapino",
   icons: {
-    icon: "/images/logo/cleankart-logo.png",
-    shortcut: "/images/logo/cleankart-logo.png",
-    apple: "/images/logo/cleankart-logo.png",
+    icon: "/images/logo/zaapino-logo-transparent.png",
+    shortcut: "/images/logo/zaapino-logo-transparent.png",
+    apple: "/images/logo/zaapino-logo-transparent.png",
   },
   openGraph: {
     type: "website",
-    siteName: "CleanKart",
-    title: "CleanKart | Doorstep Cleaning Services",
+    siteName: "Zaapino",
+    title: "Zaapino | Home, Car & Office Cleaning Services",
     description:
       "Book trusted doorstep cleaning for your car, home and everyday spaces.",
     locale: "en_IN",
@@ -38,9 +38,9 @@ export const metadata: Metadata = {
           images: [
             {
               url: logoUrl,
-              width: 1024,
-              height: 1024,
-              alt: "CleanKart logo",
+              width: 768,
+              height: 768,
+              alt: "Zaapino logo",
             },
           ],
         }
@@ -48,7 +48,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary",
-    title: "CleanKart | Doorstep Cleaning Services",
+    title: "Zaapino | Home, Car & Office Cleaning Services",
     description:
       "Book trusted doorstep cleaning for your car, home and everyday spaces.",
     ...(logoUrl ? { images: [logoUrl] } : {}),

@@ -47,6 +47,33 @@ These endpoints are documented for the backend integration phase. The current pr
 | POST | `/api/partner/apply/` | Partner application through protected document storage |
 | GET | `/api/notifications/` | Customer notification list |
 
+## Customer email verification
+
+`POST /api/auth/register/` creates an unverified customer account, sends a
+24-hour single-use email verification link, and does not issue login tokens.
+`POST /api/auth/verify-email/` accepts `{ "token": "..." }`; only after success
+can a customer log in. `POST /api/auth/resend-verification/` accepts an email
+address and sends another link for an eligible account, subject to a one-minute
+resend cooldown. Existing accounts are kept verified during migration.
+
+For local development, Django writes verification emails to the backend
+console. Configure SMTP for delivery in production with `EMAIL_HOST`,
+`EMAIL_PORT`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`, `EMAIL_USE_TLS` or
+`EMAIL_USE_SSL`, and `DEFAULT_FROM_EMAIL`. Set `CUSTOMER_FRONTEND_URL` to the
+public website origin so links point to its `/verify-email` page.
+
+## Offers and coupons
+
+`GET /api/offers/` returns active, in-date offers enabled for the home-page
+banner, including the coupon code customers can use at checkout.
+
+Authenticated checkout can validate a code against the server-side cart with
+`POST /api/bookings/validate-coupon/` and `{ "coupon_code": "SAVE20" }`.
+`POST /api/bookings/` accepts an optional `coupon_code`; the backend revalidates
+it and calculates the final discount from authoritative cart prices. The
+existing automatic first-booking discount stacks with a coupon, with the
+combined discount capped at the subtotal.
+
 ## Trust boundary
 
 The browser cart and displayed totals are preview state. A live booking request should send service IDs, variant IDs, add-on IDs, address and availability slot identifiers. It must not be accepted as authoritative for a price, discount, role, payment result or booking confirmation. The backend must recalculate the total, validate availability, create the payment order, verify the payment signature and only then confirm the booking.

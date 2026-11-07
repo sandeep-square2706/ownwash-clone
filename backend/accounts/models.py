@@ -21,6 +21,10 @@ class User(AbstractUser):
         default=False,
     )
 
+    is_email_verified = models.BooleanField(
+        default=False,
+    )
+
     created_at = models.DateTimeField(
         auto_now_add=True,
     )
@@ -35,6 +39,20 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.email
+
+
+class EmailVerificationToken(models.Model):
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        related_name="email_verification_token",
+    )
+    token_hash = models.CharField(max_length=64, unique=True)
+    expires_at = models.DateTimeField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Email verification for {self.user.email}"
 
 
 class Address(models.Model):

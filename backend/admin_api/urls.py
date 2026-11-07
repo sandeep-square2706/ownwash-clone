@@ -2,14 +2,25 @@ from django.urls import path
 
 from .views import (
     AdminDashboardView,
+    AdminOfferDetailView,
+    AdminOffersView,
     AdminCustomerDetailView,
     AdminCustomersView,
+    AdminPartnerActionView,
     AdminPartnerDetailView,
+    AdminPartnerDocumentDownloadView,
+    AdminPartnerInvoicesView,
+    AdminPartnerInvoicePaymentView,
     AdminPartnersView,
     AdminReportsView,
     AdminServiceDetailView,
     AdminServicesView,
     EmptyAdminListView,
+)
+from payments.views import (
+    AdminDirectUpiReviewView,
+    AdminPaymentDetailView,
+    AdminPaymentListView,
 )
 
 urlpatterns = [
@@ -43,6 +54,26 @@ urlpatterns = [
         AdminPartnerDetailView.as_view(),
         name="admin-partner-detail",
     ),
+    path(
+        "partners/<int:pk>/action/",
+        AdminPartnerActionView.as_view(),
+        name="admin-partner-action",
+    ),
+    path(
+        "partners/<int:pk>/documents/<int:document_id>/download/",
+        AdminPartnerDocumentDownloadView.as_view(),
+        name="admin-partner-document-download",
+    ),
+    path(
+        "partners/<int:pk>/invoices/",
+        AdminPartnerInvoicesView.as_view(),
+        name="admin-partner-invoices",
+    ),
+    path(
+        "partner-invoices/<int:invoice_id>/mark-paid/",
+        AdminPartnerInvoicePaymentView.as_view(),
+        name="admin-partner-invoice-mark-paid",
+    ),
 
     # Services
     path(
@@ -60,8 +91,13 @@ urlpatterns = [
     path("bookings/", EmptyAdminListView.as_view(), name="admin-bookings"),
     path("bookings/<int:pk>/", EmptyAdminListView.as_view(), name="admin-booking-detail"),
 
-    path("payments/", EmptyAdminListView.as_view(), name="admin-payments"),
-    path("payments/<int:pk>/", EmptyAdminListView.as_view(), name="admin-payment-detail"),
+    path("payments/", AdminPaymentListView.as_view(), name="admin-payments"),
+    path("payments/<int:pk>/", AdminPaymentDetailView.as_view(), name="admin-payment-detail"),
+    path(
+        "payments/<int:pk>/upi-review/",
+        AdminDirectUpiReviewView.as_view(),
+        name="admin-payment-upi-review",
+    ),
 
     path("refunds/", EmptyAdminListView.as_view(), name="admin-refunds"),
 
@@ -69,7 +105,8 @@ urlpatterns = [
 
     path("complaints/", EmptyAdminListView.as_view(), name="admin-complaints"),
 
-    path("offers/", EmptyAdminListView.as_view(), name="admin-offers"),
+    path("offers/", AdminOffersView.as_view(), name="admin-offers"),
+    path("offers/<int:pk>/", AdminOfferDetailView.as_view(), name="admin-offer-detail"),
 
     path("banners/", EmptyAdminListView.as_view(), name="admin-banners"),
 

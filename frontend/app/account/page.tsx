@@ -7,6 +7,10 @@ import { LogOut, UserRound, Trash2 } from "lucide-react";
 import { clearAuth, getCurrentUserData } from "@/lib/auth";
 import type { Service } from "@/lib/services";
 import useServiceCatalog from "@/hooks/useServiceCatalog";
+import {
+  getZaapinoTeamImage,
+  replaceStaffPhoto,
+} from "@/lib/zaapino-team-images";
 
 import {
   readWishlist,
@@ -37,7 +41,7 @@ export default function AccountPage() {
 
   const [section, setSection] = useState<Section>("dashboard");
   const [customerName, setCustomerName] =
-    useState("CleanKart Customer");
+    useState("Zaapino Customer");
 
   useEffect(() => {
     const user = getCurrentUserData();
@@ -50,7 +54,7 @@ export default function AccountPage() {
     setCustomerName(
       user.username ||
         user.email?.split("@")[0] ||
-        "CleanKart Customer",
+        "Zaapino Customer",
     );
   }, [router]);
 
@@ -66,7 +70,7 @@ export default function AccountPage() {
 
   return (
     <main className="min-h-[65vh] bg-white text-slate-900">
-      <div className="mx-auto max-w-[1380px] px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto w-full px-4 sm:px-6 lg:px-8">
 
         {/* BREADCRUMB */}
         <div className="border-b border-slate-200 py-5">
@@ -404,7 +408,7 @@ function Orders() {
         </h2>
 
         <p className="mt-3 text-sm leading-6 text-slate-600">
-          View your CleanKart cleaning service bookings and order history.
+          View your Zaapino cleaning service bookings and order history.
         </p>
 
         <div className="mt-7 border border-slate-200 bg-white p-6">
@@ -424,7 +428,7 @@ function Orders() {
         </h2>
 
         <p className="mt-3 text-sm leading-6 text-slate-600">
-          View your CleanKart cleaning service bookings and order history.
+          View your Zaapino cleaning service bookings and order history.
         </p>
 
         <div className="mt-7 border border-red-200 bg-red-50 p-6">
@@ -443,7 +447,7 @@ function Orders() {
       </h2>
 
       <p className="mt-3 text-sm leading-6 text-slate-600">
-        View your CleanKart cleaning service bookings and order history.
+        View your Zaapino cleaning service bookings and order history.
       </p>
 
       {bookings.length === 0 ? (
@@ -453,7 +457,7 @@ function Orders() {
           </p>
 
           <p className="mt-2 text-sm text-slate-500">
-            Your completed and upcoming CleanKart bookings will appear here.
+            Your completed and upcoming Zaapino bookings will appear here.
           </p>
         </div>
       ) : (
@@ -504,7 +508,7 @@ function Orders() {
                                   item.service_name,
                               )
                               .join(", ")
-                          : "CleanKart Service"}
+                          : "Zaapino Service"}
                       </p>
                     </div>
 
@@ -715,7 +719,7 @@ function Downloads() {
       </h2>
 
       <p className="mt-3 text-sm leading-6 text-slate-600">
-        Your CleanKart invoices, receipts and service documents will
+        Your Zaapino invoices, receipts and service documents will
         appear here.
       </p>
 
@@ -845,7 +849,7 @@ function Addresses() {
           </h2>
 
           <p className="mt-3 text-sm leading-6 text-slate-600">
-            Manage the addresses where you want CleanKart services.
+            Manage the addresses where you want Zaapino services.
           </p>
         </div>
 
@@ -1145,7 +1149,7 @@ function AccountDetails({
       </h2>
 
       <p className="mt-3 text-sm leading-6 text-slate-600">
-        Your CleanKart account information.
+        Your Zaapino account information.
       </p>
 
       <div className="mt-7 max-w-[650px]">
@@ -1382,6 +1386,7 @@ function WishlistRow({
   const image =
     service.images?.[0] ||
     "/images/generated/home-cleaning.webp";
+  const displayImage = replaceStaffPhoto(image);
 
   function removeService() {
     toggleWishlist(service.id);
@@ -1398,7 +1403,9 @@ function WishlistRow({
           <div className="h-16 w-16 shrink-0 overflow-hidden bg-slate-100">
 
             <img
-              src={image}
+              src={displayImage === image
+                ? getZaapinoTeamImage(`${service.name} ${service.category}`)
+                : displayImage}
               alt={service.name}
               className="h-full w-full object-cover"
             />
@@ -1426,7 +1433,7 @@ function WishlistRow({
             ₹{price.toLocaleString("en-IN")}
           </span>
 
-          {originalPrice !== undefined && (
+          {typeof originalPrice === "number" && (
             <span className="ml-1 text-slate-400 line-through">
               ₹{originalPrice.toLocaleString("en-IN")}
             </span>
